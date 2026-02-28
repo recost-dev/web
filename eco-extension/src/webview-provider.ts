@@ -11,11 +11,11 @@ interface ChatMessage {
   content: string;
 }
 
-export class EcoPanel {
-  public static currentPanel: EcoPanel | undefined;
-  private readonly panel: vscode.WebviewPanel;
+export class EcoSidebarProvider implements vscode.WebviewViewProvider {
+  public static readonly viewType = "eco.sidebarView";
+
+  private _view?: vscode.WebviewView;
   private readonly extensionUri: vscode.Uri;
-  private disposables: vscode.Disposable[] = [];
 
   // State
   private lastEndpoints: EndpointRecord[] = [];
@@ -24,45 +24,31 @@ export class EcoPanel {
   private chatHistory: ChatMessage[] = [];
   private chatContext: SuggestionContext | null = null;
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    this.panel = panel;
+  constructor(extensionUri: vscode.Uri) {
     this.extensionUri = extensionUri;
-
-    this.panel.webview.html = this.getHtmlForWebview();
-
-    this.panel.webview.onDidReceiveMessage(
-      (message: WebviewMessage) => this.handleMessage(message),
-      null,
-      this.disposables
-    );
-
-    this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
   }
 
-  public static createOrShow(extensionUri: vscode.Uri) {
-    const column = vscode.ViewColumn.Beside;
+  resolveWebviewView(
+    webviewView: vscode.WebviewView,
+    _context: vscode.WebviewViewResolveContext,
+    _token: vscode.CancellationToken
+  ) {
+    this._view = webviewView;
 
-    if (EcoPanel.currentPanel) {
-      EcoPanel.currentPanel.panel.reveal(column);
-      return;
-    }
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.joinPath(this.extensionUri, "dist", "webview")],
+    };
 
-    const panel = vscode.window.createWebviewPanel(
-      "eco-panel",
-      "ECO",
-      column,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.joinPath(extensionUri, "dist", "webview")],
-      }
+    webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
+
+    webviewView.webview.onDidReceiveMessage(
+      (message: WebviewMessage) => this.handleMessage(message)
     );
-
-    EcoPanel.currentPanel = new EcoPanel(panel, extensionUri);
   }
 
   private postMessage(message: HostMessage) {
-    this.panel.webview.postMessage(message);
+    this._view?.webview.postMessage(message);
   }
 
   private async handleMessage(message: WebviewMessage) {
@@ -210,7 +196,6 @@ export class EcoPanel {
       const doc = await vscode.workspace.openTextDocument(fileUri);
       const editor = await vscode.window.showTextDocument(doc);
 
-      // Insert at cursor or end of file
       const position = editor.selection.active;
       await editor.edit((editBuilder) => {
         editBuilder.insert(position, code);
@@ -240,8 +225,7 @@ export class EcoPanel {
     }
   }
 
-  private getHtmlForWebview(): string {
-    const webview = this.panel.webview;
+  private getHtmlForWebview(webview: vscode.Webview): string {
     const distUri = vscode.Uri.joinPath(this.extensionUri, "dist", "webview");
 
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(distUri, "assets", "index.js"));
@@ -263,15 +247,6 @@ export class EcoPanel {
   <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 </html>`;
-  }
-
-  private dispose() {
-    EcoPanel.currentPanel = undefined;
-    this.panel.dispose();
-    while (this.disposables.length) {
-      const d = this.disposables.pop();
-      if (d) d.dispose();
-    }
   }
 }
 

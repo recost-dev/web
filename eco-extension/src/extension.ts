@@ -1,19 +1,21 @@
 import * as vscode from "vscode";
-import { EcoPanel } from "./webview-provider";
+import { EcoSidebarProvider } from "./webview-provider";
 
 export function activate(context: vscode.ExtensionContext) {
+  const provider = new EcoSidebarProvider(context.extensionUri);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(EcoSidebarProvider.viewType, provider, {
+      webviewOptions: { retainContextWhenHidden: true },
+    })
+  );
+
   const openPanelCommand = vscode.commands.registerCommand("eco.openPanel", () => {
-    EcoPanel.createOrShow(context.extensionUri);
+    vscode.commands.executeCommand("eco.sidebarView.focus");
   });
 
   const scanCommand = vscode.commands.registerCommand("eco.scanWorkspace", () => {
-    EcoPanel.createOrShow(context.extensionUri);
-    // Small delay to ensure panel is ready, then trigger scan
-    setTimeout(() => {
-      if (EcoPanel.currentPanel) {
-        vscode.commands.executeCommand("eco.openPanel");
-      }
-    }, 500);
+    vscode.commands.executeCommand("eco.sidebarView.focus");
   });
 
   context.subscriptions.push(openPanelCommand, scanCommand);

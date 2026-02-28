@@ -25,43 +25,49 @@ EcoAPI turns parsed API call data into actionable diagnostics:
 ## Project Structure
 
 ```
-src/
-  index.ts              # Workers entry point (Hono app)
-  env.ts                # Shared Env/Variables/AppContext types
-  config/
-    pricing.ts          # Provider pricing & keyword detection
-  middleware/
-    cors.ts
-    content-type.ts
-    logging.ts
-    request-id.ts
-    error-handler.ts
-  models/
-    types.ts            # TypeScript domain types
-  routes/
-    health.ts
-    projects.ts
-    providers.ts
-  services/
-    analysis-service.ts     # Core analysis engine (pure, sync)
-    project-service.ts      # All CRUD via D1 (async)
-    provider-service.ts     # Provider config lookups
-    validation-service.ts   # Input validation
-  utils/
-    app-error.ts
-    pagination.ts
-    sort.ts
-migrations/
-  0001_schema.sql       # D1 table definitions
-  0002_seed.sql         # Demo project seed data
+api/                        # Cloudflare Workers API
+  src/
+    index.ts                # Workers entry point (Hono app)
+    env.ts                  # Shared Env/Variables/AppContext types
+    config/
+      pricing.ts            # Provider pricing & keyword detection
+    middleware/
+      cors.ts
+      content-type.ts
+      logging.ts
+      request-id.ts
+      error-handler.ts
+    models/
+      types.ts              # TypeScript domain types
+    routes/
+      health.ts
+      projects.ts
+      providers.ts
+    services/
+      analysis-service.ts   # Core analysis engine (pure, sync)
+      project-service.ts    # All CRUD via D1 (async)
+      provider-service.ts   # Provider config lookups
+      validation-service.ts # Input validation
+    utils/
+      app-error.ts
+      pagination.ts
+      sort.ts
+  migrations/
+    0001_schema.sql         # D1 table definitions
+    0002_seed.sql           # Demo project seed data
+  wrangler.toml
+  package.json
+  tsconfig.json
+eco-extension/              # VSCode extension
 ```
 
 ## Setup
 
 ```bash
+cd api
 npm install
 npx wrangler d1 create eco-db          # create D1 database
-# paste the returned database_id into wrangler.toml
+# paste the returned database_id into api/wrangler.toml
 npm run db:migrate:local                # apply schema + seed data
 npm run dev                             # start local dev server
 ```
@@ -69,6 +75,8 @@ npm run dev                             # start local dev server
 The app seeds one project + scan via migration for immediate exploration.
 
 ## Commands
+
+Run from the `api/` directory:
 
 | Command | Description |
 |---------|-------------|
@@ -224,6 +232,65 @@ GET    /providers/:name
 ```
 
 **DELETE:** `204 No Content`
+
+## VSCode Extension
+
+The `eco-extension/` folder contains a VSCode extension that runs ECO analysis directly inside your editor — no API server needed.
+
+### What it does
+
+- Scans your workspace for API call patterns (TS, JS, Python, Go, Java, Ruby)
+- Shows results in a persistent **sidebar panel** (Activity Bar)
+- Detects cost, N+1 patterns, missing caching, and unbatched calls
+- AI chat via OpenAI to explain issues and suggest fixes
+
+### Running in development (F5)
+
+1. Open `eco-extension/` as your workspace in VSCode:
+   ```bash
+   code eco-extension/
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   cd webview && npm install && cd ..
+   ```
+3. Press **F5** — builds everything and launches an Extension Development Host window.
+4. Click the **ECO leaf icon** in the Activity Bar to open the sidebar.
+
+### Running from the .vsix
+
+1. Open the Command Palette (`Ctrl+Shift+P`) → **"Extensions: Install from VSIX..."**
+2. Select `eco-extension/eco-api-analyzer-0.1.0.vsix`
+3. Reload VSCode, then click the ECO icon in the Activity Bar.
+
+To build a fresh `.vsix`:
+```bash
+cd eco-extension && npm run package
+```
+
+### Dev workflow (watch mode)
+
+Run both watchers in separate terminals, then **Ctrl+Shift+P → "Developer: Reload Window"** after changes:
+
+```bash
+# Terminal 1 — extension backend
+cd eco-extension && npm run watch:ext
+
+# Terminal 2 — React webview
+cd eco-extension && npm run watch:webview
+```
+
+### Extension settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `eco.openaiApiKey` | `""` | OpenAI API key (prompted on first use if unset) |
+| `eco.openaiModel` | `gpt-4o-mini` | OpenAI model for chat |
+| `eco.scanGlob` | `**/*.{ts,tsx,js,jsx,py,go,java,rb}` | Files to include |
+| `eco.excludeGlob` | `**/node_modules/**,...` | Files to exclude |
+
+---
 
 ## Example Workflow
 
