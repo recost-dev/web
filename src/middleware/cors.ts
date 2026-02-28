@@ -1,15 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import type { MiddlewareHandler } from "hono";
 
-export const corsMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,X-Request-Id");
+export const corsMiddleware: MiddlewareHandler = async (c, next) => {
+  c.header("Access-Control-Allow-Origin", "*");
+  c.header("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+  c.header("Access-Control-Allow-Headers", "Content-Type,X-Request-Id");
 
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
-    return;
+  if (c.req.method === "OPTIONS") {
+    return c.body(null, 204);
   }
 
-  next();
+  await next();
 };
-

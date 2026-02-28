@@ -1,18 +1,9 @@
-import { randomUUID } from "crypto";
-import { NextFunction, Request, Response } from "express";
+import type { MiddlewareHandler } from "hono";
+import type { Variables } from "../env";
 
-declare global {
-  namespace Express {
-    interface Request {
-      requestId: string;
-    }
-  }
-}
-
-export const requestIdMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const requestId = randomUUID();
-  req.requestId = requestId;
-  res.setHeader("X-Request-Id", requestId);
-  next();
+export const requestIdMiddleware: MiddlewareHandler<{ Variables: Variables }> = async (c, next) => {
+  const requestId = crypto.randomUUID();
+  c.set("requestId", requestId);
+  c.header("X-Request-Id", requestId);
+  await next();
 };
-

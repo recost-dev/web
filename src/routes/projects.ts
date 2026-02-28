@@ -1,4 +1,5 @@
-import { Router } from "express";
+import { Hono } from "hono";
+import type { AppContext } from "../env";
 import {
   createProject,
   createScan,
@@ -27,84 +28,92 @@ import { buildPaginationMeta, paginate, parsePagination } from "../utils/paginat
 import { AppError } from "../utils/app-error";
 import { parseOrder } from "../utils/sort";
 
-const router = Router();
+const app = new Hono<AppContext>();
 
-router.post("/projects", (req, res) => {
-  const input = validateCreateProjectInput(req.body);
-  const project = createProject(input);
-  res.status(201).json({ data: project });
+app.post("/projects", async (c) => {
+  const body = await c.req.json().catch(() => {
+    throw new AppError("MALFORMED_JSON", "Malformed JSON request body", 400);
+  });
+  const input = validateCreateProjectInput(body);
+  const project = await createProject(c.env.DB, input);
+  return c.json({ data: project }, 201);
 });
 
-router.get("/projects", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const order = parseOrder(req.query.order);
-  const data = listProjects({
-    name: req.query.name as string | undefined,
-    sort: req.query.sort as string | undefined,
+app.get("/projects", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const order = parseOrder(query.order);
+  const data = await listProjects(c.env.DB, {
+    name: query.name,
+    sort: query.sort,
     order
   });
-  const paged = paginate(data, page, limit);
-  res.json({
-    data: paged,
+  return c.json({
+    data: paginate(data, page, limit),
     pagination: buildPaginationMeta(page, limit, data.length)
   });
 });
 
-router.get("/projects/:id", (req, res) => {
-  const project = getProjectWithSummary(req.params.id);
-  res.json({ data: project });
+app.get("/projects/:id", async (c) => {
+  const project = await getProjectWithSummary(c.env.DB, c.req.param("id"));
+  return c.json({ data: project });
 });
 
-router.patch("/projects/:id", (req, res) => {
-  const input = validatePatchProjectInput(req.body);
-  const project = patchProject(req.params.id, input);
-  res.json({ data: project });
+app.patch("/projects/:id", async (c) => {
+  const body = await c.req.json().catch(() => {
+    throw new AppError("MALFORMED_JSON", "Malformed JSON request body", 400);
+  });
+  const input = validatePatchProjectInput(body);
+  const project = await patchProject(c.env.DB, c.req.param("id"), input);
+  return c.json({ data: project });
 });
 
-router.delete("/projects/:id", (req, res) => {
-  deleteProject(req.params.id);
-  res.status(204).send();
+app.delete("/projects/:id", async (c) => {
+  await deleteProject(c.env.DB, c.req.param("id"));
+  return c.body(null, 204);
 });
 
-router.post("/projects/:id/scans", (req, res) => {
-  const input = validateScanInput(req.body);
-  const scan = createScan(req.params.id, input.apiCalls);
-  res.status(201).json({ data: scan });
+app.post("/projects/:id/scans", async (c) => {
+  const body = await c.req.json().catch(() => {
+    throw new AppError("MALFORMED_JSON", "Malformed JSON request body", 400);
+  });
+  const input = validateScanInput(body);
+  const scan = await createScan(c.env.DB, c.req.param("id"), input.apiCalls);
+  return c.json({ data: scan }, 201);
 });
 
-router.get("/projects/:id/scans", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const order = parseOrder(req.query.order ?? "desc");
-  const sort = (req.query.sort as string | undefined) ?? "created_at";
+app.get("/projects/:id/scans", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const order = parseOrder(query.order ?? "desc");
+  const sort = query.sort ?? "created_at";
   if (!["created_at"].includes(sort)) {
     throw new AppError("INVALID_SORT_FIELD", "Query param 'sort' must be created_at", 422);
   }
-  const all = listScans(req.params.id).sort((a, b) =>
-    order === "asc"
-      ? a.createdAt.localeCompare(b.createdAt)
-      : b.createdAt.localeCompare(a.createdAt)
+  const all = (await listScans(c.env.DB, c.req.param("id"))).sort((a, b) =>
+    order === "asc" ? a.createdAt.localeCompare(b.createdAt) : b.createdAt.localeCompare(a.createdAt)
   );
-
-  res.json({
+  return c.json({
     data: paginate(all, page, limit),
     pagination: buildPaginationMeta(page, limit, all.length)
   });
 });
 
-router.get("/projects/:id/scans/latest", (req, res) => {
-  const scan = getLatestScan(req.params.id);
-  res.json({ data: scan });
+app.get("/projects/:id/scans/latest", async (c) => {
+  const scan = await getLatestScan(c.env.DB, c.req.param("id"));
+  return c.json({ data: scan });
 });
 
-router.get("/projects/:id/scans/:scanId", (req, res) => {
-  const scan = getScan(req.params.id, req.params.scanId);
-  res.json({ data: scan });
+app.get("/projects/:id/scans/:scanId", async (c) => {
+  const scan = await getScan(c.env.DB, c.req.param("id"), c.req.param("scanId"));
+  return c.json({ data: scan });
 });
 
-router.get("/projects/:id/endpoints", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const order = parseOrder(req.query.order ?? "desc");
-  const sort = (req.query.sort as string | undefined) ?? "monthly_cost";
+app.get("/projects/:id/endpoints", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const order = parseOrder(query.order ?? "desc");
+  const sort = query.sort ?? "monthly_cost";
   if (!["monthly_cost", "calls_per_day", "method", "provider"].includes(sort)) {
     throw new AppError(
       "INVALID_SORT_FIELD",
@@ -113,14 +122,11 @@ router.get("/projects/:id/endpoints", (req, res) => {
     );
   }
 
-  let data = listLatestEndpoints(req.params.id);
-  const provider = req.query.provider as string | undefined;
-  const status = req.query.status as string | undefined;
-  const method = req.query.method as string | undefined;
+  let data = await listLatestEndpoints(c.env.DB, c.req.param("id"));
 
-  if (provider) data = data.filter((item) => item.provider === provider);
-  if (status) data = data.filter((item) => item.status === status);
-  if (method) data = data.filter((item) => item.method === method.toUpperCase());
+  if (query.provider) data = data.filter((item) => item.provider === query.provider);
+  if (query.status) data = data.filter((item) => item.status === query.status);
+  if (query.method) data = data.filter((item) => item.method === query.method.toUpperCase());
 
   data = data.sort((a, b) => {
     if (sort === "calls_per_day") return order === "asc" ? a.callsPerDay - b.callsPerDay : b.callsPerDay - a.callsPerDay;
@@ -129,21 +135,22 @@ router.get("/projects/:id/endpoints", (req, res) => {
     return order === "asc" ? a.monthlyCost - b.monthlyCost : b.monthlyCost - a.monthlyCost;
   });
 
-  res.json({
+  return c.json({
     data: paginate(data, page, limit),
     pagination: buildPaginationMeta(page, limit, data.length)
   });
 });
 
-router.get("/projects/:id/endpoints/:endpointId", (req, res) => {
-  const endpoint = getEndpoint(req.params.id, req.params.endpointId);
-  res.json({ data: endpoint });
+app.get("/projects/:id/endpoints/:endpointId", async (c) => {
+  const endpoint = await getEndpoint(c.env.DB, c.req.param("id"), c.req.param("endpointId"));
+  return c.json({ data: endpoint });
 });
 
-router.get("/projects/:id/suggestions", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const order = parseOrder(req.query.order ?? "desc");
-  const sort = (req.query.sort as string | undefined) ?? "estimated_savings";
+app.get("/projects/:id/suggestions", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const order = parseOrder(query.order ?? "desc");
+  const sort = query.sort ?? "estimated_savings";
   if (!["estimated_savings", "severity", "type"].includes(sort)) {
     throw new AppError(
       "INVALID_SORT_FIELD",
@@ -152,19 +159,17 @@ router.get("/projects/:id/suggestions", (req, res) => {
     );
   }
 
-  let data = listLatestSuggestions(req.params.id);
-  const type = req.query.type as string | undefined;
-  const severity = req.query.severity as string | undefined;
+  let data = await listLatestSuggestions(c.env.DB, c.req.param("id"));
 
-  if (type) {
-    const types = type.split(",").map((item) => item.trim());
+  if (query.type) {
+    const types = query.type.split(",").map((t) => t.trim());
     data = data.filter((item) => types.includes(item.type));
   }
-  if (severity) data = data.filter((item) => item.severity === severity);
+  if (query.severity) data = data.filter((item) => item.severity === query.severity);
 
   data = data.sort((a, b) => {
     if (sort === "severity") {
-      const rank = { high: 3, medium: 2, low: 1 };
+      const rank: Record<string, number> = { high: 3, medium: 2, low: 1 };
       return order === "asc" ? rank[a.severity] - rank[b.severity] : rank[b.severity] - rank[a.severity];
     }
     if (sort === "type") return order === "asc" ? a.type.localeCompare(b.type) : b.type.localeCompare(a.type);
@@ -173,43 +178,45 @@ router.get("/projects/:id/suggestions", (req, res) => {
       : b.estimatedMonthlySavings - a.estimatedMonthlySavings;
   });
 
-  res.json({
+  return c.json({
     data: paginate(data, page, limit),
     pagination: buildPaginationMeta(page, limit, data.length)
   });
 });
 
-router.get("/projects/:id/suggestions/:suggestionId", (req, res) => {
-  const suggestion = getSuggestion(req.params.id, req.params.suggestionId);
-  res.json({ data: suggestion });
+app.get("/projects/:id/suggestions/:suggestionId", async (c) => {
+  const suggestion = await getSuggestion(c.env.DB, c.req.param("id"), c.req.param("suggestionId"));
+  return c.json({ data: suggestion });
 });
 
-router.get("/projects/:id/graph", (req, res) => {
-  const graph = getGraph(req.params.id, req.query.cluster_by as string | undefined);
-  res.json({ data: graph });
+app.get("/projects/:id/graph", async (c) => {
+  const graph = await getGraph(c.env.DB, c.req.param("id"), c.req.query("cluster_by"));
+  return c.json({ data: graph });
 });
 
-router.get("/projects/:id/cost", (req, res) => {
-  const summary = getCostSummary(req.params.id);
-  res.json({ data: summary });
+app.get("/projects/:id/cost", async (c) => {
+  const summary = await getCostSummary(c.env.DB, c.req.param("id"));
+  return c.json({ data: summary });
 });
 
-router.get("/projects/:id/cost/by-provider", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const data = getCostBreakdownByProvider(req.params.id);
-  res.json({
+app.get("/projects/:id/cost/by-provider", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const data = await getCostBreakdownByProvider(c.env.DB, c.req.param("id"));
+  return c.json({
     data: paginate(data, page, limit),
     pagination: buildPaginationMeta(page, limit, data.length)
   });
 });
 
-router.get("/projects/:id/cost/by-file", (req, res) => {
-  const { page, limit } = parsePagination(req.query);
-  const data = getCostBreakdownByFile(req.params.id);
-  res.json({
+app.get("/projects/:id/cost/by-file", async (c) => {
+  const query = c.req.query();
+  const { page, limit } = parsePagination(query);
+  const data = await getCostBreakdownByFile(c.env.DB, c.req.param("id"));
+  return c.json({
     data: paginate(data, page, limit),
     pagination: buildPaginationMeta(page, limit, data.length)
   });
 });
 
-export default router;
+export default app;

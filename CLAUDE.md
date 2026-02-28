@@ -1,0 +1,67 @@
+# ECO - API Usage Analyzer
+
+REST API for analyzing codebase API call patterns, estimating costs, and generating optimization suggestions.
+
+## Tech Stack
+
+- **Cloudflare Pages** — hosting and serverless runtime
+- **Hono** — web framework (Workers-compatible, Express-like)
+- **Cloudflare D1** — SQLite database (persistent)
+- **TypeScript** — strict mode
+
+## Setup
+
+1. Install dependencies: `npm install`
+2. Create D1 database: `npx wrangler d1 create eco-db`
+3. Paste the returned `database_id` into `wrangler.toml`
+4. Apply migrations: `npm run db:migrate:local`
+5. Start dev server: `npm run dev`
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start local dev server (`wrangler pages dev`) |
+| `npm run typecheck` | TypeScript type check (no emit) |
+| `npm run deploy` | Deploy to Cloudflare Pages |
+| `npm run db:migrate:local` | Apply D1 migrations locally |
+| `npm run db:migrate:remote` | Apply D1 migrations to production |
+
+## Project Structure
+
+```
+functions/
+  [[route]].ts        # Cloudflare Pages entry point (Hono app)
+src/
+  env.ts              # Shared Env/Variables/AppContext types
+  config/
+    pricing.ts        # Provider pricing & keyword detection
+  middleware/         # Hono middleware (cors, logging, content-type, error handler)
+  models/
+    types.ts          # TypeScript domain types
+  routes/             # Route handlers (health, projects, providers)
+  services/
+    analysis-service.ts    # Core analysis engine (pure, sync)
+    project-service.ts     # All CRUD via D1 (async)
+    provider-service.ts    # Provider config lookups
+    validation-service.ts  # Input validation
+  utils/              # AppError, pagination, sort helpers
+migrations/
+  0001_schema.sql     # D1 table definitions
+  0002_seed.sql       # Demo project seed data
+```
+
+## Architecture Notes
+
+- The D1 database binding (`DB`) flows through `c.env.DB` — passed as the first argument to every service function
+- Services are stateless async functions; no module-level state
+- JSON columns store arrays/objects (files, callSites, graph, summary, etc.)
+- `deleteProject` manually cascades: deletes suggestions → endpoints → scans → project in a `db.batch()`
+- `analyzeApiCalls` in `analysis-service.ts` is pure synchronous logic — no DB access
+- `crypto.randomUUID()` is used as a global (no import needed in Workers runtime)
+
+## D1 Schema
+
+Tables: `projects`, `scans`, `endpoints`, `suggestions`
+- See [migrations/0001_schema.sql](migrations/0001_schema.sql) for full schema
+- Numeric costs stored as `REAL`; arrays/objects stored as JSON `TEXT`

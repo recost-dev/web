@@ -1,5 +1,23 @@
-node_modules
-dist
-.DS_Store
+node_modules/
+dist/
 npm-debug.log*
 
+# Wrangler local state
+.wrangler/
+
+# LLM coding assistant directories
+.claude/
+.cursor/
+.windsurf/
+.aider/
+.codeium/
+.copilot/
+
+# Environment / secrets
+.env
+.env.*
+.dev.vars
+
+# OS
+.DS_Store
+Thumbs.db

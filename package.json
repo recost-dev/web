@@ -2,28 +2,31 @@
   "name": "api-usage-analyzer",
   "version": "1.0.0",
   "description": "REST API for analyzing codebase web API usage, costs, and optimization suggestions.",
-  "main": "dist/server.js",
+  "private": true,
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "wrangler pages dev",
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "deploy": "wrangler pages deploy",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "db:migrate:local": "wrangler d1 migrations apply eco-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply eco-db --remote"
   },
   "keywords": [
     "rest",
-    "express",
+    "hono",
+    "cloudflare-pages",
+    "d1",
     "typescript",
     "api-analysis",
     "hackathon"
   ],
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.2"
+    "hono": "^4.6.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.13.10",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.8.2",
+    "wrangler": "^3.90.0"
   }
 }

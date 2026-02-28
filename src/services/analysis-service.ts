@@ -1,4 +1,3 @@
-import { randomUUID } from "crypto";
 import {
   ApiCallInput,
   EndpointRecord,
@@ -95,7 +94,7 @@ export const analyzeApiCalls = (
     const perCallCost = getPerCallCost(provider);
     const callsPerDay = calls.reduce((sum, call) => sum + parseCallsPerDay(call.frequency), 0);
     const monthlyCost = roundCurrency(callsPerDay * perCallCost * 30);
-    const endpointId = randomUUID();
+    const endpointId = crypto.randomUUID();
     const statusSet: Set<EndpointStatus> = new Set(["normal"]);
     endpointStatuses.set(key, statusSet);
     providerDailyTotals.set(provider, (providerDailyTotals.get(provider) ?? 0) + callsPerDay);
@@ -135,7 +134,7 @@ export const analyzeApiCalls = (
     codeFix: string
   ): void => {
     suggestions.push({
-      id: randomUUID(),
+      id: crypto.randomUUID(),
       projectId,
       scanId,
       type,
