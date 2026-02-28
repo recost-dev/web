@@ -10,7 +10,6 @@ const MODELS = {
   "gpt-4o": { id: "gpt-4o", name: "GPT-4o" },
   "gpt-4.1-mini": { id: "gpt-4.1-mini", name: "GPT-4.1 Mini" },
   "gpt-4.1": { id: "gpt-4.1", name: "GPT-4.1" },
-  "o1-mini": { id: "o1-mini", name: "o1 Mini" },
   "o3-mini": { id: "o3-mini", name: "o3 Mini" },
   "o1": { id: "o1", name: "o1" },
   "o3": { id: "o3", name: "o3" },
@@ -20,6 +19,10 @@ type ModelId = keyof typeof MODELS;
 
 function isOpenAIModel(model: string): boolean {
   return model in MODELS;
+}
+
+function isReasoningModel(model: string): boolean {
+  return model.startsWith("o1") || model.startsWith("o3");
 }
 
 interface ChatMessage {
@@ -120,6 +123,8 @@ function buildAggressiveSuggestions(endpoints: EndpointRecord[], suggestions: Su
 function mergeLocalWasteFindings(
   baseSuggestions: Suggestion[],
   localFindings: Awaited<ReturnType<typeof detectLocalWastePatterns>>,
+  endpoints: EndpointRecord[],
+  totalMonthlyCost: number,
   projectId: string,
   scanId: string
 ): Suggestion[] {
@@ -133,16 +138,31 @@ function mergeLocalWasteFindings(
     if (existingByDescAndFile.has(key)) continue;
     existingByDescAndFile.add(key);
 
+    const fileEndpoints = endpoints.filter((ep) => ep.files.includes(finding.affectedFile));
+    const fileMonthlyCost = fileEndpoints.reduce((sum, ep) => sum + ep.monthlyCost, 0);
+    const baselineCost = fileMonthlyCost > 0 ? fileMonthlyCost : totalMonthlyCost;
+    const multiplier =
+      finding.type === "redundancy" ? 0.4 :
+      finding.type === "n_plus_one" ? 0.35 :
+      finding.type === "cache" ? 0.25 :
+      finding.type === "batch" ? 0.2 :
+      0.2;
+    const severityWeight =
+      finding.severity === "high" ? 1 :
+      finding.severity === "medium" ? 0.75 :
+      0.5;
+    const estimatedMonthlySavings = Number((baselineCost * multiplier * severityWeight).toFixed(2));
+
     locals.push({
       id: finding.id,
       projectId,
       scanId,
       type: finding.type,
       severity: finding.severity,
-      affectedEndpoints: [],
+      affectedEndpoints: fileEndpoints.map((ep) => ep.id),
       affectedFiles: [finding.affectedFile],
       targetLine: finding.line,
-      estimatedMonthlySavings: 0,
+      estimatedMonthlySavings,
       description: finding.description,
       codeFix: "",
     });
@@ -311,6 +331,8 @@ export class EcoSidebarProvider implements vscode.WebviewViewProvider {
       const mergedSuggestions = mergeLocalWasteFindings(
         aggressiveSuggestions,
         localWasteFindings,
+        endpoints,
+        scanResult.summary.totalMonthlyCost,
         projectId,
         scanResult.scanId
       );
@@ -410,73 +432,99 @@ export class EcoSidebarProvider implements vscode.WebviewViewProvider {
 
     const modelId: ModelId = (model in MODELS) ? (model as ModelId) : "gpt-4o-mini";
 
+    const messages = this.buildMessages(text);
+    const modelName = MODELS[modelId].id;
+    const reasoning = isReasoningModel(modelName);
+
+    const candidatePayloads: Array<{ stream: boolean; body: Record<string, unknown> }> = reasoning
+      ? [
+          { stream: false, body: { model: modelName, messages } },
+          { stream: false, body: { model: modelName, messages: messages.filter((m) => m.role !== "system") } },
+        ]
+      : [
+          { stream: true, body: { model: modelName, messages, temperature: 0.7, stream: true } },
+        ];
+
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: MODELS[modelId].id,
-          messages: this.buildMessages(text),
-          temperature: 0.7,
-          stream: true,
-        }),
-      });
+      let lastErrMsg = "API request failed";
 
-      if (response.status === 401) {
-        await this.context.secrets.delete("eco.openaiApiKey");
-        this.postMessage({ type: "needsApiKey", message: "Invalid API key. Please enter a valid key." });
-        return;
-      }
+      for (let i = 0; i < candidatePayloads.length; i += 1) {
+        const candidate = candidatePayloads[i];
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(candidate.body),
+        });
 
-      if (response.status === 429) {
-        this.postMessage({ type: "chatError", message: "Rate limited. Wait a moment and try again." });
-        return;
-      }
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({ error: { message: "Unknown API error" } }));
-        const errMsg = (errData as { error?: { message?: string } })?.error?.message ?? "API request failed";
-        this.postMessage({ type: "chatError", message: errMsg });
-        return;
-      }
-
-      const reader = response.body!.getReader();
-      const decoder = new TextDecoder();
-      let fullContent = "";
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6);
-          if (data === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(data) as { choices: { delta: { content?: string } }[] };
-            const chunk = parsed.choices[0]?.delta?.content ?? "";
-            if (chunk) {
-              fullContent += chunk;
-              this.postMessage({ type: "chatStreaming", chunk });
-            }
-          } catch {
-            // Malformed SSE line, skip
-          }
+        if (response.status === 401) {
+          await this.context.secrets.delete("eco.openaiApiKey");
+          this.postMessage({ type: "needsApiKey", message: "Invalid API key. Please enter a valid key." });
+          return;
         }
+
+        if (response.status === 429) {
+          this.postMessage({ type: "chatError", message: "Rate limited. Wait a moment and try again." });
+          return;
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({ error: { message: "Unknown API error" } }));
+          lastErrMsg = (errData as { error?: { message?: string } })?.error?.message ?? "API request failed";
+
+          const shouldRetry = reasoning && response.status === 400 && i < candidatePayloads.length - 1;
+          if (shouldRetry) {
+            continue;
+          }
+
+          this.postMessage({ type: "chatError", message: lastErrMsg });
+          return;
+        }
+
+        let fullContent = "";
+        if (candidate.stream) {
+          const reader = response.body!.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop() ?? "";
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              const data = line.slice(6);
+              if (data === "[DONE]") break;
+              try {
+                const parsed = JSON.parse(data) as { choices: { delta: { content?: string } }[] };
+                const chunk = parsed.choices[0]?.delta?.content ?? "";
+                if (chunk) {
+                  fullContent += chunk;
+                  this.postMessage({ type: "chatStreaming", chunk });
+                }
+              } catch {
+                // Malformed SSE line, skip
+              }
+            }
+          }
+        } else {
+          const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+          fullContent = data.choices?.[0]?.message?.content ?? "";
+        }
+
+        this.chatHistory.push({ role: "user", content: text });
+        this.chatHistory.push({ role: "assistant", content: fullContent });
+        this.postMessage({ type: "chatDone", fullContent });
+        return;
       }
 
-      this.chatHistory.push({ role: "user", content: text });
-      this.chatHistory.push({ role: "assistant", content: fullContent });
-
-      this.postMessage({ type: "chatDone", fullContent });
+      this.postMessage({ type: "chatError", message: lastErrMsg });
     } catch {
       this.postMessage({ type: "chatError", message: "Network error. Check your connection." });
     }

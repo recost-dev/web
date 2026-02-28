@@ -325,3 +325,34 @@ html, body, #root {
 .eco-section-header:hover {
   background: var(--vscode-list-hoverBackground);
 }
+
+.eco-thinking {
+  color: var(--vscode-descriptionForeground);
+  font-size: var(--vscode-font-size);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.eco-thinking-dots {
+  display: inline-flex;
+  min-width: 14px;
+}
+
+.eco-thinking-dots span {
+  opacity: 0.15;
+  animation: eco-thinking-dot 1.2s infinite;
+}
+
+.eco-thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.eco-thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes eco-thinking-dot {
+  0%, 20%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
+}

@@ -36,13 +36,27 @@ const MODEL_GROUPS = [
   {
     label: "Reasoning",
     models: [
-      { id: "o1-mini", name: "o1 Mini" },
       { id: "o3-mini", name: "o3 Mini" },
       { id: "o1", name: "o1" },
       { id: "o3", name: "o3" },
     ],
   },
 ];
+
+const AVAILABLE_MODEL_IDS = MODEL_GROUPS.flatMap((group) => group.models.map((m) => m.id));
+
+function isGptModel(model: string): boolean {
+  return model.startsWith("gpt-");
+}
+
+function toCodeFocusedPrompt(text: string): string {
+  return `${text}
+
+Return an actual code solution, not only explanation.
+- Include at least one fenced code block.
+- Prefer complete replacement snippets for the target file section.
+- Keep non-code commentary to 1-2 short lines max.`;
+}
 
 function extractFencedCode(raw: string): string | null {
   const match = raw.match(/```(?:\w+)?\n([\s\S]*?)```/);
@@ -68,7 +82,8 @@ function getApplyFixKey(applyFix: { code: string; file: string; line?: number })
 
 function getSavedModel(): string {
   const state = getVsCodeApi().getState() as { model?: string } | null;
-  return state?.model ?? "eco-ai";
+  const saved = state?.model ?? "eco-ai";
+  return AVAILABLE_MODEL_IDS.includes(saved) ? saved : "eco-ai";
 }
 
 function saveModel(model: string) {
@@ -122,9 +137,9 @@ export function ChatPage({ context }: ChatPageProps) {
       const locationHint = targetFile ? ` Target location: ${targetFile}${targetLine}.` : "";
       const autoText = `Analyze this ${context.type} issue and suggest a fix: ${context.description}.${locationHint} Include the proposed code in a fenced code block.`;
       if (showOnboarding) {
-        // Key not entered yet — add message to UI now, store for retry after key entry
+        // Key not entered yet ??add message to UI now, store for retry after key entry
         setMessages((prev) => [...prev, { role: "user", content: autoText }]);
-        pendingMessageRef.current = autoText;
+        pendingMessageRef.current = isGptModel(model) ? autoText : toCodeFocusedPrompt(autoText);
         pendingAddedToUI.current = true;
       } else {
         sendChatRequest(autoText, true);
@@ -217,13 +232,14 @@ export function ChatPage({ context }: ChatPageProps) {
 
   // Send a chat request, optionally adding the user message to the UI first
   const sendChatRequest = (text: string, addToUI = true) => {
+    const textForModel = isGptModel(model) ? text : toCodeFocusedPrompt(text);
     if (addToUI) {
       setMessages((prev) => [...prev, { role: "user", content: text }]);
       pendingAddedToUI.current = true;
     }
-    pendingMessageRef.current = text;
+    pendingMessageRef.current = textForModel;
     setIsLoading(true);
-    postMessage({ type: "chat", text, model });
+    postMessage({ type: "chat", text: textForModel, model });
   };
 
   const handleSend = () => {
@@ -260,7 +276,7 @@ export function ChatPage({ context }: ChatPageProps) {
     const key = apiKeyInput.trim();
     if (!key) return;
     postMessage({ type: "setApiKey", key });
-    setApiKeyInput(""); // clear immediately — never hold key in state after sending
+    setApiKeyInput(""); // clear immediately ??never hold key in state after sending
   };
 
   const handleApiKeyInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -463,9 +479,20 @@ export function ChatPage({ context }: ChatPageProps) {
                   <Markdown content={streamingContent} />
                 </div>
               ) : (
-                <span style={{ color: "var(--vscode-descriptionForeground)", fontSize: "var(--vscode-font-size)" }}>
-                  …
-                </span>
+                isGptModel(model) ? (
+                  <span style={{ color: "var(--vscode-descriptionForeground)", fontSize: "var(--vscode-font-size)" }}>
+                    ...
+                  </span>
+                ) : (
+                  <div className="eco-thinking" aria-live="polite">
+                    Thinking
+                    <span className="eco-thinking-dots">
+                      <span>.</span>
+                      <span>.</span>
+                      <span>.</span>
+                    </span>
+                  </div>
+                )
               )}
             </div>
           )}
@@ -474,7 +501,7 @@ export function ChatPage({ context }: ChatPageProps) {
         </div>
       )}
 
-      {/* Input row — hidden while onboarding */}
+      {/* Input row ??hidden while onboarding */}
       {!showOnboarding && (
         <div
           style={{
@@ -492,7 +519,7 @@ export function ChatPage({ context }: ChatPageProps) {
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Ask a follow-up…"
+            placeholder="Ask a follow-up..."
             disabled={isLoading}
             rows={1}
             style={{
@@ -559,3 +586,4 @@ export function ChatPage({ context }: ChatPageProps) {
     </div>
   );
 }
+
