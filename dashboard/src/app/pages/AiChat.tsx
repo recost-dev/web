@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Copy, Check, Play, Sparkles, Leaf, MessageSquare, ChevronRight } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Send, Copy, Check, Play, Leaf, ChevronRight } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -70,13 +70,14 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   };
 
   return (
-    <div className="mt-2 rounded-lg overflow-hidden border border-[#243224]">
-      <div className="flex items-center justify-between px-3 py-1.5 bg-[#0B0F0B]">
-        <span className="text-[9px] text-[#7EA87E] uppercase tracking-wider">{language}</span>
+    <div className="mt-2 rounded-lg overflow-hidden border border-white/[0.08]">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-black/60">
+        <span className="text-[9px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>{language}</span>
         <div className="flex gap-1">
           <button
             onClick={handleCopy}
-            className="px-2 py-0.5 text-[9px] text-[#7EA87E] hover:text-[#D6EDD0] bg-[#131A13] rounded border border-[#243224] hover:border-[#4EAA57]/30 transition-colors flex items-center gap-1"
+            className="px-2 py-0.5 text-[9px] bg-white/[0.06] rounded border border-white/[0.08] hover:border-white/[0.15] transition-colors flex items-center gap-1"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
           >
             {copied ? <Check size={9} /> : <Copy size={9} />}
             {copied ? 'Copied' : 'Copy'}
@@ -87,8 +88,8 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
           </button>
         </div>
       </div>
-      <pre className="p-3 bg-[#080B08] overflow-x-auto">
-        <code className="text-[11px] text-[#D6EDD0]/80 leading-relaxed whitespace-pre" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{code}</code>
+      <pre className="p-3 bg-black/70 overflow-x-auto">
+        <code className="text-[11px] leading-relaxed whitespace-pre" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: "'JetBrains Mono', monospace" }}>{code}</code>
       </pre>
     </div>
   );
@@ -127,40 +128,40 @@ export default function AiChat() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-[#243224]">
-        <h1 className="text-[16px] text-[#D6EDD0] flex items-center gap-2">
-          <Sparkles size={16} className="text-[#4EAA57]" />
+      <div className="p-4 border-b border-white/[0.07]">
+        <h1 className="text-[20px] text-white" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
           Eco AI Assistant
         </h1>
       </div>
 
       {/* Context Banner */}
-      <div className="mx-4 mt-3 px-3 py-2 bg-[#1C271C] border border-[#4EAA57]/20 rounded-lg flex items-center gap-2">
+      <div className="mx-4 mt-3 px-3 py-2 bg-[#4EAA57]/10 border border-[#4EAA57]/20 rounded-lg flex items-center gap-2">
         <Leaf size={12} className="text-[#4EAA57] shrink-0" />
-        <span className="text-[10px] text-[#7EA87E] flex-1">
-          Context loaded: <span className="text-[#D6EDD0]">Cache /v1/models response</span> — Redundant Call in src/ai/utils.ts
+        <span className="text-[10px] flex-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          Context loaded: <span className="text-white">Cache /v1/models response</span> — Redundant Call in src/ai/utils.ts
         </span>
-        <ChevronRight size={12} className="text-[#7EA87E]" />
+        <ChevronRight size={12} style={{ color: 'rgba(255,255,255,0.35)' }} />
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide px-4 py-4 space-y-4">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] ${msg.role === 'user' ? '' : ''}`}>
+            <div className="max-w-[85%]">
               {msg.role === 'ai' && (
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <div className="w-5 h-5 rounded-md bg-[#4EAA57]/15 flex items-center justify-center">
                     <Leaf size={10} className="text-[#4EAA57]" />
                   </div>
-                  <span className="text-[9px] text-[#7EA87E] uppercase tracking-wider">Eco AI</span>
+                  <span className="text-[9px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Eco AI</span>
                 </div>
               )}
-              <div className={`rounded-xl px-3.5 py-2.5 ${msg.role === 'user'
-                ? 'bg-[#4EAA57]/15 border border-[#4EAA57]/20 text-[#D6EDD0]'
-                : 'bg-[#131A13] border border-[#243224] text-[#D6EDD0]'
-                }`}>
-                <p className="text-[12px] leading-relaxed">{msg.content}</p>
+              <div className={`rounded-xl px-3.5 py-2.5 ${
+                msg.role === 'user'
+                  ? 'bg-[#4EAA57]/15 border border-[#4EAA57]/20'
+                  : 'bg-black/40 backdrop-blur-sm border border-white/[0.08]'
+              }`}>
+                <p className="text-[12px] text-white leading-relaxed">{msg.content}</p>
                 {msg.codeBlocks?.map((block, i) => (
                   <CodeBlock key={i} language={block.language} code={block.code} />
                 ))}
@@ -170,7 +171,7 @@ export default function AiChat() {
         ))}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-[#131A13] border border-[#243224] rounded-xl px-4 py-3">
+            <div className="bg-black/40 backdrop-blur-sm border border-white/[0.08] rounded-xl px-4 py-3">
               <div className="flex gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#4EAA57] animate-pulse" style={{ animationDelay: '0ms' }} />
                 <div className="w-1.5 h-1.5 rounded-full bg-[#4EAA57] animate-pulse" style={{ animationDelay: '200ms' }} />
@@ -187,7 +188,8 @@ export default function AiChat() {
           <button
             key={q}
             onClick={() => setInput(q)}
-            className="px-2.5 py-1 text-[10px] text-[#7EA87E] bg-[#131A13] border border-[#243224] rounded-full hover:border-[#4EAA57]/30 hover:text-[#D6EDD0] transition-colors whitespace-nowrap shrink-0"
+            className="px-2.5 py-1 text-[10px] bg-black/40 backdrop-blur-sm border border-white/[0.08] rounded-full hover:border-white/[0.18] transition-colors whitespace-nowrap shrink-0"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
           >
             {q}
           </button>
@@ -195,7 +197,7 @@ export default function AiChat() {
       </div>
 
       {/* Input */}
-      <div className="p-4 pt-2 border-t border-[#243224]">
+      <div className="p-4 pt-2 border-t border-white/[0.07]">
         <div className="flex gap-2 items-center">
           <div className="flex-1 relative">
             <input
@@ -204,7 +206,7 @@ export default function AiChat() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Ask about API optimizations..."
-              className="w-full bg-[#131A13] border border-[#243224] rounded-lg px-3.5 py-2.5 text-[12px] text-[#D6EDD0] placeholder:text-[#7EA87E]/40 focus:outline-none focus:border-[#4EAA57]/40 transition-colors"
+              className="w-full bg-black/40 backdrop-blur-sm border border-white/[0.1] rounded-lg px-3.5 py-2.5 text-[12px] text-white placeholder:text-white/25 focus:outline-none focus:border-[#4EAA57]/40 transition-colors"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             />
           </div>
