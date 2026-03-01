@@ -258,7 +258,7 @@ export function LandingPage() {
         />
 
         {/* === HERO CONTENT === */}
-        <div className="relative z-[10] flex flex-col items-center justify-center h-full px-4 pb-[18vh]">
+        <div className="relative z-[10] flex flex-col items-center justify-center h-full px-4 pb-[55vh]">
           <div className="flex flex-col items-center text-center">
             {/* Title */}
             <Motion.h1
