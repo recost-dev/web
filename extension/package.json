@@ -71,7 +71,7 @@
         },
         "eco.excludeGlob": {
           "type": "string",
-          "default": "**/node_modules/**,**/dist/**,**/build/**,**/.git/**,**/.next/**,**/vendor/**",
+          "default": "**/node_modules/**,**/dist/**,**/build/**,**/.git/**,**/.next/**,**/vendor/**,**/venv/**,**/.venv/**,**/__pycache__/**",
           "description": "Glob pattern for files to exclude from scanning"
         }
       }
