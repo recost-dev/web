@@ -1,4 +1,4 @@
-# EcoAPI — Documentation Site
+# EcoAPI - Documentation Site
 
 Public-facing documentation and landing page for [EcoAPI](https://ecoapi.dev).
 
@@ -27,8 +27,8 @@ Run from root.
 
 ## Related Repos
 
-- **API** — Cloudflare Workers backend
-- **Extension** — VSCode extension + dashboard
+- **API** - Cloudflare Workers backend
+- **Extension** - VSCode extension + dashboard
 
 ---
 
