@@ -140,8 +140,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   display: none;
 }
 
-<<<<<<< HEAD
-=======
+.dashboard-page {
+  padding-top: 120px;
+}
+@media (min-width: 768px) {
+  .dashboard-page {
+    padding-top: 140px;
+  }
+}
+
 @keyframes pulseGlow {
   0% {
     fill: #444;

@@ -630,6 +630,21 @@ export default function Docs() {
                     </div>
                   ))}
                 </div>
+                <SubHeading>Authentication</SubHeading>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+                  All requests to protected endpoints require a Bearer token in the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>Authorization</code> header:
+                </p>
+                <CodeBlock>{`Authorization: Bearer eco-xxxxxxxxxxxx`}</CodeBlock>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.6, marginTop: '10px', marginBottom: '16px' }}>
+                  Generate your API key in the{' '}
+                  <Link
+                    to="/dashboard/account"
+                    style={{ color: '#4EAA57', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}
+                  >
+                    dashboard → Account
+                  </Link>
+                  . Keys are shown only once — copy and store them securely.
+                </p>
                 <SubHeading>Quick start</SubHeading>
                 <CodeBlock>{`cd api
 npm install
