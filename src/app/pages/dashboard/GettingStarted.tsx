@@ -98,7 +98,7 @@ const STEPS = [
     title: 'Generate an API Key',
     subtitle: 'Authenticate · Authorize · Access',
     body: 'One API key works across all your projects. Pass it as a Bearer token in the Authorization header. Keys are shown only once — copy it immediately after creating.',
-    action: '/dashboard/keys',
+    action: '/dashboard/account',
     cta: 'Go to API Keys',
     features: [
       { icon: Shield, label: 'Bearer token auth', desc: 'Authorization: Bearer <your-key>' },
