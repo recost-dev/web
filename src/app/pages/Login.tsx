@@ -10,7 +10,9 @@ export default function Login() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      navigate('/dashboard/projects', { replace: true });
+      const redirect = sessionStorage.getItem('ecoapi_redirect') ?? '/dashboard';
+      sessionStorage.removeItem('ecoapi_redirect');
+      navigate(redirect, { replace: true });
     }
   }, [isAuthenticated, isLoading, navigate]);
 

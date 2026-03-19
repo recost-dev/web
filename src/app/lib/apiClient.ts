@@ -1,5 +1,7 @@
 const BASE = import.meta.env.VITE_API_URL ?? 'https://api.ecoapi.dev';
 
+let isRedirectingToLogin = false;
+
 function getToken(): string | null {
   return localStorage.getItem('ecoapi_token');
 }
@@ -15,8 +17,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
 
   if (res.status === 401) {
-    localStorage.removeItem('ecoapi_token');
-    window.location.href = '/login';
+    if (!isRedirectingToLogin) {
+      isRedirectingToLogin = true;
+      localStorage.removeItem('ecoapi_token');
+      window.location.href = '/login';
+    }
     throw new Error('Unauthorized');
   }
 

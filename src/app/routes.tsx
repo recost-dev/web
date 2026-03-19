@@ -9,6 +9,7 @@ import DashboardLayout from './pages/dashboard/DashboardLayout';
 import GettingStarted from './pages/dashboard/GettingStarted';
 import Projects from './pages/dashboard/Projects';
 import Account from './pages/dashboard/Account';
+import ProjectDetail from './pages/dashboard/ProjectDetail';
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: GettingStarted },
       { path: 'projects', Component: Projects },
+      { path: 'projects/:id', Component: ProjectDetail },
       { path: 'account', Component: Account },
     ],
   },

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
-import { FolderKanban, Plus, Trash2, Clock, X, AlertTriangle } from 'lucide-react';
+import { FolderKanban, Plus, Trash2, Clock, X, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router';
 import { apiClient } from '../../lib/apiClient';
 import { useTheme } from '../../theme-context';
 
@@ -29,13 +30,14 @@ function fmt(dateStr?: string) {
 
 export default function Projects() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
 
-  const { data: projects = [], isLoading } = useQuery<Project[]>({
+  const { data: projects = [], isLoading, isError, refetch } = useQuery<Project[]>({
     queryKey: ['dashboard-projects'],
     queryFn: () =>
       apiClient.get<{ data: Project[]; pagination: unknown }>('/projects').then((r) => r.data),
@@ -145,6 +147,28 @@ export default function Projects() {
               style={{ borderColor: `${theme.btnGradient[0]}44`, borderTopColor: theme.btnGradient[0] }}
             />
           </div>
+        ) : isError ? (
+          <Motion.div
+            {...FADE(0.1)}
+            className="flex flex-col items-center justify-center py-20 text-center rounded-2xl"
+            style={{ background: 'rgba(248,113,113,0.04)', border: '1px solid rgba(248,113,113,0.15)' }}
+          >
+            <AlertTriangle className="w-6 h-6 mb-3" style={{ color: '#f87171' }} />
+            <p className="text-[14px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+              Failed to load projects
+            </p>
+            <p className="text-[13px] mb-5" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>
+              Check your connection and try again.
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] transition-all cursor-pointer"
+              style={{ fontFamily: "'Inter', sans-serif", background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Retry
+            </button>
+          </Motion.div>
         ) : projects.length === 0 ? (
           <Motion.div
             {...FADE(0.1)}
@@ -176,11 +200,12 @@ export default function Projects() {
               <Motion.div
                 key={p.id}
                 {...FADE(i * 0.06)}
-                className="group flex items-center gap-5 px-6 py-5 rounded-2xl backdrop-blur-xl transition-all duration-200"
+                className="group flex items-center gap-5 px-6 py-5 rounded-2xl backdrop-blur-xl transition-all duration-200 cursor-pointer"
                 style={{
                   background: 'rgba(0,0,0,0.45)',
                   border: '1px solid rgba(255,255,255,0.07)',
                 }}
+                onClick={() => navigate(`/dashboard/projects/${p.id}`)}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.12)';
                   (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.6)';
@@ -239,7 +264,7 @@ export default function Projects() {
                     {fmt(p.createdAt)}
                   </span>
                   <button
-                    onClick={() => setDeleteId(p.id)}
+                    onClick={(e) => { e.stopPropagation(); setDeleteId(p.id); }}
                     className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg transition-all duration-150 cursor-pointer"
                     style={{ color: 'rgba(255,255,255,0.25)' }}
                     onMouseEnter={(e) => {

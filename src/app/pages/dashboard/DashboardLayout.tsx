@@ -1,4 +1,4 @@
-import { NavLink, Outlet, Navigate } from 'react-router';
+import { NavLink, Outlet, Navigate, useLocation } from 'react-router';
 import { useAuth } from '../../auth/AuthContext';
 import { ThemeProvider } from '../../theme-context';
 import { galaxySunsetTheme } from '../../themes';
@@ -22,9 +22,13 @@ function Spinner() {
 
 function DashboardShell() {
   const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const location = useLocation();
 
   if (isLoading) return <Spinner />;
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    sessionStorage.setItem('ecoapi_redirect', location.pathname + location.search);
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div

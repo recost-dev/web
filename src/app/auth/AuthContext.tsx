@@ -24,6 +24,16 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
 });
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (typeof payload.exp !== 'number') return true;
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -48,6 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (!activeToken) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (isTokenExpired(activeToken)) {
+      localStorage.removeItem('ecoapi_token');
       setIsLoading(false);
       return;
     }
