@@ -4,8 +4,9 @@ import { AnimatedTree } from './animated-tree';
 import { Navbar } from './navbar';
 import { useTheme } from '../theme-context';
 import { useNavigate } from 'react-router';
-import { ChevronDown, ChevronUp, Lightbulb, Zap, Droplets, Leaf, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lightbulb, Zap, Droplets, Leaf, Globe, LogIn, LayoutDashboard } from 'lucide-react';
 import { cn } from '../components/ui/utils';
+import { useAuth } from '../auth/AuthContext';
 
 const FADE = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -189,6 +190,7 @@ const WindingPath = () => (
 export function LandingPage() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="relative w-full transition-colors duration-1000" style={{ backgroundColor: theme.bg }}>
@@ -234,6 +236,37 @@ export function LandingPage() {
 
         {/* Navbar */}
         <Navbar />
+
+        {/* Floating Sign In / Dashboard button — top right */}
+        <Motion.div
+          className="absolute top-5 right-6 z-[20]"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.2, ease: 'easeOut' }}
+        >
+          <button
+            onClick={() => navigate(isAuthenticated ? '/dashboard/projects' : '/login')}
+            className="group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.8rem',
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.75)',
+              backgroundColor: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+            }}
+          >
+            {isAuthenticated
+              ? <LayoutDashboard className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+              : <LogIn className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+            }
+            <span className="group-hover:text-white transition-colors">
+              {isAuthenticated ? 'Dashboard' : 'Sign in'}
+            </span>
+          </button>
+        </Motion.div>
 
         {/* Dark overlay for text readability */}
         <div

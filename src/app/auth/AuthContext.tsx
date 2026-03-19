@@ -1,0 +1,91 @@
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+  createdAt: string;
+}
+
+interface AuthContextType {
+  isAuthenticated: boolean;
+  user: User | null;
+  token: string | null;
+  logout: () => void;
+  isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  user: null,
+  token: null,
+  logout: () => {},
+  isLoading: true,
+});
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Single effect: extract token then immediately fetch /auth/me.
+  // Avoids the race where the second effect fires with token=null
+  // and sets isLoading=false before the first effect reads the URL.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    let activeToken: string | null;
+
+    if (urlToken) {
+      localStorage.setItem('ecoapi_token', urlToken);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('token');
+      window.history.replaceState({}, '', url.toString());
+      activeToken = urlToken;
+    } else {
+      activeToken = localStorage.getItem('ecoapi_token');
+    }
+
+    if (!activeToken) {
+      setIsLoading(false);
+      return;
+    }
+
+    setToken(activeToken);
+
+    const apiBase = import.meta.env.VITE_API_URL ?? 'https://api.ecoapi.dev';
+    fetch(`${apiBase}/auth/me`, {
+      headers: { Authorization: `Bearer ${activeToken}` },
+    })
+      .then((r) => {
+        if (r.status === 401) {
+          localStorage.removeItem('ecoapi_token');
+          return null;
+        }
+        return r.json() as Promise<{ data: User }>;
+      })
+      .then((res) => {
+        if (res) setUser(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  function logout() {
+    localStorage.removeItem('ecoapi_token');
+    setToken(null);
+    setUser(null);
+    window.location.href = '/';
+  }
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated: !!token && !!user, user, token, logout, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
