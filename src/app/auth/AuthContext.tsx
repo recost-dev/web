@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((r) => {
         if (r.status === 401) {
           localStorage.removeItem('ecoapi_token');
+          setToken(null);
           return null;
         }
         return r.json() as Promise<{ data: User }>;
@@ -84,7 +85,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((res) => {
         if (res) setUser(res.data);
       })
-      .catch(() => {})
+      .catch(() => {
+        localStorage.removeItem('ecoapi_token');
+        setToken(null);
+      })
       .finally(() => setIsLoading(false));
   }, []);
 

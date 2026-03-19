@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
-import { Mail, Calendar, KeyRound, Copy, Check, Clock, Eye, EyeOff, RefreshCw, Plus, AlertTriangle } from 'lucide-react';
+import { Mail, Calendar, KeyRound, Copy, Check, Clock, RefreshCw, Plus, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { useTheme } from '../../theme-context';
@@ -62,31 +62,28 @@ function CopyButton({ value, accent }: { value: string; accent: string }) {
   );
 }
 
-const SESSION_KEY = 'ecoapi_revealed_key';
-
-function loadSavedKey(): CreatedKey | null {
-  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) ?? 'null'); }
-  catch { return null; }
-}
-
 export default function Account() {
   const { user, logout } = useAuth();
   const theme = useTheme();
   const accent = theme.btnGradient[0];
   const qc = useQueryClient();
 
-  const [revealedKey, setRevealedKey] = useState<CreatedKey | null>(loadSavedKey);
-  const [keyVisible, setKeyVisible] = useState(false);
+  const [revealedKey, setRevealedKey] = useState<CreatedKey | null>(null);
+  const [showRevealModal, setShowRevealModal] = useState(false);
   const [confirmRotate, setConfirmRotate] = useState(false);
   const [rotateError, setRotateError] = useState('');
   const [showGenerate, setShowGenerate] = useState(false);
   const [keyName, setKeyName] = useState('');
   const [generateError, setGenerateError] = useState('');
 
-  function saveKey(key: CreatedKey | null) {
-    if (key) sessionStorage.setItem(SESSION_KEY, JSON.stringify(key));
-    else sessionStorage.removeItem(SESSION_KEY);
+  function openReveal(key: CreatedKey) {
     setRevealedKey(key);
+    setShowRevealModal(true);
+  }
+
+  function dismissReveal() {
+    setShowRevealModal(false);
+    setRevealedKey(null);
   }
 
   const { data: keys = [], isLoading: keysLoading, isError: keysError, refetch: refetchKeys } = useQuery<ApiKey[]>({
@@ -101,11 +98,10 @@ export default function Account() {
       apiClient.post<{ data: CreatedKey }>('/auth/keys', { name }).then((r) => r.data),
     onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
-      saveKey(created);
-      setKeyVisible(false);
       setShowGenerate(false);
       setKeyName('');
       setGenerateError('');
+      openReveal(created);
     },
     onError: (e: Error) => setGenerateError(e.message),
   });
@@ -113,18 +109,18 @@ export default function Account() {
   const rotateMutation = useMutation({
     mutationFn: async () => {
       const fresh = await apiClient.get<{ data: ApiKey[] }>('/auth/keys');
+      const existingName = fresh.data[0]?.name ?? 'default';
       for (const k of fresh.data) {
         try { await apiClient.del(`/auth/keys/${k.id}`); } catch { /* already deleted */ }
       }
-      const res = await apiClient.post<{ data: CreatedKey }>('/auth/keys', { name: 'default' });
+      const res = await apiClient.post<{ data: CreatedKey }>('/auth/keys', { name: existingName });
       return res.data;
     },
     onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
-      saveKey(created);
-      setKeyVisible(false);
       setConfirmRotate(false);
       setRotateError('');
+      openReveal(created);
     },
     onError: (e: Error) => setRotateError(e.message),
   });
@@ -266,38 +262,18 @@ export default function Account() {
                         {activeKey.name || 'API Key'}
                       </p>
                       <p className="text-[12px] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: "'Inter', sans-serif" }}>
-                        {revealedKey ? 'Your key is shown below — copy and store it safely.' : 'Key value hidden. Rotate to generate a new one.'}
+                        Key value hidden. Rotate to generate a new one.
                       </p>
                     </div>
                   </div>
 
-                  {/* Key value */}
+                  {/* Key value — prefix only */}
                   <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    {revealedKey ? (
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl min-w-0" style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                          <code className="flex-1 text-[12px] truncate" style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}>
-                            {keyVisible ? revealedKey.key : `${revealedKey.key.slice(0, 12)}${'•'.repeat(24)}${revealedKey.key.slice(-4)}`}
-                          </code>
-                          <button
-                            onClick={() => setKeyVisible(!keyVisible)}
-                            className="transition-colors cursor-pointer flex-shrink-0"
-                            style={{ color: 'rgba(255,255,255,0.3)' }}
-                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.65)'; }}
-                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.3)'; }}
-                          >
-                            {keyVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                          </button>
-                        </div>
-                        <CopyButton value={revealedKey.key} accent={accent} />
-                      </div>
-                    ) : (
-                      <div className="flex items-center px-4 py-2.5 rounded-xl" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                        <code className="text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.25)' }}>
-                          {activeKey.key_prefix}••••••••••••••••••••
-                        </code>
-                      </div>
-                    )}
+                    <div className="flex items-center px-4 py-2.5 rounded-xl" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <code className="text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.25)' }}>
+                        {activeKey.key_prefix}••••••••••••••••••••
+                      </code>
+                    </div>
                   </div>
 
                   {/* Meta */}
@@ -305,14 +281,14 @@ export default function Account() {
                     <div className="px-6 py-4" style={{ borderRight: '1px solid rgba(255,255,255,0.05)' }}>
                       <p className="text-[10px] uppercase tracking-[0.1em] mb-1" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>Created</p>
                       <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: "'Inter', sans-serif" }}>
-                        {fmtShort(revealedKey?.created_at ?? activeKey.created_at)}
+                        {fmtShort(activeKey.created_at)}
                       </p>
                     </div>
                     <div className="px-6 py-4">
                       <p className="text-[10px] uppercase tracking-[0.1em] mb-1" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>Last used</p>
                       <p className="flex items-center gap-1.5 text-[13px]" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: "'Inter', sans-serif" }}>
                         <Clock className="w-3.5 h-3.5 opacity-50" />
-                        {revealedKey ? 'Never' : fmtShort(activeKey.last_used_at)}
+                        {fmtShort(activeKey.last_used_at)}
                       </p>
                     </div>
                   </div>
@@ -359,18 +335,71 @@ export default function Account() {
 
           </div>
 
-          {/* Usage hint — full width bottom strip */}
-          {activeKey && revealedKey && (
-            <div className="px-7 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <p className="text-[10px] uppercase tracking-[0.1em] mb-1" style={{ color: 'rgba(255,255,255,0.2)', fontFamily: "'JetBrains Mono', monospace" }}>Usage</p>
-              <code className="text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.4)' }}>
-                Authorization: Bearer {revealedKey.key.slice(0, 12)}••••
-              </code>
-            </div>
-          )}
         </Motion.div>
 
       </div>
+
+      {/* One-time key reveal modal */}
+      <AnimatePresence>
+        {showRevealModal && revealedKey && (
+          <Motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)' }}
+          >
+            <Motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-sm rounded-2xl p-6 shadow-2xl backdrop-blur-xl"
+              style={{ background: 'rgba(10,10,15,0.98)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              <div className="flex items-start gap-3 mb-5">
+                <div className="p-2 rounded-xl flex-shrink-0 mt-0.5" style={{ background: `${accent}12`, border: `1px solid ${accent}28` }}>
+                  <KeyRound className="w-4 h-4" style={{ color: accent }} />
+                </div>
+                <div>
+                  <h2 className="text-[15px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>Your API Key</h2>
+                  <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{revealedKey.name}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Key display */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 px-4 py-2.5 rounded-xl min-w-0" style={{ background: 'rgba(0,0,0,0.5)', border: `1px solid ${accent}30` }}>
+                  <code className="block text-[12px] truncate" style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}>
+                    {revealedKey.key}
+                  </code>
+                </div>
+                <CopyButton value={revealedKey.key} accent={accent} />
+              </div>
+
+              {/* Warning */}
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl mb-5" style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)' }}>
+                <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
+                <p className="text-[12px] leading-relaxed" style={{ color: 'rgba(251,191,36,0.85)', fontFamily: "'Inter', sans-serif" }}>
+                  This key will <strong>not be shown again</strong>. Copy it now and store it somewhere safe.
+                </p>
+              </div>
+
+              <button
+                onClick={dismissReveal}
+                className="w-full px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all cursor-pointer"
+                style={{ fontFamily: "'Inter', sans-serif", background: `${accent}18`, border: `1px solid ${accent}44`, color: accent }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${accent}28`; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${accent}18`; }}
+              >
+                I've saved my key
+              </button>
+            </Motion.div>
+          </Motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Generate key modal */}
       <AnimatePresence>

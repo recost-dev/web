@@ -21,6 +21,7 @@ interface Project {
   createdAt: string;
   updatedAt: string;
   latestScanId?: string;
+  endpointCount?: number;
 }
 
 function fmt(dateStr?: string) {
@@ -234,22 +235,42 @@ export default function Projects() {
                   >
                     {p.name}
                   </p>
-                  <div className="flex items-center gap-3 mt-0.5">
-                    {p.description && (
+                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                    {p.latestScanId ? (
+                      <>
+                        <span
+                          className="flex items-center gap-1 text-[11px]"
+                          style={{ color: 'rgba(255,255,255,0.28)', fontFamily: "'JetBrains Mono', monospace" }}
+                        >
+                          <Clock className="w-3 h-3" />
+                          scanned {fmt(p.updatedAt)}
+                        </span>
+                        <span
+                          className="text-[11px]"
+                          style={{ color: 'rgba(255,255,255,0.25)', fontFamily: "'JetBrains Mono', monospace" }}
+                        >
+                          {p.endpointCount != null ? `${p.endpointCount} endpoint${p.endpointCount === 1 ? '' : 's'}` : '—'}
+                        </span>
+                      </>
+                    ) : (
                       <span
-                        className="text-[11px] truncate max-w-[200px]"
-                        style={{ color: 'rgba(255,255,255,0.3)', fontFamily: "'Inter', sans-serif" }}
+                        className="text-[11px] px-2 py-0.5 rounded-md"
+                        style={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          color: 'rgba(255,255,255,0.3)',
+                          background: 'rgba(255,255,255,0.04)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                        }}
                       >
-                        {p.description}
+                        No endpoints scanned yet
                       </span>
                     )}
-                    {p.latestScanId && (
+                    {p.description && (
                       <span
-                        className="flex items-center gap-1 text-[11px]"
-                        style={{ color: 'rgba(255,255,255,0.28)', fontFamily: "'JetBrains Mono', monospace" }}
+                        className="text-[11px] truncate max-w-[180px]"
+                        style={{ color: 'rgba(255,255,255,0.25)', fontFamily: "'Inter', sans-serif" }}
                       >
-                        <Clock className="w-3 h-3" />
-                        scanned {fmt(p.updatedAt)}
+                        {p.description}
                       </span>
                     )}
                   </div>
