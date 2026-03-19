@@ -31,9 +31,9 @@ function DashboardShell() {
       className="flex h-screen overflow-hidden"
       style={{ backgroundColor: '#02060f', fontFamily: "'Inter', sans-serif" }}
     >
-      {/* Sidebar */}
+      {/* Sidebar — desktop only */}
       <aside
-        className="flex flex-col w-72 flex-shrink-0 backdrop-blur-xl"
+        className="hidden md:flex flex-col w-72 flex-shrink-0 backdrop-blur-xl"
         style={{ borderRight: '1px solid rgba(255,255,255,0.06)', background: 'rgba(0,0,0,0.5)' }}
       >
         {/* Logo */}
@@ -125,9 +125,31 @@ function DashboardShell() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto scrollbar-hide">
+      <main className="flex-1 overflow-y-auto scrollbar-hide pb-20 md:pb-0">
         <Outlet />
       </main>
+
+      {/* Bottom nav — mobile only */}
+      <nav
+        className="flex md:hidden fixed bottom-0 inset-x-0 z-50 items-center justify-around px-2 py-1"
+        style={{ background: 'rgba(2,6,15,0.92)', borderTop: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(20px)' }}
+      >
+        {NAV.map(({ to, icon: Icon, label, end }) => (
+          <NavLink key={to} to={to} end={end} style={{ textDecoration: 'none', flex: 1 }}>
+            {({ isActive }) => (
+              <div
+                className="flex flex-col items-center gap-1 py-2 rounded-xl mx-1 transition-all duration-150"
+                style={{ color: isActive ? accent : 'rgba(255,255,255,0.3)' }}
+              >
+                <Icon style={{ width: '20px', height: '20px' }} />
+                <span style={{ fontSize: '10px', fontFamily: "'Inter', sans-serif", fontWeight: isActive ? 600 : 400 }}>
+                  {label}
+                </span>
+              </div>
+            )}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

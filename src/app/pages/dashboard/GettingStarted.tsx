@@ -130,10 +130,10 @@ export default function GettingStarted() {
 
   return (
     <div
-      className="min-h-full"
-      style={{ paddingTop: '140px', fontFamily: "'Inter', sans-serif" }}
+      className="min-h-full dashboard-page"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <div className="pb-24 space-y-5" style={{ maxWidth: 'calc(100% * 6 / 7)', margin: '0 auto', paddingLeft: '40px', paddingRight: '40px' }}>
+      <div className="pb-24 space-y-5 px-5 md:px-10" style={{ maxWidth: 'calc(100% * 6 / 7)', margin: '0 auto' }}>
 
         {/* Hero */}
         <Motion.div {...FADE(0)} className="px-4 pb-6">

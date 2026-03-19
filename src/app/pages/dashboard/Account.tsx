@@ -126,10 +126,10 @@ export default function Account() {
 
   return (
     <div
-      className="min-h-full"
-      style={{ paddingTop: '140px', fontFamily: "'Inter', sans-serif" }}
+      className="min-h-full dashboard-page"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
-      <div className="pb-10" style={{ maxWidth: 'calc(100% * 6 / 7)', margin: '0 auto', paddingLeft: '40px', paddingRight: '40px' }}>
+      <div className="pb-10 px-5 md:px-10" style={{ maxWidth: 'calc(100% * 6 / 7)', margin: '0 auto' }}>
 
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
@@ -153,10 +153,10 @@ export default function Account() {
           className="rounded-2xl overflow-hidden backdrop-blur-xl"
           style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2" style={{ minHeight: '360px' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2">
 
             {/* LEFT — Profile */}
-            <div className="flex flex-col" style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex flex-col border-b lg:border-b-0 lg:border-r" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
               {/* Avatar + name */}
               <div className="flex items-start gap-5 px-7 py-7" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <div className="relative flex-shrink-0">

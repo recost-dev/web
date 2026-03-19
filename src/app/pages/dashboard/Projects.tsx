@@ -71,8 +71,8 @@ export default function Projects() {
 
   return (
     <div
-      className="min-h-full flex flex-col items-center px-8 pb-10"
-      style={{ paddingTop: '140px', fontFamily: "'Inter', sans-serif" }}
+      className="min-h-full flex flex-col items-center px-6 md:px-10 pb-10 dashboard-page"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <div className="w-full max-w-2xl">
 
