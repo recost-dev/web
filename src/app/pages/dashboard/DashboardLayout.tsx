@@ -2,12 +2,11 @@ import { NavLink, Outlet, Navigate } from 'react-router';
 import { useAuth } from '../../auth/AuthContext';
 import { ThemeProvider } from '../../theme-context';
 import { galaxySunsetTheme } from '../../themes';
-import { Leaf, Sparkles, FolderKanban, KeyRound, User, LogOut } from 'lucide-react';
+import { Leaf, Sparkles, FolderKanban, User, LogOut } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard', icon: Sparkles, label: 'Get Started', end: true },
   { to: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
-  { to: '/dashboard/keys', icon: KeyRound, label: 'API Keys' },
   { to: '/dashboard/account', icon: User, label: 'Account' },
 ];
 
