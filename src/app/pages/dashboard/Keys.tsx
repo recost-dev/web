@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
-import { KeyRound, Plus, Trash2, Copy, Check, Clock, X, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, Copy, Check, Clock, Eye, EyeOff, RefreshCw, Plus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../lib/apiClient';
+import { useTheme } from '../../theme-context';
 
-const MAX_KEYS = 10;
+const FADE = (delay = 0) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, delay, ease: 'easeOut' as const },
+});
 
 interface ApiKey {
   id: string;
@@ -22,12 +27,12 @@ interface CreatedKey {
   created_at: string;
 }
 
-function fmt(dateStr?: string) {
+function fmt(dateStr?: string | null) {
   if (!dateStr) return 'Never';
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function CopyButton({ value }: { value: string }) {
+function CopyButton({ value, accent }: { value: string; accent: string }) {
   const [copied, setCopied] = useState(false);
   function copy() {
     navigator.clipboard.writeText(value);
@@ -37,347 +42,322 @@ function CopyButton({ value }: { value: string }) {
   return (
     <button
       onClick={copy}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 text-xs text-white/50 hover:text-white/80 hover:bg-white/5 transition-all cursor-pointer"
-      style={{ fontFamily: "'Inter', sans-serif" }}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] transition-all cursor-pointer"
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        background: copied ? `${accent}14` : 'rgba(255,255,255,0.04)',
+        border: `1px solid ${copied ? accent + '40' : 'rgba(255,255,255,0.1)'}`,
+        color: copied ? accent : 'rgba(255,255,255,0.45)',
+      }}
     >
-      {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? 'Copied!' : 'Copy'}
     </button>
   );
 }
 
+const SESSION_KEY = 'ecoapi_revealed_key';
+
+function loadSavedKey(): CreatedKey | null {
+  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) ?? 'null'); }
+  catch { return null; }
+}
+
 export default function Keys() {
+  const theme = useTheme();
+  const accent = theme.btnGradient[0];
   const qc = useQueryClient();
-  const [showCreate, setShowCreate] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [revokeId, setRevokeId] = useState<string | null>(null);
-  const [createError, setCreateError] = useState('');
-  const [newKey, setNewKey] = useState<CreatedKey | null>(null);
+  const [revealedKey, setRevealedKey] = useState<CreatedKey | null>(loadSavedKey);
   const [keyVisible, setKeyVisible] = useState(false);
+  const [confirmRotate, setConfirmRotate] = useState(false);
+  const [rotateError, setRotateError] = useState('');
+
+  function saveKey(key: CreatedKey | null) {
+    if (key) sessionStorage.setItem(SESSION_KEY, JSON.stringify(key));
+    else sessionStorage.removeItem(SESSION_KEY);
+    setRevealedKey(key);
+  }
 
   const { data: keys = [], isLoading } = useQuery<ApiKey[]>({
     queryKey: ['dashboard-keys'],
     queryFn: () => apiClient.get<{ data: ApiKey[] }>('/auth/keys').then((r) => r.data),
   });
 
-  const createMutation = useMutation({
-    mutationFn: (name: string) =>
-      apiClient.post<{ data: CreatedKey }>('/auth/keys', { name }).then((r) => r.data),
+  const activeKey = keys[0] ?? null;
+
+  const generateMutation = useMutation({
+    mutationFn: () =>
+      apiClient.post<{ data: CreatedKey }>('/auth/keys', { name: 'default' }).then((r) => r.data),
     onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
-      setShowCreate(false);
-      setNewName('');
-      setCreateError('');
-      setNewKey(created);
+      saveKey(created);
       setKeyVisible(false);
     },
-    onError: (e: Error) => setCreateError(e.message),
   });
 
-  const revokeMutation = useMutation({
-    mutationFn: (id: string) => apiClient.del(`/auth/keys/${id}`),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
-      setRevokeId(null);
+  const rotateMutation = useMutation({
+    mutationFn: async () => {
+      const fresh = await apiClient.get<{ data: ApiKey[] }>('/auth/keys');
+      for (const k of fresh.data) {
+        try { await apiClient.del(`/auth/keys/${k.id}`); } catch { /* already deleted */ }
+      }
+      const res = await apiClient.post<{ data: CreatedKey }>('/auth/keys', { name: 'default' });
+      return res.data;
     },
+    onSuccess: (created) => {
+      qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
+      saveKey(created);
+      setKeyVisible(false);
+      setConfirmRotate(false);
+      setRotateError('');
+    },
+    onError: (e: Error) => setRotateError(e.message),
   });
-
-  const atLimit = keys.length >= MAX_KEYS;
-
-  function handleCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newName.trim()) return;
-    createMutation.mutate(newName.trim());
-  }
 
   return (
-    <div className="p-8 max-w-4xl">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <KeyRound className="w-5 h-5 text-green-400" />
-            <h1
-              className="text-2xl font-bold text-white"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              API Keys
-            </h1>
-          </div>
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)', fontFamily: "'Inter', sans-serif" }}>
-            {keys.length} / {MAX_KEYS} keys used
+    <div
+      className="min-h-full flex flex-col items-center px-8 pb-10"
+      style={{ paddingTop: '140px', fontFamily: "'Inter', sans-serif" }}
+    >
+      <div className="w-full max-w-2xl">
+
+        {/* Header */}
+        <Motion.div {...FADE(0)} className="mb-8">
+          <p
+            className="text-[10px] uppercase tracking-[0.15em] mb-1"
+            style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}
+          >
+            API Key
           </p>
-        </div>
-        <button
-          onClick={() => { setShowCreate(true); setCreateError(''); }}
-          disabled={atLimit}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-            atLimit
-              ? 'bg-white/5 text-white/20 cursor-not-allowed'
-              : 'bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 cursor-pointer'
-          }`}
-          style={{ fontFamily: "'Inter', sans-serif" }}
-          title={atLimit ? `Maximum ${MAX_KEYS} keys allowed` : 'Create key'}
-        >
-          <Plus className="w-4 h-4" />
-          Create Key
-        </button>
+          <h1
+            className="text-[32px] text-white"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, lineHeight: 1.1 }}
+          >
+            Your API Key
+          </h1>
+          <p
+            className="mt-1 text-[13px]"
+            style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}
+          >
+            Use this key to authenticate requests to the EcoApi.
+          </p>
+        </Motion.div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-28">
+            <div
+              className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin"
+              style={{ borderColor: `${accent}44`, borderTopColor: accent }}
+            />
+          </div>
+        ) : activeKey ? (
+          <Motion.div
+            {...FADE(0.08)}
+            className="rounded-2xl backdrop-blur-xl"
+            style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            {/* Icon + label */}
+            <div className="flex items-center gap-4 px-6 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div
+                className="p-3 rounded-xl flex-shrink-0"
+                style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}
+              >
+                <KeyRound className="w-5 h-5" style={{ color: accent }} />
+              </div>
+              <div>
+                <p className="text-[14px] text-white font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  API Key
+                </p>
+                <p className="text-[12px] mt-0.5" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: "'Inter', sans-serif" }}>
+                  {revealedKey ? 'Your key is shown below — copy and store it safely.' : 'Key value hidden. Rotate to generate a new one.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Key value row */}
+            <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              {revealedKey ? (
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl"
+                    style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  >
+                    <code
+                      className="flex-1 text-[12px] truncate"
+                      style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}
+                    >
+                      {keyVisible ? revealedKey.key : `${revealedKey.key.slice(0, 12)}${'•'.repeat(24)}${revealedKey.key.slice(-4)}`}
+                    </code>
+                    <button
+                      onClick={() => setKeyVisible(!keyVisible)}
+                      className="transition-colors cursor-pointer flex-shrink-0"
+                      style={{ color: 'rgba(255,255,255,0.3)' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.65)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.3)'; }}
+                    >
+                      {keyVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <CopyButton value={revealedKey.key} accent={accent} />
+                </div>
+              ) : (
+                <div
+                  className="flex items-center px-4 py-2.5 rounded-xl"
+                  style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  <code
+                    className="text-[12px]"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.25)' }}
+                  >
+                    {activeKey.key_prefix}••••••••••••••••••••
+                  </code>
+                </div>
+              )}
+            </div>
+
+            {/* Meta + actions */}
+            <div className="grid grid-cols-2 divide-x" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div className="px-6 py-4">
+                <p className="text-[10px] uppercase tracking-[0.1em] mb-1" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>
+                  Created
+                </p>
+                <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: "'Inter', sans-serif" }}>
+                  {fmt(revealedKey?.created_at ?? activeKey.created_at)}
+                </p>
+              </div>
+              <div className="px-6 py-4">
+                <p className="text-[10px] uppercase tracking-[0.1em] mb-1" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>
+                  Last used
+                </p>
+                <p className="flex items-center gap-1.5 text-[13px]" style={{ color: 'rgba(255,255,255,0.6)', fontFamily: "'Inter', sans-serif" }}>
+                  <Clock className="w-3.5 h-3.5 opacity-50" />
+                  {revealedKey ? 'Never' : fmt(activeKey.last_used_at)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 px-6 py-4">
+              <button
+                onClick={() => setConfirmRotate(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all cursor-pointer"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  background: 'rgba(251,191,36,0.06)',
+                  border: '1px solid rgba(251,191,36,0.2)',
+                  color: '#fbbf24',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,191,36,0.12)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,191,36,0.06)'; }}
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                Rotate Key
+              </button>
+              <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'Inter', sans-serif" }}>
+                Invalidates the current key immediately.
+              </p>
+            </div>
+          </Motion.div>
+        ) : (
+          <Motion.div
+            {...FADE(0.08)}
+            className="flex flex-col items-center justify-center py-28 text-center rounded-2xl"
+            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            <div className="p-4 rounded-2xl mb-4" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
+              <KeyRound className="w-6 h-6" style={{ color: accent }} />
+            </div>
+            <p className="text-[15px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+              No API key yet
+            </p>
+            <p className="text-[13px] mb-6" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>
+              Generate a key to start authenticating requests
+            </p>
+            <button
+              onClick={() => generateMutation.mutate()}
+              disabled={generateMutation.isPending}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all cursor-pointer disabled:opacity-40"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                background: `${accent}18`,
+                border: `1px solid ${accent}44`,
+                color: accent,
+              }}
+            >
+              <Plus className="w-4 h-4" />
+              {generateMutation.isPending ? 'Generating…' : 'Generate API Key'}
+            </button>
+          </Motion.div>
+        )}
+
+        {/* Usage hint */}
+        {activeKey && revealedKey && (
+          <Motion.div
+            {...FADE(0.14)}
+            className="mt-3 px-6 py-4 rounded-2xl"
+            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)' }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.1em] mb-2" style={{ color: 'rgba(255,255,255,0.2)', fontFamily: "'JetBrains Mono', monospace" }}>
+              Usage
+            </p>
+            <code className="text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.4)' }}>
+              Authorization: Bearer {revealedKey.key.slice(0, 12)}••••
+            </code>
+          </Motion.div>
+        )}
       </div>
 
-      {/* Limit banner */}
-      {atLimit && (
-        <Motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 px-4 py-3 mb-6 rounded-xl border border-yellow-500/20 bg-yellow-500/5"
-        >
-          <AlertTriangle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-          <p className="text-sm text-yellow-300/70" style={{ fontFamily: "'Inter', sans-serif" }}>
-            You've reached the {MAX_KEYS}-key limit. Revoke a key to create a new one.
-          </p>
-        </Motion.div>
-      )}
-
-      {/* Newly created key banner — shown once */}
+      {/* Rotate confirmation modal */}
       <AnimatePresence>
-        {newKey && (
-          <Motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mb-6 p-5 rounded-2xl border border-green-500/25 bg-green-500/5"
-          >
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <div>
-                <p className="text-sm font-semibold text-green-300" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Key created — copy it now
-                </p>
-                <p className="text-xs text-white/40 mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  This key will not be shown again.
-                </p>
-              </div>
-              <button
-                onClick={() => setNewKey(null)}
-                className="p-1.5 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all cursor-pointer flex-shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-black/30">
-                <code
-                  className="flex-1 text-xs text-green-300 font-mono truncate"
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                >
-                  {keyVisible ? newKey.key : `${newKey.key.slice(0, 12)}${'•'.repeat(24)}${newKey.key.slice(-4)}`}
-                </code>
-                <button
-                  onClick={() => setKeyVisible(!keyVisible)}
-                  className="text-white/30 hover:text-white/60 transition-colors cursor-pointer flex-shrink-0"
-                >
-                  {keyVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-              <CopyButton value={newKey.key} />
-            </div>
-          </Motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Keys list */}
-      {isLoading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-6 h-6 border-2 border-green-500/30 border-t-green-500 rounded-full animate-spin" />
-        </div>
-      ) : keys.length === 0 ? (
-        <Motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-24 text-center"
-        >
-          <KeyRound className="w-10 h-10 text-white/10 mb-4" />
-          <p className="text-base text-white/30" style={{ fontFamily: "'Inter', sans-serif" }}>
-            No API keys yet
-          </p>
-          <p className="text-sm text-white/20 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Create a key to start using the EcoApi
-          </p>
-        </Motion.div>
-      ) : (
-        <div className="space-y-3">
-          {keys.map((k, i) => (
-            <Motion.div
-              key={k.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="group flex items-center gap-6 px-6 py-5 rounded-2xl border border-white/5 bg-zinc-900/50 hover:border-white/10 hover:bg-zinc-900/80 transition-all duration-200"
-            >
-              <div className="p-2.5 rounded-xl bg-green-500/10 border border-green-500/15 flex-shrink-0">
-                <KeyRound className="w-4 h-4 text-green-400" />
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  {k.name}
-                </p>
-                <code
-                  className="text-xs text-white/30 mt-0.5 block"
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                >
-                  {k.key_prefix}••••••••
-                </code>
-              </div>
-
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <div className="text-right">
-                  <p className="text-xs text-white/20" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Last used
-                  </p>
-                  <p className="flex items-center gap-1 text-xs text-white/30 mt-0.5">
-                    <Clock className="w-3 h-3" />
-                    {fmt(k.last_used_at ?? undefined)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-white/20" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Created
-                  </p>
-                  <p className="text-xs text-white/30 mt-0.5">{fmt(k.created_at)}</p>
-                </div>
-                <button
-                  onClick={() => setRevokeId(k.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </Motion.div>
-          ))}
-        </div>
-      )}
-
-      {/* Create modal */}
-      <AnimatePresence>
-        {showCreate && (
+        {confirmRotate && (
           <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
-            onClick={(e) => { if (e.target === e.currentTarget) setShowCreate(false); }}
+            style={{ backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setConfirmRotate(false); setRotateError(''); } }}
           >
             <Motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.2 }}
-              className="w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl"
-            >
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-base font-bold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  Create API Key
-                </h2>
-                <button
-                  onClick={() => setShowCreate(false)}
-                  className="p-1.5 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <form onSubmit={handleCreate} className="space-y-4">
-                <div>
-                  <label
-                    className="block text-xs font-medium text-white/50 mb-2"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
-                    Key name
-                  </label>
-                  <input
-                    autoFocus
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="production, staging, local…"
-                    className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder-white/20 focus:outline-none focus:border-green-500/40 transition-all"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  />
-                  {createError && (
-                    <p className="text-xs text-red-400 mt-2" style={{ fontFamily: "'Inter', sans-serif" }}>
-                      {createError}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-3 pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowCreate(false)}
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-white/50 hover:text-white/80 hover:bg-white/5 transition-all cursor-pointer"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={!newName.trim() || createMutation.isPending}
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-green-500/10 border border-green-500/20 text-sm font-medium text-green-400 hover:bg-green-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
-                    {createMutation.isPending ? 'Creating…' : 'Create'}
-                  </button>
-                </div>
-              </form>
-            </Motion.div>
-          </Motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Revoke confirmation */}
-      <AnimatePresence>
-        {revokeId && (
-          <Motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
-            onClick={(e) => { if (e.target === e.currentTarget) setRevokeId(null); }}
-          >
-            <Motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.2 }}
-              className="w-full max-w-sm rounded-2xl border border-white/10 bg-zinc-900 p-6 shadow-2xl"
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-sm rounded-2xl p-6 shadow-2xl backdrop-blur-xl"
+              style={{ background: 'rgba(10,10,15,0.95)', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               <div className="flex items-start gap-3 mb-5">
-                <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 flex-shrink-0 mt-0.5">
-                  <KeyRound className="w-4 h-4 text-red-400" />
+                <div className="p-2 rounded-xl flex-shrink-0 mt-0.5" style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)' }}>
+                  <RefreshCw className="w-4 h-4" style={{ color: '#fbbf24' }} />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Revoke API key?
+                  <h2 className="text-[15px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                    Rotate API key?
                   </h2>
-                  <p className="text-sm text-white/40 mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Any application using this key will immediately lose access. This cannot be undone.
+                  <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>
+                    Your current key will be immediately invalidated. Any apps using it will stop working until updated with the new key.
                   </p>
                 </div>
               </div>
+              {rotateError && (
+                <p className="text-[12px] mb-4" style={{ color: '#f87171', fontFamily: "'Inter', sans-serif" }}>
+                  {rotateError}
+                </p>
+              )}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setRevokeId(null)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-white/10 text-sm text-white/50 hover:text-white/80 hover:bg-white/5 transition-all cursor-pointer"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  onClick={() => { setConfirmRotate(false); setRotateError(''); }}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-[13px] transition-all cursor-pointer"
+                  style={{ fontFamily: "'Inter', sans-serif", background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={() => revokeMutation.mutate(revokeId)}
-                  disabled={revokeMutation.isPending}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-sm font-medium text-red-400 hover:bg-red-500/20 disabled:opacity-40 transition-all cursor-pointer"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
+                  onClick={() => rotateMutation.mutate()}
+                  disabled={rotateMutation.isPending}
+                  className="flex-1 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all cursor-pointer disabled:opacity-40"
+                  style={{ fontFamily: "'Inter', sans-serif", background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', color: '#fbbf24' }}
                 >
-                  {revokeMutation.isPending ? 'Revoking…' : 'Revoke'}
+                  {rotateMutation.isPending ? 'Rotating…' : 'Rotate Key'}
                 </button>
               </div>
             </Motion.div>

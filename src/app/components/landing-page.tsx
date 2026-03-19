@@ -246,21 +246,21 @@ export function LandingPage() {
         >
           <button
             onClick={() => navigate(isAuthenticated ? '/dashboard/projects' : '/login')}
-            className="group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+            className="group flex items-center gap-2.5 px-6 py-3 rounded-full transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
             style={{
               fontFamily: "'Inter', sans-serif",
-              fontSize: '0.8rem',
+              fontSize: '0.95rem',
               fontWeight: 500,
-              color: 'rgba(255,255,255,0.75)',
+              color: 'rgba(255,255,255,0.85)',
               backgroundColor: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.14)',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
             }}
           >
             {isAuthenticated
-              ? <LayoutDashboard className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
-              : <LogIn className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+              ? <LayoutDashboard className="w-4.5 h-4.5 opacity-70 group-hover:opacity-100 transition-opacity" style={{ width: '18px', height: '18px' }} />
+              : <LogIn className="w-4.5 h-4.5 opacity-70 group-hover:opacity-100 transition-opacity" style={{ width: '18px', height: '18px' }} />
             }
             <span className="group-hover:text-white transition-colors">
               {isAuthenticated ? 'Dashboard' : 'Sign in'}

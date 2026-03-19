@@ -3,8 +3,8 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 export interface User {
   id: string;
   email: string;
-  name: string;
-  picture: string;
+  name: string | null;
+  avatarUrl: string | null;
   createdAt: string;
 }
 
