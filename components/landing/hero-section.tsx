@@ -13,7 +13,7 @@ export function HeroSection() {
       <div className="glow-orb w-[1500px] h-[750px] top-0 left-1/2 -translate-x-1/2" />
       
       {/* Content */}
-      <div className="relative mx-auto max-w-6xl px-6 pt-32 pb-20">
+      <div className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32 pb-20">
         <div className="flex flex-col items-center text-center">
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm">
