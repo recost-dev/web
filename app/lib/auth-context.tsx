@@ -42,6 +42,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Mock mode — skip token/auth entirely
+    if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
+      import('./mock-data').then(({ MOCK_USER }) => {
+        setToken('mock-token');
+        setUser(MOCK_USER);
+        setIsLoading(false);
+      });
+      return;
+    }
+
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     let activeToken: string | null;

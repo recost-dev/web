@@ -82,7 +82,7 @@ export default function Projects() {
 
   return (
     <div className="min-h-full">
-      <div className="max-w-5xl mx-auto px-6 md:px-10 pt-36 pb-24">
+      <div className="w-full px-6 md:px-10 pt-8 pb-16">
 
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
@@ -168,11 +168,10 @@ export default function Projects() {
             <p className="text-sm text-[#737373]">Create your first project to start scanning APIs</p>
           </Motion.div>
         ) : (
-          <div className="space-y-2">
-            {projects.map((p, i) => (
-              <Motion.div
+          <Motion.div {...FADE(0.08)} className="space-y-2">
+            {projects.map((p) => (
+              <div
                 key={p.id}
-                {...FADE(i * 0.06)}
                 className="group flex items-center gap-5 px-5 py-4 rounded-xl transition-all duration-200 cursor-pointer"
                 style={{ background: '#111111', border: '1px solid #262626' }}
                 onClick={() => navigate(`/dashboard/projects/${p.id}`)}
@@ -214,9 +213,9 @@ export default function Projects() {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              </Motion.div>
+              </div>
             ))}
-          </div>
+          </Motion.div>
         )}
       </div>
 

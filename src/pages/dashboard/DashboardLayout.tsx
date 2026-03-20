@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router';
 import { useAuth } from '@/src/lib/auth-context';
+import { useQueryClient } from '@tanstack/react-query';
 import { Sparkles, FolderKanban, User, LogOut } from 'lucide-react';
 
 const NAV = [
@@ -10,11 +11,26 @@ const NAV = [
 
 const accent = '#34d399';
 
-function usePageLabel() {
+function useBreadcrumb() {
   const { pathname } = useLocation();
-  if (pathname === '/dashboard') return 'Get Started';
+  const qc = useQueryClient();
+
+  const projectDetailMatch = pathname.match(/^\/dashboard\/projects\/([^/]+)/);
+  if (projectDetailMatch) {
+    const id = projectDetailMatch[1];
+    const list = qc.getQueryData<{ id: string; name: string }[]>(['dashboard-projects']);
+    const name = list?.find(p => p.id === id)?.name
+      ?? qc.getQueryData<{ id: string; name: string }>(['dashboard-project', id])?.name
+      ?? '…';
+    return { segments: [
+      { label: 'Projects', href: '/dashboard/projects' },
+      { label: name },
+    ]};
+  }
+
+  if (pathname === '/dashboard') return { segments: [{ label: 'Get Started' }] };
   const match = NAV.find(n => !n.exact && pathname.startsWith(n.href));
-  return match?.label ?? 'Dashboard';
+  return { segments: [{ label: match?.label ?? 'Dashboard' }] };
 }
 
 function Spinner() {
@@ -50,7 +66,7 @@ function NavItem({ href, icon: Icon, label, exact }: { href: string; icon: React
 export default function DashboardLayout() {
   const { isAuthenticated, isLoading, user, logout } = useAuth();
   const { pathname } = useLocation();
-  const pageLabel = usePageLabel();
+  const { segments } = useBreadcrumb();
 
   if (isLoading) return <Spinner />;
   if (!isAuthenticated) {
@@ -66,8 +82,16 @@ export default function DashboardLayout() {
         <Link to="/" style={{ textDecoration: 'none' }}>
           <span className="font-mono text-sm font-bold tracking-tight text-[#fafafa] hover:opacity-75 transition-opacity">recost</span>
         </Link>
-        <span className="mx-2.5 text-sm text-[#525252]">/</span>
-        <span className="text-sm text-[#a3a3a3]">{pageLabel}</span>
+        {segments.map((seg, i) => (
+          <span key={i} className="flex items-center gap-2.5">
+            <span className="mx-2.5 text-sm text-[#525252]">/</span>
+            {seg.href ? (
+              <Link to={seg.href} className="text-sm text-[#737373] hover:text-[#fafafa] transition-colors" style={{ textDecoration: 'none' }}>{seg.label}</Link>
+            ) : (
+              <span className="text-sm text-[#fafafa]">{seg.label}</span>
+            )}
+          </span>
+        ))}
       </header>
 
       <div className="flex flex-1 overflow-hidden">

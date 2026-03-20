@@ -79,7 +79,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="min-h-full">
-      <div className="max-w-5xl mx-auto px-6 md:px-10 pt-36 pb-24">
+      <div className="w-full px-6 md:px-10 pt-8 pb-16">
 
         {/* Back link */}
         <Motion.div {...FADE(0)} className="mb-8">

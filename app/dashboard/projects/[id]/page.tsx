@@ -4,26 +4,16 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { motion as Motion } from 'motion/react';
 import {
-  ArrowLeft,
-  FolderKanban,
-  Layers,
-  DollarSign,
-  Zap,
   AlertTriangle,
   RefreshCw,
-  Clock,
+  DollarSign,
+  Layers,
+  Activity,
+  ShieldAlert,
+  ChevronRight,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/app/lib/api-client';
-import { galaxySunsetTheme } from '@/app/lib/themes';
-
-const accent = galaxySunsetTheme.btnGradient[0];
-
-const FADE = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, delay, ease: 'easeOut' as const },
-});
 
 interface Project {
   id: string;
@@ -35,41 +25,81 @@ interface Project {
 
 interface ScanSummary {
   totalEndpoints: number;
+  totalCallsPerDay: number;
   totalMonthlyCost: number;
-  totalSuggestions: number;
-  highSeverityCount: number;
+  highRiskCount: number;
 }
 
 interface Scan {
   id: string;
-  project_id: string;
-  created_at: string;
+  projectId: string;
+  createdAt: string;
   summary: ScanSummary;
 }
 
-function fmt(dateStr?: string | null) {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+interface Endpoint {
+  id: string;
+  provider: string;
+  method: string;
+  url: string;
+  callsPerDay: number;
+  monthlyCost: number;
+  status: string;
+}
+
+interface Suggestion {
+  id: string;
+  type: string;
+  severity: 'high' | 'medium' | 'low';
+  estimatedMonthlySavings: number;
+  description: string;
+  affectedEndpoints: string[];
+}
+
+interface ProviderBreakdown {
+  provider: string;
+  monthlyCost: number;
+  callsPerDay: number;
+  endpointCount: number;
 }
 
 function fmtCost(n: number) {
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+function fmtNum(n: number) {
+  return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+const SEVERITY_STYLE = {
+  high:   { bg: 'rgba(248,113,113,0.1)',  border: 'rgba(248,113,113,0.25)',  text: '#f87171' },
+  medium: { bg: 'rgba(251,191,36,0.1)',   border: 'rgba(251,191,36,0.25)',   text: '#fbbf24' },
+  low:    { bg: 'rgba(163,163,163,0.08)', border: 'rgba(163,163,163,0.15)',  text: '#737373' },
+};
+
+const METHOD_COLOR: Record<string, string> = {
+  GET: '#34d399', POST: '#3b82f6', PUT: '#f59e0b', PATCH: '#f59e0b', DELETE: '#f87171',
+};
+
+const PROVIDER_COLOR: Record<string, string> = {
+  openai: '#34d399', anthropic: '#3b82f6', cohere: '#f59e0b',
+  google: '#a78bfa', azure: '#60a5fa', mistral: '#fb923c',
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  redundant: 'Redundant', cacheable: 'Cacheable', batchable: 'Batchable',
+  n_plus_one_risk: 'N+1 Risk', rate_limit_risk: 'Rate Limit',
+};
+
+function providerColor(name: string) {
+  return PROVIDER_COLOR[name.toLowerCase()] ?? '#737373';
+}
+
+function PanelSpinner() {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl" style={{ background: 'rgba(248,113,113,0.04)', border: '1px solid rgba(248,113,113,0.15)' }}>
-      <AlertTriangle className="w-6 h-6 mb-3" style={{ color: '#f87171' }} />
-      <p className="text-[14px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{message}</p>
-      <p className="text-[13px] mb-5" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>Check your connection and try again.</p>
-      <button
-        onClick={onRetry}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] transition-all cursor-pointer"
-        style={{ fontFamily: "'Inter', sans-serif", background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}
-      >
-        <RefreshCw className="w-3.5 h-3.5" />
-        Retry
-      </button>
+    <div className="flex items-center justify-center py-12">
+      <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
+        style={{ borderColor: 'rgba(52,211,153,0.25)', borderTopColor: '#34d399' }} />
     </div>
   );
 }
@@ -78,134 +108,288 @@ export default function ProjectDetail() {
   const params = useParams();
   const id = params?.id as string;
 
-  const { data: project, isLoading: projectLoading, isError: projectError, refetch: refetchProject } = useQuery<Project>({
-    queryKey: ['dashboard-project', id],
-    queryFn: () => apiClient.get<{ data: Project }>(`/projects/${id}`).then((r) => r.data),
-    enabled: !!id,
-  });
+  const { data: project, isLoading: projectLoading, isError: projectError, refetch: refetchProject } =
+    useQuery<Project>({
+      queryKey: ['dashboard-project', id],
+      queryFn: () => apiClient.get<{ data: Project }>(`/projects/${id}`).then((r) => r.data),
+      enabled: !!id,
+    });
 
-  const { data: scans = [], isLoading: scansLoading, isError: scansError, refetch: refetchScans } = useQuery<Scan[]>({
-    queryKey: ['dashboard-project-scans', id],
-    queryFn: () => apiClient.get<{ data: Scan[] }>(`/projects/${id}/scans`).then((r) => r.data),
-    enabled: !!id,
-  });
+  const { data: latestScan, isLoading: scanLoading } =
+    useQuery<Scan>({
+      queryKey: ['dashboard-project-latest-scan', id],
+      queryFn: () => apiClient.get<{ data: Scan }>(`/projects/${id}/scans/latest`).then((r) => r.data),
+      enabled: !!id,
+      retry: false,
+    });
+
+  const { data: endpoints = [], isLoading: endpointsLoading } =
+    useQuery<Endpoint[]>({
+      queryKey: ['dashboard-project-endpoints', id],
+      queryFn: () => apiClient.get<{ data: Endpoint[] }>(`/projects/${id}/endpoints`).then((r) => r.data),
+      enabled: !!id,
+      retry: false,
+    });
+
+  const { data: suggestions = [], isLoading: suggestionsLoading } =
+    useQuery<Suggestion[]>({
+      queryKey: ['dashboard-project-suggestions', id],
+      queryFn: () => apiClient.get<{ data: Suggestion[] }>(`/projects/${id}/suggestions`).then((r) => r.data),
+      enabled: !!id,
+      retry: false,
+    });
+
+  const { data: byProvider = [], isLoading: providerLoading } =
+    useQuery<ProviderBreakdown[]>({
+      queryKey: ['dashboard-project-cost-provider', id],
+      queryFn: () => apiClient.get<{ data: ProviderBreakdown[] }>(`/projects/${id}/cost/by-provider`).then((r) => r.data),
+      enabled: !!id,
+      retry: false,
+    });
+
+  const summary = latestScan?.summary;
+  const maxCost = Math.max(...byProvider.map((p) => p.monthlyCost), 0.01);
+
+  if (projectLoading) {
+    return (
+      <div className="min-h-full flex items-center justify-center" style={{ background: '#0a0a0a' }}>
+        <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: 'rgba(52,211,153,0.25)', borderTopColor: '#34d399' }} />
+      </div>
+    );
+  }
+
+  if (projectError || !project) {
+    return (
+      <div className="min-h-full flex items-center justify-center" style={{ background: '#0a0a0a' }}>
+        <div className="text-center">
+          <AlertTriangle className="w-6 h-6 mx-auto mb-3" style={{ color: '#f87171' }} />
+          <p className="text-[14px] font-semibold text-white mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>
+            Failed to load project
+          </p>
+          <button
+            onClick={() => refetchProject()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] cursor-pointer"
+            style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171', fontFamily: "'Inter', sans-serif" }}
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-full flex flex-col items-center px-6 md:px-10 pb-10 dashboard-page" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="w-full max-w-2xl">
+    <div className="min-h-full" style={{ background: '#0a0a0a', fontFamily: "'Inter', sans-serif" }}>
 
-        {/* Back link */}
-        <Motion.div {...FADE(0)} className="mb-6">
-          <Link
-            href="/dashboard/projects"
-            className="inline-flex items-center gap-2 text-[13px] transition-colors hover:text-white/70"
-            style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            All Projects
-          </Link>
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 px-6 py-3.5" style={{ borderBottom: '1px solid #262626', background: '#111111' }}>
+        <Link href="/" className="text-sm font-bold" style={{ color: '#fafafa', textDecoration: 'none', fontFamily: "'Inter', sans-serif" }}>
+          recost
+        </Link>
+        <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#525252' }} />
+        <Link href="/dashboard/projects" className="text-sm" style={{ color: '#a3a3a3', textDecoration: 'none' }}>
+          Projects
+        </Link>
+        <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#525252' }} />
+        <span className="text-sm truncate" style={{ color: '#fafafa' }}>{project.name}</span>
+        {project.description && (
+          <span className="hidden md:inline text-xs ml-2" style={{ color: '#525252', fontFamily: "'JetBrains Mono', monospace" }}>
+            — {project.description}
+          </span>
+        )}
+      </div>
+
+      <div className="p-6 space-y-5">
+
+        {/* Stat cards */}
+        <Motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          {([
+            { label: 'Monthly Cost',  value: summary ? fmtCost(summary.totalMonthlyCost)   : '—', icon: DollarSign,  color: '#34d399' },
+            { label: 'Endpoints',     value: summary ? fmtNum(summary.totalEndpoints)        : '—', icon: Layers,      color: '#3b82f6' },
+            { label: 'Calls / Day',   value: summary ? fmtNum(summary.totalCallsPerDay)      : '—', icon: Activity,    color: '#f59e0b' },
+            { label: 'High Risk',     value: summary ? fmtNum(summary.highRiskCount)          : '—', icon: ShieldAlert, color: '#f87171' },
+          ] as const).map(({ label, value, icon: Icon, color }) => (
+            <div key={label} className="rounded-lg p-5" style={{ background: '#111111', border: '1px solid #262626' }}>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs" style={{ color: '#737373', fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
+                <Icon className="w-3.5 h-3.5" style={{ color }} />
+              </div>
+              <p className="text-2xl font-bold" style={{ color: '#fafafa', fontFamily: "'JetBrains Mono', monospace" }}>
+                {scanLoading ? <span style={{ color: '#525252' }}>…</span> : value}
+              </p>
+            </div>
+          ))}
         </Motion.div>
 
-        {/* Project header */}
-        {projectLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent}44`, borderTopColor: accent }} />
-          </div>
-        ) : projectError ? (
-          <Motion.div {...FADE(0.05)}>
-            <ErrorState message="Failed to load project" onRetry={() => refetchProject()} />
-          </Motion.div>
-        ) : project ? (
-          <Motion.div {...FADE(0.05)} className="mb-8">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] uppercase tracking-[0.15em]" style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}>Project</span>
+        {/* Cost by provider + Suggestions */}
+        <Motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.06 }}
+          className="grid gap-5 lg:grid-cols-2"
+        >
+          {/* Cost by provider */}
+          <div className="rounded-lg p-6" style={{ background: '#111111', border: '1px solid #262626' }}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-medium" style={{ color: '#fafafa' }}>Cost by Provider</h3>
+              <span className="text-xs" style={{ color: '#737373', fontFamily: "'JetBrains Mono', monospace" }}>Monthly</span>
             </div>
-            <h1 className="text-[28px] text-white" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, lineHeight: 1.1 }}>{project.name}</h1>
-            {project.description && (
-              <p className="mt-1 text-[13px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>{project.description}</p>
-            )}
-            <div className="flex items-center gap-2 mt-2">
-              <Clock className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
-              <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)', fontFamily: "'JetBrains Mono', monospace" }}>
-                Created {fmt(project.createdAt)}
-              </span>
-            </div>
-          </Motion.div>
-        ) : null}
-
-        {/* Scans section */}
-        <Motion.div {...FADE(0.1)}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] uppercase tracking-[0.15em]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.3)' }}>Scans</span>
-          </div>
-          <h2 className="text-[18px] text-white mb-4" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>Scan History</h2>
-        </Motion.div>
-
-        {scansLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent}44`, borderTopColor: accent }} />
-          </div>
-        ) : scansError ? (
-          <Motion.div {...FADE(0.12)}>
-            <ErrorState message="Failed to load scans" onRetry={() => refetchScans()} />
-          </Motion.div>
-        ) : scans.length === 0 ? (
-          <Motion.div
-            {...FADE(0.12)}
-            className="flex flex-col items-center justify-center py-20 text-center rounded-2xl"
-            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            <div className="p-4 rounded-2xl mb-4" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
-              <Layers className="w-6 h-6" style={{ color: accent }} />
-            </div>
-            <p className="text-[15px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>No scans yet</p>
-            <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>Submit a scan via the API to see results here.</p>
-          </Motion.div>
-        ) : (
-          <div className="space-y-3">
-            {scans.map((scan, i) => (
-              <Motion.div
-                key={scan.id}
-                {...FADE(i * 0.05)}
-                className="rounded-2xl backdrop-blur-xl"
-                style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.07)' }}
-              >
-                <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl flex-shrink-0" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>
-                      <Layers className="w-3.5 h-3.5" style={{ color: accent }} />
-                    </div>
-                    <div>
-                      <p className="text-[13px] text-white font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Scan</p>
-                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)', fontFamily: "'JetBrains Mono', monospace" }}>{fmt(scan.created_at)}</p>
-                    </div>
-                  </div>
-                  {scan.summary?.highSeverityCount > 0 && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg" style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}>
-                      <AlertTriangle className="w-3 h-3" style={{ color: '#f87171' }} />
-                      <span className="text-[11px]" style={{ color: '#f87171', fontFamily: "'JetBrains Mono', monospace" }}>{scan.summary.highSeverityCount} high</span>
-                    </div>
-                  )}
-                </div>
-                <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                  {[
-                    { icon: FolderKanban, label: 'Endpoints', value: scan.summary?.totalEndpoints ?? '—' },
-                    { icon: DollarSign, label: 'Monthly cost', value: scan.summary?.totalMonthlyCost != null ? fmtCost(scan.summary.totalMonthlyCost) : '—' },
-                    { icon: Zap, label: 'Suggestions', value: scan.summary?.totalSuggestions ?? '—' },
-                  ].map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="px-5 py-4">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Icon className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.3)' }} />
-                        <p className="text-[10px] uppercase tracking-[0.1em]" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>
+            {providerLoading ? (
+              <PanelSpinner />
+            ) : byProvider.length === 0 ? (
+              <p className="text-sm text-center py-10" style={{ color: '#525252' }}>No scan data yet</p>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  {byProvider.map((p) => (
+                    <div key={p.provider} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-sm">
+                        <span style={{ color: '#a3a3a3' }}>{p.provider}</span>
+                        <span style={{ color: '#fafafa', fontFamily: "'JetBrains Mono', monospace" }}>{fmtCost(p.monthlyCost)}</span>
                       </div>
-                      <p className="text-[15px] text-white" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{value}</p>
+                      <div className="h-1.5 w-full rounded-full" style={{ background: '#1a1a1a' }}>
+                        <div
+                          className="h-1.5 rounded-full transition-all duration-700"
+                          style={{ width: `${(p.monthlyCost / maxCost) * 100}%`, background: providerColor(p.provider) }}
+                        />
+                      </div>
+                      <span className="text-xs" style={{ color: '#525252', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {fmtNum(p.callsPerDay)} calls/day · {p.endpointCount} endpoint{p.endpointCount !== 1 ? 's' : ''}
+                      </span>
                     </div>
                   ))}
                 </div>
-              </Motion.div>
-            ))}
+                <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #262626' }}>
+                  <span className="text-sm" style={{ color: '#a3a3a3' }}>Total</span>
+                  <span className="font-bold" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                    {fmtCost(byProvider.reduce((s, p) => s + p.monthlyCost, 0))}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
-        )}
+
+          {/* Suggestions */}
+          <div className="rounded-lg p-6" style={{ background: '#111111', border: '1px solid #262626' }}>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-medium" style={{ color: '#fafafa' }}>Suggestions</h3>
+              <span className="text-xs" style={{ color: '#737373', fontFamily: "'JetBrains Mono', monospace" }}>
+                {suggestions.length} total
+              </span>
+            </div>
+            {suggestionsLoading ? (
+              <PanelSpinner />
+            ) : suggestions.length === 0 ? (
+              <p className="text-sm text-center py-10" style={{ color: '#525252' }}>No suggestions yet</p>
+            ) : (
+              <div className="space-y-2 overflow-y-auto" style={{ maxHeight: '280px' }}>
+                {suggestions.map((s) => {
+                  const style = SEVERITY_STYLE[s.severity];
+                  return (
+                    <div key={s.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: '#0a0a0a', border: '1px solid #262626' }}>
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0"
+                        style={{ background: style.bg, border: `1px solid ${style.border}`, color: style.text, fontFamily: "'JetBrains Mono', monospace" }}
+                      >
+                        {s.severity}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs truncate" style={{ color: '#a3a3a3' }}>{s.description}</p>
+                        <p className="text-xs mt-0.5" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                          saves {fmtCost(s.estimatedMonthlySavings)}/mo
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </Motion.div>
+
+        {/* Endpoints table */}
+        <Motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.12 }}
+          className="rounded-lg overflow-hidden"
+          style={{ background: '#111111', border: '1px solid #262626' }}
+        >
+          <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid #262626' }}>
+            <h3 className="text-sm font-medium" style={{ color: '#fafafa' }}>Endpoints</h3>
+            <span className="text-xs" style={{ color: '#737373', fontFamily: "'JetBrains Mono', monospace" }}>
+              {endpoints.length} total
+            </span>
+          </div>
+          {endpointsLoading ? (
+            <PanelSpinner />
+          ) : endpoints.length === 0 ? (
+            <p className="text-sm text-center py-14" style={{ color: '#525252' }}>No endpoints yet</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #262626' }}>
+                    {['Method', 'URL', 'Provider', 'Calls / Day', 'Monthly Cost', 'Status'].map((h) => (
+                      <th key={h} className="px-6 py-3 text-left text-xs font-medium" style={{ color: '#737373', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {endpoints.map((ep, i) => (
+                    <tr key={ep.id} style={{ borderBottom: i < endpoints.length - 1 ? '1px solid rgba(38,38,38,0.6)' : 'none' }}>
+                      <td className="px-6 py-3.5">
+                        <span
+                          className="text-[11px] px-1.5 py-0.5 rounded"
+                          style={{
+                            color: METHOD_COLOR[ep.method] ?? '#a3a3a3',
+                            background: `${METHOD_COLOR[ep.method] ?? '#a3a3a3'}18`,
+                            fontFamily: "'JetBrains Mono', monospace",
+                          }}
+                        >
+                          {ep.method}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5 max-w-xs">
+                        <span className="text-xs truncate block" style={{ color: '#a3a3a3', fontFamily: "'JetBrains Mono', monospace" }}>
+                          {ep.url}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3.5 text-xs" style={{ color: '#737373' }}>{ep.provider}</td>
+                      <td className="px-6 py-3.5 text-xs" style={{ color: '#fafafa', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {fmtNum(ep.callsPerDay)}
+                      </td>
+                      <td className="px-6 py-3.5 text-xs" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {fmtCost(ep.monthlyCost)}
+                      </td>
+                      <td className="px-6 py-3.5">
+                        {ep.status !== 'normal' ? (
+                          <span
+                            className="text-[11px] px-1.5 py-0.5 rounded"
+                            style={{ color: '#fbbf24', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.18)', fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            {STATUS_LABEL[ep.status] ?? ep.status}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#525252', fontSize: '12px' }}>—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Motion.div>
+
       </div>
     </div>
   );

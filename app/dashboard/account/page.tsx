@@ -85,7 +85,7 @@ export default function Account() {
 
   function dismissReveal() {
     setShowRevealModal(false);
-    setRevealedKey(null);
+    // Keep revealedKey in state so the copy button works for the rest of this session
   }
 
   const { data: keys = [], isLoading: keysLoading, isError: keysError, refetch: refetchKeys } = useQuery<ApiKey[]>({
@@ -122,6 +122,7 @@ export default function Account() {
       qc.invalidateQueries({ queryKey: ['dashboard-keys'] });
       setConfirmRotate(false);
       setRotateError('');
+      setRevealedKey(null);
       openReveal(created);
     },
     onError: (e: Error) => setRotateError(e.message),
@@ -229,9 +230,10 @@ export default function Account() {
                   </div>
                   <div className="px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <div className="flex items-center px-4 py-2.5 rounded-xl" style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      <code className="text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.25)' }}>
+                      <code className="flex-1 text-[12px]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.25)' }}>
                         {activeKey.key_prefix}••••••••••••••••••••
                       </code>
+                      <CopyButton value={revealedKey?.id === activeKey.id ? revealedKey.key : activeKey.key_prefix} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
