@@ -18,6 +18,7 @@ const footerLinks = {
   ],
   Connect: [
     { name: "GitHub", href: "https://github.com/recost-dev" },
+    { name: "Email", href: "mailto:hello@recost.dev" },
   ],
 }
 
