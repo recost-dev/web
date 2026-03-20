@@ -20,10 +20,10 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
         overlayClassName="bg-[#0a0a0a]"
         className="
           top-auto bottom-0 left-0 right-0 max-w-full translate-x-0 translate-y-0
-          rounded-b-none rounded-t-xl max-h-[90vh] overflow-y-auto
+          rounded-b-none rounded-t-xl max-h-[90svh] overflow-y-scroll overscroll-contain
           sm:top-[50%] sm:left-[50%] sm:right-auto sm:bottom-auto
           sm:translate-x-[-50%] sm:translate-y-[-50%]
-          sm:max-w-md sm:rounded-xl
+          sm:max-w-md sm:rounded-xl sm:max-h-[85svh]
           border-[#262626] bg-[#111111] text-[#fafafa]
         "
       >
