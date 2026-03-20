@@ -82,6 +82,13 @@
 }
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
   * {
     @apply border-border outline-ring/50;
   }

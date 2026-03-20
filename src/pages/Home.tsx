@@ -13,7 +13,7 @@ export default function Home() {
       <HeroSection />
       <HowItWorks />
       <FeaturesSection />
-      <DashboardPreview />
+      <div className="hidden md:block"><DashboardPreview /></div>
       <OpenSourceSection />
 <Footer />
     </main>
