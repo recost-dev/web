@@ -1,5 +1,3 @@
-"use client"
-
 const providers = [
   { name: "OpenAI", cost: "$127.45", calls: "12,847", color: "#34d399" },
   { name: "Anthropic", cost: "$89.23", calls: "8,421", color: "#3b82f6" },

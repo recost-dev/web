@@ -538,7 +538,7 @@ export default function Docs() {
       {/* Top bar — sticky, never scrolls */}
       <header className="sticky top-0 z-20 flex-shrink-0 flex items-center justify-between px-8 py-3 border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md">
         <Link
-          href="/docs"
+          to="/docs"
           className="flex items-center gap-2 text-[12px] text-[#a3a3a3] hover:text-[#fafafa] transition-colors font-mono"
         >
           <ArrowLeft size={14} />
