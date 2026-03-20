@@ -111,7 +111,7 @@
 .glow-orb {
   position: absolute;
   border-radius: 9999px;
-  background: rgba(52, 211, 153, 0.08);
+  background: rgba(52, 211, 153, 0.06);
   filter: blur(200px);
   pointer-events: none;
 }
@@ -120,7 +120,7 @@
 .glow-orb-sm {
   position: absolute;
   border-radius: 9999px;
-  background: rgba(52, 211, 153, 0.05);
+  background: rgba(52, 211, 153, 0.04);
   filter: blur(160px);
   pointer-events: none;
 }

@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { CodeBlock } from "./code-block"
 
@@ -38,7 +38,7 @@ export function HeroSection() {
               className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium px-8 glow-green"
               asChild
             >
-              <Link href="/login">Get started free</Link>
+              <Link to="/login">Get started free</Link>
             </Button>
             <Button 
               size="lg"
@@ -46,7 +46,7 @@ export function HeroSection() {
               className="border-[#262626] bg-transparent text-[#fafafa] hover:bg-[#1a1a1a] px-8"
               asChild
             >
-              <Link href="/docs">View docs</Link>
+              <Link to="/docs">View docs</Link>
             </Button>
           </div>
 

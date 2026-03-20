@@ -1,4 +1,4 @@
-import Link from "next/link"
+import { Link } from "react-router"
 
 const footerLinks = {
   Product: [
@@ -34,7 +34,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="font-mono text-xl font-bold tracking-tight text-[#fafafa]">
+            <Link to="/" className="font-mono text-xl font-bold tracking-tight text-[#fafafa]">
               recost
             </Link>
             <p className="mt-4 max-w-xs text-sm text-[#a3a3a3]">
@@ -49,16 +49,25 @@ export function Footer() {
               <ul className="mt-4 space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
-                      {...(link.href.startsWith("http") && {
-                        target: "_blank",
-                        rel: "noopener noreferrer",
-                      })}
-                    >
-                      {link.name}
-                    </Link>
+                    {link.href.startsWith("http") || link.href.startsWith("mailto:") ? (
+                      <a
+                        href={link.href}
+                        className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
+                        {...(link.href.startsWith("http") && {
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                        })}
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

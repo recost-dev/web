@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { Star, GitFork } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -28,7 +27,7 @@ export function OpenSourceSection() {
 
           {/* GitHub Stats */}
           <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row">
-            <Link
+            <a
               href="https://github.com/recost-dev"
               target="_blank"
               rel="noopener noreferrer"
@@ -47,7 +46,7 @@ export function OpenSourceSection() {
                 />
               </svg>
               <span className="font-medium text-[#fafafa]">ecoapi-dev/recost-app</span>
-            </Link>
+            </a>
 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5 text-[#a3a3a3]">
