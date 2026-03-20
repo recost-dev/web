@@ -24,6 +24,12 @@ export function Navigation() {
           >
             Documentation
           </Link>
+          <Link
+            to="/about"
+            className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
+          >
+            About
+          </Link>
           <a
             href="https://github.com/recost-dev"
             target="_blank"
@@ -32,12 +38,6 @@ export function Navigation() {
           >
             GitHub
           </a>
-          <Link
-            to="/about"
-            className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
-          >
-            Pricing
-          </Link>
         </div>
 
         {/* Desktop CTA */}
@@ -89,6 +89,13 @@ export function Navigation() {
             >
               Documentation
             </Link>
+            <Link
+              to="/about"
+              className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About
+            </Link>
             <a
               href="https://github.com/recost-dev"
               target="_blank"
@@ -98,13 +105,6 @@ export function Navigation() {
             >
               GitHub
             </a>
-            <Link
-              to="/about"
-              className="text-sm text-[#a3a3a3] transition-colors hover:text-[#fafafa]"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Pricing
-            </Link>
             <div className="flex flex-col gap-2 pt-4 border-t border-[#262626]">
               {isAuthenticated ? (
                 <Button

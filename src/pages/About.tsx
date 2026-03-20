@@ -48,14 +48,9 @@ function Section({
       className="rounded-2xl border border-[#262626] bg-[#111111] p-8"
     >
       {/* Badge */}
-      <div className="flex items-center gap-2 mb-5">
-        <div
-          className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest font-mono"
-          style={{ background: `${ACCENT}22`, color: ACCENT, border: `1px solid ${ACCENT}44` }}
-        >
-          <Icon size={12} />
-          {badge}
-        </div>
+      <div className="inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#0a0a0a] px-3 py-1 mb-4">
+        <Icon size={12} className="text-[#34d399]" />
+        <span className="text-xs text-[#a3a3a3] font-mono">{badge}</span>
       </div>
 
       {/* Title */}
@@ -93,11 +88,10 @@ export default function About() {
       <Navigation />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
+      <section className="relative pt-32 pb-16">
         <div className="absolute inset-0 dot-grid opacity-40" />
         <div className="absolute inset-0 animated-gradient" />
-        <div className="glow-orb w-[600px] h-[400px] -top-32 left-1/2 -translate-x-1/2" />
-        <Motion.div {...FADE(0)} className="relative mx-auto max-w-3xl px-6 text-center">
+        <Motion.div {...FADE(0)} className="relative mx-auto max-w-5xl px-6 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance">
             About <span className="text-[#34d399]">Recost</span>
           </h1>
@@ -108,7 +102,7 @@ export default function About() {
       </section>
 
       {/* Sections */}
-      <section className="mx-auto max-w-3xl px-6 pb-24 space-y-6">
+      <section className="mx-auto max-w-5xl px-6 pb-24 space-y-6">
         <Section
           icon={Server}
           badge="REST API"

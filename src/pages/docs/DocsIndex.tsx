@@ -9,10 +9,9 @@ export default function DocsPage() {
       <Navigation />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
+      <section className="relative pt-32 pb-16">
         <div className="absolute inset-0 dot-grid opacity-40" />
         <div className="absolute inset-0 animated-gradient" />
-        <div className="glow-orb w-[600px] h-[400px] -top-32 left-1/2 -translate-x-1/2" />
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm">
             <BookOpen className="h-3.5 w-3.5 text-[#34d399]" />
