@@ -6,7 +6,7 @@
 recost/
 ├── web/               # Frontend — Vite + React 19 + React Router v7
 ├── api/               # Backend  — Hono on Cloudflare Workers + D1
-├── extension/         # Browser extension
+├── extension/         # VS Code extension
 ├── middleware-node/   # Node.js SDK
 ├── middleware-python/ # Python SDK
 └── docs/

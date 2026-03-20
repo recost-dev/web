@@ -59,4 +59,4 @@ src/
 
 ## Auth
 
-The app uses Google OAuth via the recost API. After login, a JWT is stored in `localStorage` as `ecoapi_token` and sent as `Authorization: Bearer <token>` on every request. On 401, the token is cleared and the user is redirected to `/login`.
+The app uses Google OAuth via the ReCost API. After login, a JWT is stored in `localStorage` as `ecoapi_token` and sent as `Authorization: Bearer <token>` on every request. On 401, the token is cleared and the user is redirected to `/login`.
