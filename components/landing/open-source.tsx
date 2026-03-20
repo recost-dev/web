@@ -45,7 +45,7 @@ export function OpenSourceSection() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium text-[#fafafa]">ecoapi-dev/recost-app</span>
+              <span className="font-medium text-[#fafafa]">recost-dev/recost-app</span>
             </a>
 
             <div className="flex items-center gap-4">

@@ -71,7 +71,7 @@ export default function Login() {
 
         {/* Google Sign-in button */}
         <a
-          href={`${import.meta.env.VITE_API_URL ?? 'https://api.ecoapi.dev'}/auth/google`}
+          href={`${import.meta.env.VITE_API_URL ?? 'https://api.recost.dev'}/auth/google`}
           className="group relative w-full flex items-center justify-center gap-3 px-6 py-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-200 cursor-pointer"
         >
           {/* Google icon */}

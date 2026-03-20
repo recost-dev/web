@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL ?? 'https://api.ecoapi.dev';
+const BASE = import.meta.env.VITE_API_URL ?? 'https://api.recost.dev';
 
 let isRedirectingToLogin = false;
 

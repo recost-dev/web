@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setToken(activeToken);
 
-    const apiBase = import.meta.env.VITE_API_URL ?? 'https://api.ecoapi.dev';
+    const apiBase = import.meta.env.VITE_API_URL ?? 'https://api.recost.dev';
     fetch(`${apiBase}/auth/me`, {
       headers: { Authorization: `Bearer ${activeToken}` },
     })
