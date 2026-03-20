@@ -1,4 +1,3 @@
-import { Star, GitFork } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export function OpenSourceSection() {
@@ -25,8 +24,8 @@ export function OpenSourceSection() {
             Recost SDKs are AGPL licensed. Use them in production, fork them, contribute back. No vendor lock-in.
           </p>
 
-          {/* GitHub Stats */}
-          <div className="mt-10 flex flex-col items-center gap-6 sm:flex-row">
+          {/* GitHub Button */}
+          <div className="mt-10 flex justify-center">
             <a
               href="https://github.com/recost-dev"
               target="_blank"
@@ -47,17 +46,6 @@ export function OpenSourceSection() {
               </svg>
               <span className="font-medium text-[#fafafa]">recost-dev/</span>
             </a>
-
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-[#a3a3a3]">
-                <Star className="h-4 w-4 text-[#f59e0b]" />
-                <span className="font-mono text-sm">2.4k</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-[#a3a3a3]">
-                <GitFork className="h-4 w-4" />
-                <span className="font-mono text-sm">312</span>
-              </div>
-            </div>
           </div>
 
           {/* Supported languages */}
