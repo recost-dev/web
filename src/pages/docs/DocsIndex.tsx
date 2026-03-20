@@ -5,13 +5,13 @@ import { Code2, PuzzleIcon, ArrowRight, BookOpen, Terminal, Zap } from 'lucide-r
 
 export default function DocsPage() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
+    <main className="relative min-h-screen bg-[#0a0a0a]">
+      <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 animated-gradient pointer-events-none" />
       <Navigation />
 
       {/* Hero */}
       <section className="relative pt-32 pb-16">
-        <div className="absolute inset-0 dot-grid opacity-40" />
-        <div className="absolute inset-0 animated-gradient" />
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm">
             <BookOpen className="h-3.5 w-3.5 text-[#34d399]" />

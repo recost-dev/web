@@ -84,13 +84,13 @@ function Section({
 
 export default function About() {
   return (
-    <main className="min-h-screen bg-[#0a0a0a]">
+    <main className="relative min-h-screen bg-[#0a0a0a]">
+      <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 animated-gradient pointer-events-none" />
       <Navigation />
 
       {/* Hero */}
       <section className="relative pt-32 pb-16">
-        <div className="absolute inset-0 dot-grid opacity-40" />
-        <div className="absolute inset-0 animated-gradient" />
         <Motion.div {...FADE(0)} className="relative mx-auto max-w-5xl px-6 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance">
             About <span className="text-[#34d399]">Recost</span>
