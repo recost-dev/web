@@ -14,7 +14,7 @@ export function OpenSourceSection() {
             variant="outline" 
             className="mb-6 border-[#34d399]/30 bg-[#34d399]/10 text-[#34d399] px-4 py-1"
           >
-            MIT Licensed
+            AGPL Licensed
           </Badge>
 
           {/* Headline */}
@@ -22,7 +22,7 @@ export function OpenSourceSection() {
             Open source. Free forever.
           </h2>
           <p className="mt-4 max-w-xl text-lg text-[#a3a3a3]">
-            Recost SDKs are MIT licensed. Use them in production, fork them, contribute back. No vendor lock-in.
+            Recost SDKs are AGPL licensed. Use them in production, fork them, contribute back. No vendor lock-in.
           </p>
 
           {/* GitHub Stats */}
@@ -45,7 +45,7 @@ export function OpenSourceSection() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium text-[#fafafa]">recost-dev/recost-app</span>
+              <span className="font-medium text-[#fafafa]">recost-dev/</span>
             </a>
 
             <div className="flex items-center gap-4">
@@ -62,7 +62,7 @@ export function OpenSourceSection() {
 
           {/* Supported languages */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-            {["TypeScript", "Python", "Go", "Rust"].map((lang) => (
+            {["TypeScript"].map((lang) => (
               <span
                 key={lang}
                 className="rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-sm text-[#a3a3a3]"

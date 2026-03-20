@@ -1,20 +1,10 @@
 import { Link, useParams } from 'react-router';
 import { motion as Motion } from 'motion/react';
-import {
-  ArrowLeft,
-  FolderKanban,
-  Layers,
-  DollarSign,
-  Zap,
-  AlertTriangle,
-  RefreshCw,
-  Clock,
-} from 'lucide-react';
+import { ArrowLeft, FolderKanban, Layers, DollarSign, Zap, AlertTriangle, RefreshCw, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/src/lib/api-client';
-import { galaxySunsetTheme } from '@/src/lib/themes';
 
-const accent = galaxySunsetTheme.btnGradient[0];
+const accent = '#34d399';
 
 const FADE = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -55,14 +45,14 @@ function fmtCost(n: number) {
 
 function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center rounded-2xl" style={{ background: 'rgba(248,113,113,0.04)', border: '1px solid rgba(248,113,113,0.15)' }}>
+    <div className="flex flex-col items-center justify-center py-20 text-center rounded-xl" style={{ background: 'rgba(248,113,113,0.04)', border: '1px solid rgba(248,113,113,0.15)' }}>
       <AlertTriangle className="w-6 h-6 mb-3" style={{ color: '#f87171' }} />
-      <p className="text-[14px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>{message}</p>
-      <p className="text-[13px] mb-5" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>Check your connection and try again.</p>
+      <p className="text-sm font-semibold text-[#fafafa] mb-1">{message}</p>
+      <p className="text-sm text-[#737373] mb-5">Check your connection and try again.</p>
       <button
         onClick={onRetry}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] transition-all cursor-pointer"
-        style={{ fontFamily: "'Inter', sans-serif", background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}
+        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all cursor-pointer"
+        style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}
       >
         <RefreshCw className="w-3.5 h-3.5" />
         Retry
@@ -88,15 +78,14 @@ export default function ProjectDetail() {
   });
 
   return (
-    <div className="min-h-full flex flex-col items-center px-6 md:px-10 pb-10 dashboard-page" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="w-full max-w-2xl">
+    <div className="min-h-full">
+      <div className="max-w-5xl mx-auto px-6 md:px-10 pt-36 pb-24">
 
         {/* Back link */}
-        <Motion.div {...FADE(0)} className="mb-6">
+        <Motion.div {...FADE(0)} className="mb-8">
           <Link
             to="/dashboard/projects"
-            className="inline-flex items-center gap-2 text-[13px] transition-colors hover:text-white/70"
-            style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}
+            className="inline-flex items-center gap-2 text-sm transition-colors text-[#525252] hover:text-[#a3a3a3]"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             All Projects
@@ -106,24 +95,24 @@ export default function ProjectDetail() {
         {/* Project header */}
         {projectLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent}44`, borderTopColor: accent }} />
+            <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: `${accent}33`, borderTopColor: accent }} />
           </div>
         ) : projectError ? (
           <Motion.div {...FADE(0.05)}>
             <ErrorState message="Failed to load project" onRetry={() => refetchProject()} />
           </Motion.div>
         ) : project ? (
-          <Motion.div {...FADE(0.05)} className="mb-8">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] uppercase tracking-[0.15em]" style={{ fontFamily: "'JetBrains Mono', monospace", color: accent }}>Project</span>
+          <Motion.div {...FADE(0.05)} className="mb-10">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs uppercase tracking-[0.15em] text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Project</span>
             </div>
-            <h1 className="text-[28px] text-white" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, lineHeight: 1.1 }}>{project.name}</h1>
+            <h1 className="text-3xl font-bold text-[#fafafa]">{project.name}</h1>
             {project.description && (
-              <p className="mt-1 text-[13px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>{project.description}</p>
+              <p className="mt-2 text-sm text-[#737373]">{project.description}</p>
             )}
-            <div className="flex items-center gap-2 mt-2">
-              <Clock className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
-              <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.25)', fontFamily: "'JetBrains Mono', monospace" }}>
+            <div className="flex items-center gap-2 mt-3">
+              <Clock className="w-3 h-3 text-[#525252]" />
+              <span className="text-xs text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>
                 Created {fmt(project.createdAt)}
               </span>
             </div>
@@ -131,16 +120,14 @@ export default function ProjectDetail() {
         ) : null}
 
         {/* Scans section */}
-        <Motion.div {...FADE(0.1)}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] uppercase tracking-[0.15em]" style={{ fontFamily: "'JetBrains Mono', monospace", color: 'rgba(255,255,255,0.3)' }}>Scans</span>
-          </div>
-          <h2 className="text-[18px] text-white mb-4" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>Scan History</h2>
+        <Motion.div {...FADE(0.1)} className="mb-5">
+          <p className="text-xs uppercase tracking-[0.15em] mb-2 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Scans</p>
+          <h2 className="text-xl font-bold text-[#fafafa]">Scan History</h2>
         </Motion.div>
 
         {scansLoading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: `${accent}44`, borderTopColor: accent }} />
+            <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: `${accent}33`, borderTopColor: accent }} />
           </div>
         ) : scansError ? (
           <Motion.div {...FADE(0.12)}>
@@ -149,14 +136,14 @@ export default function ProjectDetail() {
         ) : scans.length === 0 ? (
           <Motion.div
             {...FADE(0.12)}
-            className="flex flex-col items-center justify-center py-20 text-center rounded-2xl"
-            style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}
+            className="flex flex-col items-center justify-center py-20 text-center rounded-xl"
+            style={{ background: '#111111', border: '1px solid #262626' }}
           >
-            <div className="p-4 rounded-2xl mb-4" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
+            <div className="p-4 rounded-xl mb-4" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
               <Layers className="w-6 h-6" style={{ color: accent }} />
             </div>
-            <p className="text-[15px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>No scans yet</p>
-            <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: "'Inter', sans-serif" }}>Submit a scan via the API to see results here.</p>
+            <p className="text-[15px] font-semibold text-[#fafafa] mb-1">No scans yet</p>
+            <p className="text-sm text-[#737373]">Submit a scan via the API to see results here.</p>
           </Motion.div>
         ) : (
           <div className="space-y-3">
@@ -164,27 +151,27 @@ export default function ProjectDetail() {
               <Motion.div
                 key={scan.id}
                 {...FADE(i * 0.05)}
-                className="rounded-2xl backdrop-blur-xl"
-                style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.07)' }}
+                className="rounded-xl overflow-hidden"
+                style={{ background: '#111111', border: '1px solid #262626' }}
               >
-                <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #1e1e1e' }}>
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl flex-shrink-0" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>
+                    <div className="p-2 rounded-lg flex-shrink-0" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>
                       <Layers className="w-3.5 h-3.5" style={{ color: accent }} />
                     </div>
                     <div>
-                      <p className="text-[13px] text-white font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>Scan</p>
-                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.28)', fontFamily: "'JetBrains Mono', monospace" }}>{fmt(scan.created_at)}</p>
+                      <p className="text-sm font-semibold text-[#fafafa]">Scan</p>
+                      <p className="text-xs text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{fmt(scan.created_at)}</p>
                     </div>
                   </div>
                   {scan.summary?.highSeverityCount > 0 && (
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg" style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md" style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)' }}>
                       <AlertTriangle className="w-3 h-3" style={{ color: '#f87171' }} />
-                      <span className="text-[11px]" style={{ color: '#f87171', fontFamily: "'JetBrains Mono', monospace" }}>{scan.summary.highSeverityCount} high</span>
+                      <span className="text-xs text-[#f87171]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{scan.summary.highSeverityCount} high</span>
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-3 divide-x" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                <div className="grid grid-cols-3 divide-x divide-[#1e1e1e]">
                   {[
                     { icon: FolderKanban, label: 'Endpoints', value: scan.summary?.totalEndpoints ?? '—' },
                     { icon: DollarSign, label: 'Monthly cost', value: scan.summary?.totalMonthlyCost != null ? fmtCost(scan.summary.totalMonthlyCost) : '—' },
@@ -192,10 +179,10 @@ export default function ProjectDetail() {
                   ].map(({ icon: Icon, label, value }) => (
                     <div key={label} className="px-5 py-4">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Icon className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.3)' }} />
-                        <p className="text-[10px] uppercase tracking-[0.1em]" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>
+                        <Icon className="w-3 h-3 text-[#525252]" />
+                        <p className="text-xs uppercase tracking-[0.1em] text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{label}</p>
                       </div>
-                      <p className="text-[15px] text-white" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>{value}</p>
+                      <p className="text-base font-bold text-[#fafafa]">{value}</p>
                     </div>
                   ))}
                 </div>

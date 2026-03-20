@@ -34,10 +34,26 @@ function isTokenExpired(token: string): boolean {
   }
 }
 
+const DEV_USER: User = {
+  id: 'dev-user',
+  email: 'dev@localhost',
+  name: 'Dev User',
+  avatarUrl: null,
+  createdAt: new Date().toISOString(),
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  if (import.meta.env.VITE_DEV_AUTH === 'true') {
+    return (
+      <AuthContext.Provider value={{ isAuthenticated: true, user: DEV_USER, token: 'dev-token', logout: () => {}, isLoading: false }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

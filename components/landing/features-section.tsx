@@ -47,17 +47,28 @@ export function FeaturesSection() {
 
         {/* Features Grid */}
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <div 
+          {features.slice(0, 3).map((feature) => (
+            <div
               key={feature.title}
               className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#34d399]/30 hover:bg-[#111111]"
             >
-              {/* Icon */}
               <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#34d399]/10">
                 <feature.icon className="h-5 w-5 text-[#34d399]" />
               </div>
-
-              {/* Content */}
+              <h3 className="text-lg font-semibold text-[#fafafa]">{feature.title}</h3>
+              <p className="mt-2 text-sm text-[#a3a3a3] leading-relaxed">{feature.description}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 lg:max-w-2xl lg:mx-auto">
+          {features.slice(3).map((feature) => (
+            <div
+              key={feature.title}
+              className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#34d399]/30 hover:bg-[#111111]"
+            >
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#34d399]/10">
+                <feature.icon className="h-5 w-5 text-[#34d399]" />
+              </div>
               <h3 className="text-lg font-semibold text-[#fafafa]">{feature.title}</h3>
               <p className="mt-2 text-sm text-[#a3a3a3] leading-relaxed">{feature.description}</p>
             </div>
