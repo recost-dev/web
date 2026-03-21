@@ -11,19 +11,13 @@ const footerLinks = {
     { name: "Documentation", href: "/docs" },
     { name: "API Reference", href: "/docs/api" },
     { name: "Examples", href: "/docs/examples" },
-    { name: "Blog", href: "/blog" },
   ],
   Company: [
     { name: "About", href: "/about" },
-    { name: "Careers", href: "/careers" },
     { name: "Privacy", href: "/privacy" },
-    { name: "Terms", href: "/terms" },
   ],
   Connect: [
     { name: "GitHub", href: "https://github.com/recost-dev" },
-    { name: "Twitter", href: "https://twitter.com/recost" },
-    { name: "Discord", href: "/discord" },
-    { name: "Email", href: "mailto:hello@recost.dev" },
   ],
 }
 

@@ -4,7 +4,6 @@ import { HowItWorks } from "@/components/landing/how-it-works"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { DashboardPreview } from "@/components/landing/dashboard-preview"
 import { OpenSourceSection } from "@/components/landing/open-source"
-import { FooterCTA } from "@/components/landing/footer-cta"
 import { Footer } from "@/components/landing/footer"
 
 export default function Home() {
@@ -16,8 +15,7 @@ export default function Home() {
       <FeaturesSection />
       <DashboardPreview />
       <OpenSourceSection />
-      <FooterCTA />
-      <Footer />
+<Footer />
     </main>
   )
 }
