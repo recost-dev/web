@@ -79,8 +79,12 @@ export default function DashboardLayout() {
 
       {/* Top header */}
       <header className="flex-shrink-0 flex items-center px-6 h-14" style={{ borderBottom: '1px solid #1e1e1e', background: '#0d0d0d' }}>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <span className="font-mono text-sm font-bold tracking-tight text-[#fafafa] hover:opacity-75 transition-opacity">recost</span>
+        <Link to="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity" style={{ textDecoration: 'none' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="20" height="20">
+            <path d="M55 85 L240 85 L240 140 L105 140 L105 315 L55 315 Z" fill="none" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
+            <path d="M345 315 L160 315 L160 260 L295 260 L295 85 L345 85 Z" fill="#fafafa" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
+          </svg>
+          <span className="font-mono text-sm font-bold tracking-tight text-[#fafafa]">recost</span>
         </Link>
         {segments.map((seg, i) => (
           <span key={i} className="flex items-center gap-2.5">

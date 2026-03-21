@@ -12,7 +12,11 @@ export function Navigation() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 w-[85.7%] items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="font-mono text-xl font-bold tracking-tight text-[#fafafa]">
+        <Link to="/" className="flex items-center gap-2 font-mono text-xl font-bold tracking-tight text-[#fafafa] hover:opacity-75 transition-opacity">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="22" height="22">
+            <path d="M55 85 L240 85 L240 140 L105 140 L105 315 L55 315 Z" fill="none" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
+            <path d="M345 315 L160 315 L160 260 L295 260 L295 85 L345 85 Z" fill="#fafafa" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
+          </svg>
           recost
         </Link>
 
