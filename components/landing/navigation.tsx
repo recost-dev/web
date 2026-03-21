@@ -1,14 +1,24 @@
-import { Link } from "react-router"
+import { Link, useLocation } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "@/src/lib/auth-context"
+import { SignInModal } from "./sign-in-modal"
 
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [signInOpen, setSignInOpen] = useState(false)
   const { isAuthenticated } = useAuth()
+  const location = useLocation()
+
+  useEffect(() => {
+    if ((location.state as { openSignIn?: boolean })?.openSignIn) {
+      setSignInOpen(true)
+    }
+  }, [location.state])
 
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md">
       <nav className="mx-auto flex h-16 w-[85.7%] items-center justify-between">
         {/* Logo */}
@@ -58,15 +68,15 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 className="text-sm text-[#a3a3a3] hover:text-[#fafafa] hover:bg-[#1a1a1a]"
-                asChild
+                onClick={() => setSignInOpen(true)}
               >
-                <Link to="/login">Sign in</Link>
+                Sign in
               </Button>
               <Button
                 className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
-                asChild
+                onClick={() => setSignInOpen(true)}
               >
-                <Link to="/login">Get started</Link>
+                Get started
               </Button>
             </>
           )}
@@ -122,15 +132,15 @@ export function Navigation() {
                   <Button
                     variant="ghost"
                     className="w-full justify-center text-sm text-[#a3a3a3] hover:text-[#fafafa] hover:bg-[#1a1a1a]"
-                    asChild
+                    onClick={() => { setMobileMenuOpen(false); setSignInOpen(true) }}
                   >
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
+                    Sign in
                   </Button>
                   <Button
                     className="w-full bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
-                    asChild
+                    onClick={() => { setMobileMenuOpen(false); setSignInOpen(true) }}
                   >
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Get started</Link>
+                    Get started
                   </Button>
                 </>
               )}
@@ -139,5 +149,8 @@ export function Navigation() {
         </div>
       )}
     </header>
+
+    <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
+    </>
   )
 }
