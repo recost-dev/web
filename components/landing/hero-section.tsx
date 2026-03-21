@@ -1,6 +1,7 @@
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { CodeBlock } from "./code-block"
+import { WaitlistModal } from "./waitlist-modal"
 
 export function HeroSection() {
   return (
@@ -33,13 +34,14 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Button 
-              size="lg"
-              className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium px-8 glow-green"
-              asChild
-            >
-              <Link to="/login">Get started free</Link>
-            </Button>
+            <WaitlistModal>
+              <Button
+                size="lg"
+                className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium px-8 glow-green"
+              >
+                Join waitlist
+              </Button>
+            </WaitlistModal>
             <Button 
               size="lg"
               variant="outline"
