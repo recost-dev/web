@@ -1,7 +1,7 @@
 import { Link } from "react-router"
 import { Button } from "@/components/ui/button"
 import { CodeBlock } from "./code-block"
-import { WaitlistModal } from "./waitlist-modal"
+import { MailingListModal } from "./mailing-list-modal"
 import { motion as Motion, useReducedMotion } from "motion/react"
 
 const HEADLINE_WORDS = [
@@ -90,14 +90,14 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <Motion.div {...fade(0.68)} className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <WaitlistModal>
+            <MailingListModal>
               <Button
                 size="lg"
                 className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium px-8 glow-amber"
               >
-                Join waitlist
+                Get Updates
               </Button>
-            </WaitlistModal>
+            </MailingListModal>
             <Button
               size="lg"
               variant="outline"
