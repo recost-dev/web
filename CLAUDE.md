@@ -63,7 +63,7 @@ The api-client also uses `VITE_API_URL` (default: `https://api.recost.dev`) to s
 - Status only (live/beta pulse dots, copied state): `#22c55e` (green), used sparingly
 - Destructive: `#ef4444` (red)
 
-**Typography:** Geist (sans-serif), Geist Mono (monospace)
+**Typography:** Plus Jakarta Sans (sans-serif), Geist Mono (monospace)
 
 **Layout:**
 - Dashboard pages: no `max-w-*` width constraints — go wide

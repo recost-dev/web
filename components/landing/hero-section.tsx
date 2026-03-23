@@ -37,7 +37,7 @@ export function HeroSection() {
             <WaitlistModal>
               <Button
                 size="lg"
-                className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium px-8 glow-green"
+                className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium px-8 glow-amber"
               >
                 Join waitlist
               </Button>

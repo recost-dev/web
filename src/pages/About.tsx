@@ -50,7 +50,7 @@ function Section({
       {/* Badge */}
       <div className="inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#0a0a0a] px-3 py-1 mb-4">
         <Icon size={12} className="text-[#d4900a]" />
-        <span className="text-xs text-[#a3a3a3] font-mono">{badge}</span>
+        <span className="text-xs text-[#a3a3a3] tracking-wide">{badge}</span>
       </div>
 
       {/* Title */}
@@ -72,7 +72,7 @@ function Section({
               <FIcon size={13} style={{ color: ACCENT }} />
             </div>
             <div>
-              <p className="text-xs text-[#fafafa] mb-0.5 font-mono">{label}</p>
+              <p className="text-xs text-[#fafafa] mb-0.5 font-medium">{label}</p>
               <p className="text-xs text-[#737373]">{desc}</p>
             </div>
           </div>

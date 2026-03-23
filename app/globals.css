@@ -41,7 +41,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-sans: 'Plus Jakarta Sans Variable', sans-serif;
   --font-mono: 'Geist Mono Variable', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);

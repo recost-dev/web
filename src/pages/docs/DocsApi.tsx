@@ -36,7 +36,7 @@ function CodeBlock({ children }: { children: string }) {
   return (
     <pre
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '11px',
         lineHeight: 1.7,
         backgroundColor: 'rgba(0,0,0,0.6)',
@@ -69,7 +69,7 @@ function MethodBadge({ method }: { method: string }) {
   return (
     <span
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '11px',
         fontWeight: 700,
         color: c.text,
@@ -94,7 +94,7 @@ function StatusBadge({ code, label }: { code: string; label: string }) {
   return (
     <span
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '11px',
         color,
         backgroundColor: isOk ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)',
@@ -115,7 +115,7 @@ function SubHeading({ children }: { children: React.ReactNode }) {
   return (
     <p
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '10px',
         letterSpacing: '0.12em',
         textTransform: 'uppercase',
@@ -145,7 +145,7 @@ function FieldTable({ fields }: { fields: Field[] }) {
                 style={{
                   textAlign: 'left',
                   padding: '6px 10px',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Geist Mono Variable', monospace",
                   fontSize: '10px',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -161,10 +161,10 @@ function FieldTable({ fields }: { fields: Field[] }) {
         <tbody>
           {fields.map((f) => (
             <tr key={f.name} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#60a5fa' }}>{f.name}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#fbbf24' }}>{f.type}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: f.required ? '#d4900a' : 'rgba(255,255,255,0.3)' }}>{f.required ? 'yes' : 'no'}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'Inter', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{f.desc}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: '#60a5fa' }}>{f.name}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: '#fbbf24' }}>{f.type}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: f.required ? '#d4900a' : 'rgba(255,255,255,0.3)' }}>{f.required ? 'yes' : 'no'}</td>
+              <td style={{ padding: '7px 10px', fontFamily: 'inherit', fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{f.desc}</td>
             </tr>
           ))}
         </tbody>
@@ -187,7 +187,7 @@ function DataTable({ rows, headers }: { rows: string[][]; headers: string[] }) {
                 style={{
                   textAlign: 'left',
                   padding: '6px 10px',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Geist Mono Variable', monospace",
                   fontSize: '10px',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -208,7 +208,7 @@ function DataTable({ rows, headers }: { rows: string[][]; headers: string[] }) {
                   key={j}
                   style={{
                     padding: '7px 10px',
-                    fontFamily: j === 0 ? "'JetBrains Mono', monospace" : "'Inter', sans-serif",
+                    fontFamily: j === 0 ? "'Geist Mono Variable', monospace" : 'inherit',
                     fontSize: j === 0 ? '11px' : '12px',
                     color: j === 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.45)',
                   }}
@@ -252,10 +252,10 @@ function SectionCard({
     >
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: 'inherit', fontWeight: 700 }}>
             {title}
           </h2>
-          <p className="text-[13px]" style={{ color: '#d4900a', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
+          <p className="text-[13px]" style={{ color: '#d4900a', fontFamily: 'inherit', fontWeight: 500 }}>
             {subtitle}
           </p>
         </div>
@@ -265,7 +265,7 @@ function SectionCard({
             background: `${'#d4900a'}22`,
             color: '#d4900a',
             border: `1px solid ${'#d4900a'}44`,
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "'Geist Mono Variable', monospace",
           }}
         >
           <Icon size={12} />
@@ -298,7 +298,7 @@ function SectionLabel({
           background: `${'#d4900a'}18`,
           color: '#d4900a',
           border: `1px solid ${'#d4900a'}33`,
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: "'Geist Mono Variable', monospace",
         }}
       >
         <Icon size={12} />
@@ -350,7 +350,7 @@ function EndpointCard({
         <MethodBadge method={method} />
         <code
           style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "'Geist Mono Variable', monospace",
             fontSize: '14px',
             color: 'rgba(255,255,255,0.9)',
             wordBreak: 'break-all',
@@ -361,7 +361,7 @@ function EndpointCard({
       </div>
 
       {/* Description */}
-      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: '4px' }}>
+      <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '4px' }}>
         {description}
       </p>
 
@@ -457,7 +457,7 @@ function TOCSidebar({ activeSection }: { activeSection: string }) {
           <div key={section.label}>
             <p
               style={{
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "'Geist Mono Variable', monospace",
                 fontSize: '14px',
                 fontWeight: 600,
                 letterSpacing: '0.1em',
@@ -476,7 +476,7 @@ function TOCSidebar({ activeSection }: { activeSection: string }) {
                   key={id}
                   href={`#${id}`}
                   style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'inherit',
                     fontSize: isActive ? '16px' : '15px',
                     fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.3)',
@@ -565,12 +565,12 @@ export default function Docs() {
             <Motion.div {...FADE(0)} className="px-4 pt-14 pb-6">
               <h1
                 className="text-[40px] md:text-[52px] text-white mb-3"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 900, lineHeight: 1.05 }}
+                style={{ fontFamily: 'inherit', fontWeight: 900, lineHeight: 1.05 }}
               >
                 API Docs
               </h1>
               <p
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}
+                style={{ fontFamily: 'inherit', fontSize: '16px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}
               >
                 Complete reference for every EcoApi endpoint: request shapes, response formats, rate limits, and curl examples.
               </p>
@@ -578,13 +578,13 @@ export default function Docs() {
 
             {/* ── 1. Overview ─────────────────────────────────────── */}
               <SectionCard id="overview" icon={Zap} badge="Overview" title="What is EcoApi?" subtitle="Analyze · Estimate · Optimize · Sustainability" delay={0.05}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
                   EcoApi is a REST API that turns parsed API call data from your codebase into actionable diagnostics.
                   Send a list of outbound HTTP calls found in your source files and the engine detects inefficiencies,
                   estimates monthly costs per provider, surfaces N+1 and rate-limit hotspots, and generates code-level
                   optimization suggestions with estimated savings.
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
                   EcoApi also computes <strong style={{ color: 'rgba(255,255,255,0.8)' }}>sustainability stats</strong>: electricity (kWh),
                   water (L), and CO₂ (g) footprint estimated from API call volume, with an AI vs non-AI breakdown, so your
                   team can measure the environmental cost of every API call.
@@ -604,21 +604,21 @@ export default function Docs() {
                       key={label}
                       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px 14px' }}
                     >
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '4px' }}>{label}</p>
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.75)' }}>{value}</p>
+                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '4px' }}>{label}</p>
+                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.75)' }}>{value}</p>
                     </div>
                   ))}
                 </div>
                 <SubHeading>Authentication</SubHeading>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
-                  All requests to protected endpoints require a Bearer token in the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>Authorization</code> header:
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+                  All requests to protected endpoints require a Bearer token in the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px' }}>Authorization</code> header:
                 </p>
                 <CodeBlock>{`Authorization: Bearer eco-xxxxxxxxxxxx`}</CodeBlock>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.6, marginTop: '10px', marginBottom: '16px' }}>
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.7, marginTop: '10px', marginBottom: '16px' }}>
                   Generate your API key in the{' '}
                   <Link
                     href="/dashboard/account"
-                    style={{ color: '#4EAA57', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}
+                    style={{ color: '#4EAA57', textDecoration: 'underline', fontFamily: 'inherit' }}
                   >
                     dashboard → Account
                   </Link>
@@ -633,8 +633,8 @@ npx wrangler kv namespace create rate-limit
 # paste returned id + preview_id into wrangler.toml [[kv_namespaces]]
 npm run db:migrate:local                # apply schema + seed data
 npm run dev                             # → http://localhost:8787`}</CodeBlock>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '10px', lineHeight: 1.6 }}>
-                  All responses carry CORS headers and an <code style={{ fontFamily: "'JetBrains Mono', monospace" }}>X-Request-Id</code> header.
+                <p style={{ fontFamily: 'inherit', fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '10px', lineHeight: 1.6 }}>
+                  All responses carry CORS headers and an <code style={{ fontFamily: "'Geist Mono Variable', monospace" }}>X-Request-Id</code> header.
                 </p>
               </SectionCard>
 
@@ -1127,7 +1127,7 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
 
               {/* Energy constants table */}
               <Motion.div {...FADE(0.35)} className="rounded-2xl border p-6 backdrop-blur-xl" style={{ backgroundColor: 'rgba(0,0,0,0.4)', borderColor: 'rgba(255,255,255,0.08)' }}>
-                <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }}>
+                <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }}>
                   Energy constants: api/src/config/sustainability.ts
                 </p>
                 <DataTable
@@ -1141,7 +1141,7 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
                     ['SendGrid/Internal', '0.000005',  'No'],
                   ]}
                 />
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '12px', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'inherit', fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '12px', lineHeight: 1.6 }}>
                   Water intensity: <strong style={{ color: 'rgba(255,255,255,0.5)' }}>1.8 L/kWh</strong> (Microsoft Azure data center disclosures) ·
                   CO₂ intensity: <strong style={{ color: 'rgba(255,255,255,0.5)' }}>386 g/kWh</strong> (US EPA eGRID 2022 national average)
                 </p>
@@ -1221,8 +1221,8 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
 
               {/* ── 13. Request Format ──────────────────────────────── */}
               <SectionCard id="request-format" icon={Code2} badge="Request Format" title="ApiCall Schema" subtitle="POST /projects/:id/scans → body.apiCalls[]" delay={0.41}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
-                  Each element of the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px' }}>apiCalls</code> array represents one outbound HTTP call found in source code.
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
+                  Each element of the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px' }}>apiCalls</code> array represents one outbound HTTP call found in source code.
                   The scanner (extension or CI script) extracts these and POSTs them to EcoApi.
                 </p>
                 <FieldTable fields={[
@@ -1267,9 +1267,9 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
                       key={stat}
                       style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '14px' }}
                     >
-                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '26px', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>{stat}</p>
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '4px 0' }}>{label}</p>
-                      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>{desc}</p>
+                      <p style={{ fontFamily: 'inherit', fontSize: '26px', fontWeight: 700, color: '#fff', lineHeight: 1.1 }}>{stat}</p>
+                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '4px 0' }}>{label}</p>
+                      <p style={{ fontFamily: 'inherit', fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>{desc}</p>
                     </div>
                   ))}
                 </div>
@@ -1330,9 +1330,9 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
 
               {/* ── 16. Example Workflow ────────────────────────────── */}
               <SectionCard id="workflow" icon={List} badge="Example Workflow" title="End-to-End curl Workflow" subtitle="Create → Scan → Endpoints → Suggestions → Cost → Sustainability" delay={0.44}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: '14px' }}>
-                  Replace <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px' }}>{'{projectId}'}</code> with
-                  the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px' }}>id</code> returned by step 1.
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '14px' }}>
+                  Replace <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>{'{projectId}'}</code> with
+                  the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>id</code> returned by step 1.
                 </p>
                 <CodeBlock>{`# 1. Create project
 curl -s -X POST https://api.recost.dev/projects \\
@@ -1369,10 +1369,10 @@ curl -s https://api.recost.dev/projects/{projectId}/sustainability`}</CodeBlock>
 
               {/* ── 17. Pricing Table ───────────────────────────────── */}
               <SectionCard id="pricing" icon={DollarSign} badge="Pricing" title="Provider Pricing" subtitle="api/src/config/pricing.ts: cost per API call" delay={0.45}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: '14px' }}>
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '14px' }}>
                   EcoApi uses these per-call costs to estimate monthly spend. Provider detection is URL keyword matching.
                   Unrecognized URLs fall back to the internal rate.
-                  Monthly cost = <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px' }}>calls_per_day × cost_per_call × 30</code>.
+                  Monthly cost = <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>calls_per_day × cost_per_call × 30</code>.
                 </p>
                 <DataTable
                   headers={['Provider', 'Cost / call (USD)', 'Detection keywords']}
@@ -1390,9 +1390,9 @@ curl -s https://api.recost.dev/projects/{projectId}/sustainability`}</CodeBlock>
 
               {/* ── 18. Frequency Heuristics ────────────────────────── */}
               <SectionCard id="frequency" icon={Cpu} badge="Frequency Heuristics" title="Frequency Heuristics" subtitle="frequency field → calls/day conversion" delay={0.46}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: '14px' }}>
-                  When the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px' }}>frequency</code> field is a keyword or
-                  <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px' }}> N/day</code> pattern, EcoApi converts it to a
+                <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '14px' }}>
+                  When the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>frequency</code> field is a keyword or
+                  <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}> N/day</code> pattern, EcoApi converts it to a
                   daily call count used for cost and sustainability calculations.
                 </p>
                 <DataTable

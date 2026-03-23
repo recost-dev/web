@@ -48,7 +48,7 @@ export default function GettingStarted() {
 
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
-          <p className="text-xs uppercase tracking-[0.15em] mb-2" style={{ color: accent, fontFamily: "'Geist Mono Variable', monospace" }}>
+          <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>
             Get Started
           </p>
           <h1 className="text-3xl font-bold text-[#fafafa]">Hey, {firstName}</h1>
@@ -68,7 +68,7 @@ export default function GettingStarted() {
                 <Icon size={16} style={{ color: accent }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs mb-1 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Step {step}</p>
+                <p className="text-xs mb-1" style={{ color: '#7a7a7a' }}>Step {step}</p>
                 <p className="text-sm font-semibold text-[#fafafa] mb-1">{title}</p>
                 <p className="text-sm text-[#737373] leading-relaxed mb-3">{body}</p>
                 <button

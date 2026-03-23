@@ -33,7 +33,7 @@ export default function DocsPage() {
 
           {/* API Docs card */}
           <Link to="/docs/api" className="group block">
-            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#d4900a]/40 hover:bg-[#111111]/80 glow-green">
+            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#d4900a]/40 hover:bg-[#111111]/80 glow-amber">
               {/* Icon */}
               <div className="mb-6 inline-flex rounded-xl border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#d4900a]/30 transition-colors duration-200">
                 <Code2 className="h-6 w-6 text-[#d4900a]" />
@@ -98,7 +98,7 @@ export default function DocsPage() {
 
         {/* Quick links strip */}
         <div className="mt-8 rounded-2xl border border-[#262626] bg-[#111111] p-6">
-          <p className="text-xs uppercase tracking-widest text-[#737373] mb-4 font-mono">Quick links</p>
+          <p className="text-xs uppercase tracking-[0.12em] text-[#737373] mb-4">Quick links</p>
           <div className="grid gap-3 sm:grid-cols-3">
             <Link
               to="/docs/api#installation"
