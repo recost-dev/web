@@ -4,8 +4,8 @@ import { Mail, Calendar, KeyRound, Copy, Check, Clock, RefreshCw, Plus, AlertTri
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/src/lib/auth-context';
 import { apiClient } from '@/src/lib/api-client';
+import { colors, accent, FADE } from '@/src/lib/tokens';
 
-const accent = '#34d399';
 const DEV = import.meta.env.VITE_DEV_AUTH === 'true';
 
 const MOCK_KEY: ApiKey = {
@@ -15,12 +15,6 @@ const MOCK_KEY: ApiKey = {
   last_used_at: '2026-03-19T08:00:00Z',
   created_at: '2026-01-15T10:00:00Z',
 };
-
-const FADE = (delay = 0) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, delay, ease: 'easeOut' as const },
-});
 
 interface ApiKey {
   id: string;
@@ -58,11 +52,12 @@ function CopyButton({ value }: { value: string }) {
   return (
     <button
       onClick={copy}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer"
+      aria-label={copied ? 'Copied' : 'Copy to clipboard'}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs transition-all cursor-pointer"
       style={{
-        background: copied ? `${accent}14` : '#0d0d0d',
-        border: `1px solid ${copied ? accent + '40' : '#262626'}`,
-        color: copied ? accent : '#737373',
+        background: copied ? colors.accentSubtle : colors.bgSubtle,
+        border: `1px solid ${copied ? colors.accentBorder : colors.borderDefault}`,
+        color: copied ? accent : colors.textMuted,
       }}
     >
       {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -142,73 +137,87 @@ export default function Account() {
 
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
-          <p className="text-xs uppercase tracking-[0.15em] mb-2" style={{ color: accent, fontFamily: "'Geist Mono Variable', monospace" }}>Settings</p>
-          <h1 className="text-3xl font-bold text-[#fafafa]">Account & API Key</h1>
+          <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>Settings</p>
+          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Account & API Key</h1>
         </Motion.div>
 
         {/* Combined card */}
         <Motion.div
           {...FADE(0.08)}
-          className="rounded-xl overflow-hidden"
-          style={{ background: '#111111', border: '1px solid #262626' }}
+          className="rounded-lg overflow-hidden"
+          style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2">
 
             {/* LEFT — Profile */}
-            <div className="flex flex-col border-b lg:border-b-0 lg:border-r border-[#1e1e1e]">
-              <div className="flex items-start gap-5 px-7 py-7 border-b border-[#1e1e1e]">
+            <div className="flex flex-col border-b lg:border-b-0 lg:border-r" style={{ borderColor: colors.borderSubtle }}>
+
+              {/* Avatar + name */}
+              <div className="flex items-start gap-5 px-7 py-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                 <div className="relative flex-shrink-0">
                   {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name ?? ''} className="w-14 h-14 rounded-xl" style={{ outline: '1px solid #262626' }} />
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name ?? ''}
+                      className="w-14 h-14 rounded-md"
+                      loading="lazy"
+                      decoding="async"
+                      style={{ outline: `1px solid ${colors.borderDefault}` }}
+                    />
                   ) : (
-                    <div className="w-14 h-14 rounded-xl flex items-center justify-center text-lg font-bold" style={{ background: `${accent}20`, color: accent }}>
+                    <div
+                      className="w-14 h-14 rounded-md flex items-center justify-center text-lg font-bold"
+                      style={{ background: colors.accentSubtle, color: accent }}
+                    >
                       {(user.name ?? user.email)[0].toUpperCase()}
                     </div>
                   )}
-                  <div className="absolute -bottom-1.5 -right-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center" style={{ background: accent, borderColor: '#111111' }}>
+                  <div
+                    className="absolute -bottom-1.5 -right-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center"
+                    style={{ background: accent, borderColor: colors.bgBase }}
+                  >
                     <div className="w-1.5 h-1.5 bg-white rounded-full" />
                   </div>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-[#fafafa]">{user.name ?? user.email}</h2>
-                  <p className="text-xs mt-1 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{user.email}</p>
+                  <h2 className="text-lg font-bold" style={{ color: colors.textPrimary }}>{user.name ?? user.email}</h2>
+                  <p className="text-xs mt-1 font-mono" style={{ color: colors.textMuted }}>{user.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 px-7 py-4 border-b border-[#1e1e1e]">
-                <div className="p-2 rounded-lg flex-shrink-0" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
-                  <Mail className="w-3.5 h-3.5" style={{ color: accent }} />
-                </div>
+              {/* Email row */}
+              <div className="flex items-center gap-4 px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" style={{ color: colors.textMuted }} />
                 <div>
-                  <p className="text-xs uppercase tracking-[0.1em] mb-0.5 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Email</p>
-                  <p className="text-sm text-[#fafafa]">{user.email}</p>
+                  <p className="text-xs uppercase tracking-[0.1em] mb-0.5" style={{ color: colors.textMuted }}>Email</p>
+                  <p className="text-sm" style={{ color: colors.textPrimary }}>{user.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 px-7 py-4 border-b border-[#1e1e1e]">
-                <div className="p-2 rounded-lg flex-shrink-0" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
-                  <Calendar className="w-3.5 h-3.5" style={{ color: accent }} />
-                </div>
+              {/* Member since row */}
+              <div className="flex items-center gap-4 px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                <Calendar className="w-3.5 h-3.5 flex-shrink-0" style={{ color: colors.textMuted }} />
                 <div>
-                  <p className="text-xs uppercase tracking-[0.1em] mb-0.5 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Member since</p>
-                  <p className="text-sm text-[#fafafa]">{fmtLong(user.createdAt)}</p>
+                  <p className="text-xs uppercase tracking-[0.1em] mb-0.5" style={{ color: colors.textMuted }}>Member since</p>
+                  <p className="text-sm" style={{ color: colors.textPrimary }}>{fmtLong(user.createdAt)}</p>
                 </div>
               </div>
 
+              {/* User ID + sign out */}
               <div className="flex-1 flex flex-col justify-end">
-                <div className="px-7 py-4 border-b border-[#1e1e1e]">
+                <div className="px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                   <div className="flex items-center justify-between w-full">
-                    <p className="text-xs uppercase tracking-[0.1em] text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>User ID</p>
-                    <code className="text-xs text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{user.id}</code>
+                    <p className="text-xs uppercase tracking-[0.1em]" style={{ color: colors.textMuted }}>User ID</p>
+                    <code className="text-xs font-mono" style={{ color: colors.textMuted }}>{user.id}</code>
                   </div>
                 </div>
                 <div className="px-7 py-4">
                   <button
                     onClick={logout}
-                    className="px-4 py-2 rounded-lg text-sm transition-all duration-200 cursor-pointer"
-                    style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.12)'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.06)'; }}
+                    className="px-4 py-2 rounded-md text-sm transition-all duration-200 cursor-pointer"
+                    style={{ background: colors.errorSubtle, border: `1px solid ${colors.errorBorder}`, color: colors.error }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.14)'; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.errorSubtle; }}
                   >
                     Sign out
                   </button>
@@ -220,76 +229,83 @@ export default function Account() {
             <div className="flex flex-col">
               {keysLoading ? (
                 <div className="flex-1 flex items-center justify-center py-16">
-                  <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: `${accent}33`, borderTopColor: accent }} />
+                  <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: colors.accentSubtle, borderTopColor: accent }} />
                 </div>
               ) : keysError ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-16 text-center px-6">
-                  <AlertTriangle className="w-5 h-5 mb-3" style={{ color: '#f87171' }} />
-                  <p className="text-sm font-semibold text-[#fafafa] mb-1">Failed to load key</p>
-                  <p className="text-xs mb-4 text-[#737373]">Check your connection and try again.</p>
-                  <button onClick={() => refetchKeys()} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm cursor-pointer" style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171' }}>
+                  <AlertTriangle className="w-5 h-5 mb-3" style={{ color: colors.error }} />
+                  <p className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>Failed to load key</p>
+                  <p className="text-xs mb-4" style={{ color: colors.textMuted }}>Check your connection and try again.</p>
+                  <button
+                    onClick={() => refetchKeys()}
+                    className="flex items-center gap-2 px-4 py-2 rounded-md text-sm cursor-pointer"
+                    style={{ background: colors.errorSubtle, border: `1px solid ${colors.errorBorder}`, color: colors.error }}
+                  >
                     <RefreshCw className="w-3.5 h-3.5" /> Retry
                   </button>
                 </div>
               ) : activeKey ? (
                 <>
-                  <div className="flex items-center gap-4 px-6 py-5 border-b border-[#1e1e1e]">
-                    <div className="p-2.5 rounded-lg flex-shrink-0" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>
-                      <KeyRound className="w-5 h-5" style={{ color: accent }} />
-                    </div>
+                  {/* Key header */}
+                  <div className="flex items-center gap-4 px-6 py-5" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                    <KeyRound className="w-4 h-4 flex-shrink-0" style={{ color: accent }} />
                     <div>
-                      <p className="text-sm font-semibold text-[#fafafa]">{activeKey.name || 'API Key'}</p>
-                      <p className="text-xs mt-0.5 text-[#737373]">Key value hidden. Rotate to generate a new one.</p>
+                      <p className="text-sm font-semibold" style={{ color: colors.textPrimary }}>{activeKey.name || 'API Key'}</p>
+                      <p className="text-xs mt-0.5" style={{ color: colors.textMuted }}>Key hidden. Rotate to generate a new one.</p>
                     </div>
                   </div>
-                  <div className="px-6 py-4 border-b border-[#1e1e1e]">
-                    <div className="flex items-center px-4 py-2.5 rounded-lg" style={{ background: '#0d0d0d', border: '1px solid #1e1e1e' }}>
-                      <code className="text-xs text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>
+
+                  {/* Masked key */}
+                  <div className="px-6 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                    <div className="flex items-center px-4 py-2.5 rounded-md" style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderSubtle}` }}>
+                      <code className="text-xs font-mono flex-1" style={{ color: colors.textMuted }}>
                         {activeKey.key_prefix}••••••••••••••••••••
                       </code>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 divide-x divide-[#1e1e1e] border-b border-[#1e1e1e]">
+
+                  {/* Created / last used */}
+                  <div className="grid grid-cols-2 divide-x" style={{ borderBottom: `1px solid ${colors.borderSubtle}`, borderColor: colors.borderSubtle }}>
                     <div className="px-6 py-4">
-                      <p className="text-xs uppercase tracking-[0.1em] mb-1 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Created</p>
-                      <p className="text-sm text-[#a3a3a3]">{fmtShort(activeKey.created_at)}</p>
+                      <p className="text-xs uppercase tracking-[0.1em] mb-1" style={{ color: colors.textMuted }}>Created</p>
+                      <p className="text-sm" style={{ color: colors.textSecondary }}>{fmtShort(activeKey.created_at)}</p>
                     </div>
                     <div className="px-6 py-4">
-                      <p className="text-xs uppercase tracking-[0.1em] mb-1 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Last used</p>
-                      <p className="flex items-center gap-1.5 text-sm text-[#a3a3a3]">
-                        <Clock className="w-3.5 h-3.5 text-[#525252]" />
+                      <p className="text-xs uppercase tracking-[0.1em] mb-1" style={{ color: colors.textMuted }}>Last used</p>
+                      <p className="flex items-center gap-1.5 text-sm" style={{ color: colors.textSecondary }}>
+                        <Clock className="w-3.5 h-3.5" style={{ color: colors.textMuted }} />
                         {fmtShort(activeKey.last_used_at)}
                       </p>
                     </div>
                   </div>
+
+                  {/* Rotate action */}
                   <div className="flex-1 flex items-end">
                     <div className="flex items-center gap-3 px-6 py-5 w-full">
                       <button
                         onClick={() => setConfirmRotate(true)}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                        style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer"
+                        style={{ background: colors.warningSubtle, border: `1px solid ${colors.warningBorder}`, color: colors.warning }}
                         onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,191,36,0.12)'; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(251,191,36,0.06)'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.warningSubtle; }}
                       >
                         <RefreshCw className="w-3.5 h-3.5" /> Rotate Key
                       </button>
-                      <p className="text-xs text-[#525252]">Invalidates the current key immediately.</p>
+                      <p className="text-xs" style={{ color: colors.textMuted }}>Invalidates the current key immediately.</p>
                     </div>
                   </div>
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center py-12 text-center px-6">
-                  <div className="p-4 rounded-xl mb-4" style={{ background: `${accent}12`, border: `1px solid ${accent}25` }}>
-                    <KeyRound className="w-6 h-6" style={{ color: accent }} />
-                  </div>
-                  <p className="text-[15px] font-semibold text-[#fafafa] mb-1">No API key yet</p>
-                  <p className="text-sm text-[#737373] mb-6">Generate a key to start authenticating requests</p>
+                  <KeyRound className="w-7 h-7 mb-4" style={{ color: colors.textMuted }} />
+                  <p className="text-[15px] font-semibold mb-1" style={{ color: colors.textPrimary }}>No API key yet</p>
+                  <p className="text-sm mb-6" style={{ color: colors.textMuted }}>Generate a key to start authenticating requests</p>
                   <button
                     onClick={() => { setShowGenerate(true); setGenerateError(''); }}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer"
-                    style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: accent }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${accent}20`; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = `${accent}14`; }}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer"
+                    style={{ background: colors.accentSubtle, border: `1px solid ${colors.accentBorder}`, color: accent }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.accentHover; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.accentSubtle; }}
                   >
                     <Plus className="w-4 h-4" /> Generate API Key
                   </button>
@@ -303,32 +319,42 @@ export default function Account() {
       {/* One-time key reveal modal */}
       <AnimatePresence>
         {showRevealModal && revealedKey && (
-          <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
-            <Motion.div initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }} transition={{ duration: 0.18 }} className="w-full max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: '#111111', border: '1px solid #262626' }}>
+          <Motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+          >
+            <Motion.div
+              role="dialog" aria-modal="true" aria-labelledby="reveal-dialog-title"
+              initial={{ opacity: 0, scale: 0.97, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }} transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-sm rounded-lg p-6 shadow-2xl"
+              style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+            >
               <div className="flex items-start gap-3 mb-5">
-                <div className="p-2 rounded-lg flex-shrink-0 mt-0.5" style={{ background: `${accent}12`, border: `1px solid ${accent}28` }}>
-                  <KeyRound className="w-4 h-4" style={{ color: accent }} />
-                </div>
+                <KeyRound className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: accent }} />
                 <div>
-                  <h2 className="text-[15px] font-bold text-[#fafafa] mb-1">Your API Key</h2>
-                  <p className="text-sm text-[#737373]">
-                    <span style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{revealedKey.name}</span>
-                  </p>
+                  <h2 id="reveal-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>Your API Key</h2>
+                  <p className="text-sm font-mono" style={{ color: colors.textMuted }}>{revealedKey.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 px-4 py-2.5 rounded-lg min-w-0" style={{ background: '#0d0d0d', border: `1px solid ${accent}30` }}>
-                  <code className="block text-xs truncate" style={{ fontFamily: "'Geist Mono Variable', monospace", color: accent }}>{revealedKey.key}</code>
+                <div className="flex-1 px-4 py-2.5 rounded-md min-w-0" style={{ background: colors.bgSubtle, border: `1px solid ${colors.accentBorder}` }}>
+                  <code className="block text-xs truncate font-mono" style={{ color: accent }}>{revealedKey.key}</code>
                 </div>
                 <CopyButton value={revealedKey.key} />
               </div>
-              <div className="flex items-start gap-2.5 px-4 py-3 rounded-lg mb-5" style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)' }}>
-                <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#fbbf24' }} />
-                <p className="text-xs leading-relaxed" style={{ color: 'rgba(251,191,36,0.85)' }}>
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-md mb-5" style={{ background: colors.warningSubtle, border: `1px solid ${colors.warningBorder}` }}>
+                <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.warning }} />
+                <p className="text-xs leading-relaxed" style={{ color: colors.warning }}>
                   This key will <strong>not be shown again</strong>. Copy it now and store it somewhere safe.
                 </p>
               </div>
-              <button onClick={dismissReveal} className="w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer" style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: accent }}>
+              <button
+                onClick={dismissReveal}
+                className="w-full px-4 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer"
+                style={{ background: colors.accentSubtle, border: `1px solid ${colors.accentBorder}`, color: accent }}
+              >
                 I've saved my key
               </button>
             </Motion.div>
@@ -339,15 +365,24 @@ export default function Account() {
       {/* Generate key modal */}
       <AnimatePresence>
         {showGenerate && (
-          <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={(e) => { if (e.target === e.currentTarget) { setShowGenerate(false); setKeyName(''); setGenerateError(''); } }}>
-            <Motion.div initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }} transition={{ duration: 0.18 }} className="w-full max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: '#111111', border: '1px solid #262626' }}>
+          <Motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setShowGenerate(false); setKeyName(''); setGenerateError(''); } }}
+          >
+            <Motion.div
+              role="dialog" aria-modal="true" aria-labelledby="generate-dialog-title"
+              initial={{ opacity: 0, scale: 0.97, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }} transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-sm rounded-lg p-6 shadow-2xl"
+              style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+            >
               <div className="flex items-start gap-3 mb-5">
-                <div className="p-2 rounded-lg flex-shrink-0 mt-0.5" style={{ background: `${accent}12`, border: `1px solid ${accent}28` }}>
-                  <KeyRound className="w-4 h-4" style={{ color: accent }} />
-                </div>
+                <KeyRound className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: accent }} />
                 <div>
-                  <h2 className="text-[15px] font-bold text-[#fafafa] mb-1">Generate API Key</h2>
-                  <p className="text-sm text-[#737373]">Give your key a name so you can identify it later.</p>
+                  <h2 id="generate-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>Generate API Key</h2>
+                  <p className="text-sm" style={{ color: colors.textMuted }}>Give your key a name so you can identify it later.</p>
                 </div>
               </div>
               <form onSubmit={(e) => { e.preventDefault(); if (keyName.trim()) generateMutation.mutate(keyName.trim()); }}>
@@ -356,15 +391,27 @@ export default function Account() {
                   value={keyName}
                   onChange={(e) => setKeyName(e.target.value.slice(0, 64))}
                   placeholder="e.g. production"
-                  className="w-full px-4 py-2.5 rounded-lg text-sm text-[#fafafa] placeholder-[#525252] focus:outline-none transition-all mb-1"
-                  style={{ background: '#0d0d0d', border: '1px solid #262626' }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = `${accent}50`; }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = '#262626'; }}
+                  className="w-full px-4 py-2.5 rounded-md text-sm placeholder-[#525252] focus:outline-none transition-all mb-1"
+                  style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textPrimary }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = colors.accentBorder; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = colors.borderDefault; }}
                 />
-                {generateError && <p className="text-xs mb-3 text-[#f87171]">{generateError}</p>}
+                {generateError && <p className="text-xs mb-3" style={{ color: colors.error }}>{generateError}</p>}
                 <div className="flex gap-3 mt-4">
-                  <button type="button" onClick={() => { setShowGenerate(false); setKeyName(''); setGenerateError(''); }} className="flex-1 px-4 py-2.5 rounded-lg text-sm transition-all cursor-pointer text-[#737373]" style={{ background: '#0d0d0d', border: '1px solid #262626' }}>Cancel</button>
-                  <button type="submit" disabled={!keyName.trim() || generateMutation.isPending} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" style={{ background: `${accent}14`, border: `1px solid ${accent}30`, color: accent }}>
+                  <button
+                    type="button"
+                    onClick={() => { setShowGenerate(false); setKeyName(''); setGenerateError(''); }}
+                    className="flex-1 px-4 py-2.5 rounded-md text-sm transition-all cursor-pointer"
+                    style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textMuted }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!keyName.trim() || generateMutation.isPending}
+                    className="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: colors.accentSubtle, border: `1px solid ${colors.accentBorder}`, color: accent }}
+                  >
                     {generateMutation.isPending ? 'Generating…' : 'Generate'}
                   </button>
                 </div>
@@ -377,21 +424,41 @@ export default function Account() {
       {/* Rotate confirmation modal */}
       <AnimatePresence>
         {confirmRotate && (
-          <Motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }} onClick={(e) => { if (e.target === e.currentTarget) { setConfirmRotate(false); setRotateError(''); } }}>
-            <Motion.div initial={{ opacity: 0, scale: 0.96, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 12 }} transition={{ duration: 0.18 }} className="w-full max-w-sm rounded-xl p-6 shadow-2xl" style={{ background: '#111111', border: '1px solid #262626' }}>
+          <Motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setConfirmRotate(false); setRotateError(''); } }}
+          >
+            <Motion.div
+              role="dialog" aria-modal="true" aria-labelledby="rotate-dialog-title"
+              initial={{ opacity: 0, scale: 0.97, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 8 }} transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-sm rounded-lg p-6 shadow-2xl"
+              style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+            >
               <div className="flex items-start gap-3 mb-5">
-                <div className="p-2 rounded-lg flex-shrink-0 mt-0.5" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
-                  <RefreshCw className="w-4 h-4" style={{ color: '#fbbf24' }} />
-                </div>
+                <RefreshCw className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.warning }} />
                 <div>
-                  <h2 className="text-[15px] font-bold text-[#fafafa] mb-1">Rotate API key?</h2>
-                  <p className="text-sm text-[#737373]">Your current key will be immediately invalidated.</p>
+                  <h2 id="rotate-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>Rotate API key?</h2>
+                  <p className="text-sm" style={{ color: colors.textMuted }}>Your current key will be immediately invalidated.</p>
                 </div>
               </div>
-              {rotateError && <p className="text-xs mb-4 text-[#f87171]">{rotateError}</p>}
+              {rotateError && <p className="text-xs mb-4" style={{ color: colors.error }}>{rotateError}</p>}
               <div className="flex gap-3">
-                <button onClick={() => { setConfirmRotate(false); setRotateError(''); }} className="flex-1 px-4 py-2.5 rounded-lg text-sm transition-all cursor-pointer text-[#737373]" style={{ background: '#0d0d0d', border: '1px solid #262626' }}>Cancel</button>
-                <button onClick={() => rotateMutation.mutate()} disabled={rotateMutation.isPending} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer disabled:opacity-40" style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', color: '#fbbf24' }}>
+                <button
+                  onClick={() => { setConfirmRotate(false); setRotateError(''); }}
+                  className="flex-1 px-4 py-2.5 rounded-md text-sm transition-all cursor-pointer"
+                  style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textMuted }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => rotateMutation.mutate()}
+                  disabled={rotateMutation.isPending}
+                  className="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer disabled:opacity-40"
+                  style={{ background: colors.warningSubtle, border: `1px solid ${colors.warningBorder}`, color: colors.warning }}
+                >
                   {rotateMutation.isPending ? 'Rotating…' : 'Rotate Key'}
                 </button>
               </div>

@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Recost Dark Theme - #0a0a0a background, #34d399 accent (tamer green) */
+/* Recost Dark Theme - #0a0a0a background, #d4900a accent (amber/gold) */
 :root {
   --background: #0a0a0a;
   --foreground: #fafafa;
@@ -11,33 +11,33 @@
   --card-foreground: #fafafa;
   --popover: #111111;
   --popover-foreground: #fafafa;
-  --primary: #34d399;
+  --primary: #d4900a;
   --primary-foreground: #0a0a0a;
   --secondary: #1a1a1a;
   --secondary-foreground: #fafafa;
   --muted: #1a1a1a;
-  --muted-foreground: #737373;
-  --accent: #34d399;
+  --muted-foreground: #7a7a7a;
+  --accent: #d4900a;
   --accent-foreground: #0a0a0a;
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
   --border: #262626;
   --input: #262626;
-  --ring: #34d399;
-  --chart-1: #34d399;
+  --ring: #d4900a;
+  --chart-1: #d4900a;
   --chart-2: #3b82f6;
   --chart-3: #f59e0b;
   --chart-4: #ef4444;
   --chart-5: #8b5cf6;
-  --radius: 0.5rem;
+  --radius: 0.375rem;
   --sidebar: #0f0f0f;
   --sidebar-foreground: #fafafa;
-  --sidebar-primary: #34d399;
+  --sidebar-primary: #d4900a;
   --sidebar-primary-foreground: #0a0a0a;
   --sidebar-accent: #1a1a1a;
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #262626;
-  --sidebar-ring: #34d399;
+  --sidebar-ring: #d4900a;
 }
 
 @theme inline {
@@ -110,15 +110,15 @@
 }
 
 /* Glow effect for accent elements */
-.glow-green {
-  box-shadow: 0 0 20px rgba(52, 211, 153, 0.15);
+.glow-amber {
+  box-shadow: 0 0 20px rgba(212, 144, 10, 0.15);
 }
 
 /* Ambient radial glow orb — large blurred circle for depth */
 .glow-orb {
   position: absolute;
   border-radius: 9999px;
-  background: rgba(52, 211, 153, 0.06);
+  background: rgba(212, 144, 10, 0.05);
   filter: blur(200px);
   pointer-events: none;
 }
@@ -127,7 +127,7 @@
 .glow-orb-sm {
   position: absolute;
   border-radius: 9999px;
-  background: rgba(52, 211, 153, 0.04);
+  background: rgba(212, 144, 10, 0.03);
   filter: blur(160px);
   pointer-events: none;
 }
@@ -145,9 +145,9 @@
 .animated-gradient {
   background: linear-gradient(
     135deg,
-    rgba(52, 211, 153, 0.05) 0%,
+    rgba(212, 144, 10, 0.04) 0%,
     transparent 50%,
-    rgba(52, 211, 153, 0.03) 100%
+    rgba(212, 144, 10, 0.02) 100%
   );
   background-size: 200% 200%;
   animation: gradient-shift 15s ease infinite;
