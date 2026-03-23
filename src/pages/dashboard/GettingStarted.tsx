@@ -56,7 +56,7 @@ export default function GettingStarted() {
         </Motion.div>
 
         {/* Steps */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {STEPS.map(({ icon: Icon, step, title, body, action, cta }, i) => (
             <Motion.div
               key={step}

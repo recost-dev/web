@@ -12,8 +12,9 @@ const apiKeys = [
 
 export function DashboardPreview() {
   return (
-    <section className="relative border-t border-[#262626] bg-[#0a0a0a]">
-      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="relative overflow-hidden border-t border-[#262626] bg-[#0a0a0a]">
+      <div className="glow-orb-sm w-[900px] h-[400px] -top-10 left-1/2 -translate-x-1/2" />
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32 relative">
         {/* Section Header */}
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">

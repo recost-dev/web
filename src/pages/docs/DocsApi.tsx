@@ -260,7 +260,7 @@ function SectionCard({
           </p>
         </div>
         <div
-          className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest flex-shrink-0"
+          className="flex items-center gap-2 px-3 py-1 rounded text-[11px] uppercase tracking-widest flex-shrink-0"
           style={{
             background: `${'#d4900a'}22`,
             color: '#d4900a',
@@ -593,7 +593,7 @@ export default function Docs() {
 
               {/* ── 2. Setup ────────────────────────────────────────── */}
               <SectionCard id="setup" icon={Server} badge="Setup" title="Base URL & Setup" subtitle="Cloudflare Workers · Hono · D1 SQLite" delay={0.07}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                <div style={{ marginBottom: '16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                   {[
                     { label: 'Local dev',     value: 'http://localhost:8787' },
                     { label: 'Production',    value: 'https://api.recost.dev' },
@@ -602,10 +602,10 @@ export default function Docs() {
                   ].map(({ label, value }) => (
                     <div
                       key={label}
-                      style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px 14px' }}
+                      style={{ display: 'flex', alignItems: 'baseline', gap: '16px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
                     >
-                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: '4px' }}>{label}</p>
-                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.75)' }}>{value}</p>
+                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', flexShrink: 0, width: '100px' }}>{label}</p>
+                      <p style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.65)' }}>{value}</p>
                     </div>
                   ))}
                 </div>

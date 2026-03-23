@@ -1,7 +1,61 @@
 import { useState } from "react"
+import { motion as Motion, useReducedMotion } from "motion/react"
 import { Check, Copy } from "lucide-react"
 
-const codeSnippet = `import { recost } from '@recost/sdk';
+type Token = { text: string; color: string }
+
+const C = {
+  white:  '#fafafa',
+  muted:  '#6b7280',
+  purple: '#c084fc',
+  blue:   '#60a5fa',
+  str:    '#a5d6ff',
+  amber:  '#d4900a',
+  yellow: '#fbbf24',
+}
+
+const CODE_LINES: (Token[] | null)[] = [
+  [
+    { text: 'import', color: C.purple }, { text: ' { ', color: C.white },
+    { text: 'recost', color: C.yellow }, { text: ' } ', color: C.white },
+    { text: 'from', color: C.purple }, { text: " '@recost/sdk'", color: C.str },
+    { text: ';', color: C.white },
+  ],
+  null,
+  [{ text: '// Wrap your HTTP client', color: C.muted }],
+  [
+    { text: 'const', color: C.purple }, { text: ' client = recost.', color: C.white },
+    { text: 'wrap', color: C.blue }, { text: '(fetch);', color: C.white },
+  ],
+  null,
+  [{ text: '// Make API calls as usual', color: C.muted }],
+  [
+    { text: 'const', color: C.purple }, { text: ' response = ', color: C.white },
+    { text: 'await', color: C.purple }, { text: " client(", color: C.white },
+    { text: "'https://api.openai.com/v1/chat/completions'", color: C.str },
+    { text: ', {', color: C.white },
+  ],
+  [{ text: "  method: ", color: C.white }, { text: "'POST'", color: C.str }, { text: ',', color: C.white }],
+  [
+    { text: "  headers: { ", color: C.white },
+    { text: "'Authorization'", color: C.str },
+    { text: ": `Bearer ${process.env.OPENAI_KEY}` },", color: C.white },
+  ],
+  [{ text: '  body: JSON.', color: C.white }, { text: 'stringify', color: C.blue }, { text: '({', color: C.white }],
+  [{ text: "    model: ", color: C.white }, { text: "'gpt-4'", color: C.str }, { text: ',', color: C.white }],
+  [
+    { text: '    messages: [{ role: ', color: C.white },
+    { text: "'user'", color: C.str }, { text: ', content: ', color: C.white },
+    { text: "'Hello!'", color: C.str }, { text: ' }]', color: C.white },
+  ],
+  [{ text: '  })', color: C.white }],
+  [{ text: '});', color: C.white }],
+  null,
+  [{ text: '// Cost telemetry is logged automatically', color: C.muted }],
+  [{ text: '// → Provider: openai | Model: gpt-4 | Cost: $0.0032', color: C.amber }],
+]
+
+const CODE_STRING = `import { recost } from '@recost/sdk';
 
 // Wrap your HTTP client
 const client = recost.wrap(fetch);
@@ -19,11 +73,23 @@ const response = await client('https://api.openai.com/v1/chat/completions', {
 // Cost telemetry is logged automatically
 // → Provider: openai | Model: gpt-4 | Cost: $0.0032`
 
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.045, delayChildren: 0.2 } },
+}
+
+const lineVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.08, ease: 'easeOut' as const } },
+}
+
 export function CodeBlock() {
   const [copied, setCopied] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(codeSnippet)
+    await navigator.clipboard.writeText(CODE_STRING)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -58,73 +124,35 @@ export function CodeBlock() {
           )}
         </button>
       </div>
-      
+
       {/* Code */}
       <div className="overflow-x-auto p-4 text-left">
-        <pre className="font-mono text-sm leading-relaxed text-left">
-          <code>
-            <span className="text-[#c084fc]">import</span>
-            <span className="text-[#fafafa]">{" { "}</span>
-            <span className="text-[#fbbf24]">recost</span>
-            <span className="text-[#fafafa]">{" } "}</span>
-            <span className="text-[#c084fc]">from</span>
-            <span className="text-[#a5d6ff]">{" '@recost/sdk'"}</span>
-            <span className="text-[#fafafa]">;</span>
-            {"\n\n"}
-            <span className="text-[#6b7280]">{"// Wrap your HTTP client"}</span>
-            {"\n"}
-            <span className="text-[#c084fc]">const</span>
-            <span className="text-[#fafafa]"> client </span>
-            <span className="text-[#c084fc]">=</span>
-            <span className="text-[#fafafa]"> recost.</span>
-            <span className="text-[#60a5fa]">wrap</span>
-            <span className="text-[#fafafa]">(fetch);</span>
-            {"\n\n"}
-            <span className="text-[#6b7280]">{"// Make API calls as usual"}</span>
-            {"\n"}
-            <span className="text-[#c084fc]">const</span>
-            <span className="text-[#fafafa]"> response </span>
-            <span className="text-[#c084fc]">=</span>
-            <span className="text-[#c084fc]"> await</span>
-            <span className="text-[#fafafa]"> client(</span>
-            <span className="text-[#a5d6ff]">{"'https://api.openai.com/v1/chat/completions'"}</span>
-            <span className="text-[#fafafa]">, {"{"}</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"  "}method: </span>
-            <span className="text-[#a5d6ff]">{"'POST'"}</span>
-            <span className="text-[#fafafa]">,</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"  "}headers: {"{ "}</span>
-            <span className="text-[#a5d6ff]">{"'Authorization'"}</span>
-            <span className="text-[#fafafa]">: </span>
-            <span className="text-[#a5d6ff]">{"`Bearer ${process.env.OPENAI_KEY}`"}</span>
-            <span className="text-[#fafafa]">{" }"}</span>
-            <span className="text-[#fafafa]">,</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"  "}body: JSON.</span>
-            <span className="text-[#60a5fa]">stringify</span>
-            <span className="text-[#fafafa]">({"{"}</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"    "}model: </span>
-            <span className="text-[#a5d6ff]">{"'gpt-4'"}</span>
-            <span className="text-[#fafafa]">,</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"    "}messages: [{"{ "}role: </span>
-            <span className="text-[#a5d6ff]">{"'user'"}</span>
-            <span className="text-[#fafafa]">, content: </span>
-            <span className="text-[#a5d6ff]">{"'Hello!'"}</span>
-            <span className="text-[#fafafa]">{" }"}]</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"  }"}</span>
-            <span className="text-[#fafafa]">)</span>
-            {"\n"}
-            <span className="text-[#fafafa]">{"}"});</span>
-            {"\n\n"}
-            <span className="text-[#6b7280]">{"// Cost telemetry is logged automatically"}</span>
-            {"\n"}
-            <span className="text-[#d4900a]">{"// → Provider: openai | Model: gpt-4 | Cost: $0.0032"}</span>
-          </code>
-        </pre>
+        <Motion.div
+          className="font-mono text-sm leading-relaxed text-left"
+          variants={shouldReduceMotion ? undefined : containerVariants}
+          initial={shouldReduceMotion ? undefined : 'hidden'}
+          animate={shouldReduceMotion ? undefined : 'visible'}
+        >
+          {CODE_LINES.map((line, i) => (
+            <Motion.div
+              key={i}
+              className="min-h-[1.5em]"
+              variants={shouldReduceMotion ? undefined : lineVariants}
+            >
+              {line === null
+                ? <span>{'\u00a0'}</span>
+                : <>
+                    {line.map((token, j) => (
+                      <span key={j} style={{ color: token.color }}>{token.text}</span>
+                    ))}
+                    {i === CODE_LINES.length - 1 && !shouldReduceMotion && (
+                      <span className="cursor-blink" style={{ color: C.amber }}>▋</span>
+                    )}
+                  </>
+              }
+            </Motion.div>
+          ))}
+        </Motion.div>
       </div>
     </div>
   )

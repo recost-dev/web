@@ -132,6 +132,31 @@
   pointer-events: none;
 }
 
+/* Accent orbs — companion colors alongside amber */
+.glow-orb-teal {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(52, 211, 153, 0.055);
+  filter: blur(140px);
+  pointer-events: none;
+}
+
+.glow-orb-purple {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(139, 92, 246, 0.05);
+  filter: blur(145px);
+  pointer-events: none;
+}
+
+.glow-orb-blue {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(59, 130, 246, 0.035);
+  filter: blur(145px);
+  pointer-events: none;
+}
+
 /* Subtle animated gradient for hero */
 @keyframes gradient-shift {
   0%, 100% {
@@ -152,6 +177,17 @@
   background-size: 200% 200%;
   animation: gradient-shift 15s ease infinite;
 }
+
+/* Blinking cursor for code typewriter */
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.cursor-blink {
+  animation: cursor-blink 1.3s step-end infinite;
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

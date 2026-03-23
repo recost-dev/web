@@ -305,7 +305,7 @@ function SectionCard({
           </p>
         </div>
         <div
-          className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest flex-shrink-0"
+          className="flex items-center gap-2 px-3 py-1 rounded text-[11px] uppercase tracking-widest flex-shrink-0"
           style={{
             background: `${'#d4900a'}22`,
             color: '#d4900a',
@@ -490,9 +490,7 @@ export default function Extension() {
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
                 ECO is a VS Code extension that analyzes your entire codebase for API call patterns. Install it and scan your workspace in one click from the Activity Bar sidebar. Because it runs on the VS Code extension host, it works natively in any compatible editor: VS Code, Cursor, Windsurf, and more.
               </p>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                 {[
                   { icon: Search, label: 'Workspace scan', desc: 'Scans TS, JS, Python, Go, Java, and Ruby files for API calls' },
                   { icon: AlertTriangle, label: 'Risk detection', desc: 'Surfaces N+1, redundant calls, cacheable endpoints, and rate-limit risks' },
@@ -501,16 +499,12 @@ export default function Extension() {
                   { icon: Globe, label: 'Editor compatible', desc: 'VS Code, Cursor, Windsurf, any extension-host-compatible editor' },
                   { icon: LayoutDashboard, label: 'Open Dashboard', desc: 'Launch a full local dashboard in the browser from the sidebar button' },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-3 p-3.5 rounded-xl"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
-                  >
+                  <div key={label} className="flex items-start gap-3">
                     <div
-                      className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#d4900a'}18` }}
+                      className="mt-0.5 p-1.5 rounded-md shrink-0"
+                      style={{ background: `${'#d4900a'}14` }}
                     >
-                      <Icon size={13} style={{ color: '#d4900a' }} />
+                      <Icon size={12} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
                       <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{label}</p>
@@ -667,9 +661,7 @@ cd extension && npm run watch:webview`}</CodeBlock>
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
                 The dashboard is built with <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>VITE_LOCAL_MODE=true</code>, so navigating to <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/</code> automatically redirects to <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/projects/local</code>, the local project view.
               </p>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-5">
                 {[
                   { icon: LayoutDashboard, label: 'Project overview', desc: 'Eco Score gauge, stat cards, provider cost breakdown' },
                   { icon: Globe, label: 'Endpoints explorer', desc: 'Filter by provider, HTTP method, or status' },
@@ -678,16 +670,12 @@ cd extension && npm run watch:webview`}</CodeBlock>
                   { icon: DollarSign, label: 'Cost analytics', desc: 'Monthly cost estimates and potential savings totals' },
                   { icon: MessageSquare, label: 'AI chat', desc: 'In-dashboard AI assistant with context from your scan results' },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-3 p-3.5 rounded-xl"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
-                  >
+                  <div key={label} className="flex items-start gap-3">
                     <div
-                      className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#d4900a'}18` }}
+                      className="mt-0.5 p-1.5 rounded-md shrink-0"
+                      style={{ background: `${'#d4900a'}14` }}
                     >
-                      <Icon size={13} style={{ color: '#d4900a' }} />
+                      <Icon size={12} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
                       <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{label}</p>
