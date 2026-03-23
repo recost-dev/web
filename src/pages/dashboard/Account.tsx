@@ -165,7 +165,7 @@ export default function Account() {
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
           <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>Settings</p>
-          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Account & API Key</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: colors.textPrimary }}>Account & API Key</h1>
         </Motion.div>
 
         {/* Combined card */}
@@ -180,7 +180,7 @@ export default function Account() {
             <div className="flex flex-col border-b lg:border-b-0 lg:border-r" style={{ borderColor: colors.borderSubtle }}>
 
               {/* Avatar + name */}
-              <div className="flex items-start gap-5 px-7 py-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+              <div className="flex items-start gap-4 px-5 py-5 sm:px-7 sm:py-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                 <div className="relative flex-shrink-0">
                   {user.avatarUrl ? (
                     <img
@@ -213,7 +213,7 @@ export default function Account() {
               </div>
 
               {/* Email row */}
-              <div className="flex items-center gap-4 px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+              <div className="flex items-center gap-4 px-5 py-4 sm:px-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                 <Mail className="w-3.5 h-3.5 flex-shrink-0" style={{ color: colors.textMuted }} />
                 <div>
                   <p className="text-xs uppercase tracking-[0.1em] mb-0.5" style={{ color: colors.textMuted }}>Email</p>
@@ -222,7 +222,7 @@ export default function Account() {
               </div>
 
               {/* Member since row */}
-              <div className="flex items-center gap-4 px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+              <div className="flex items-center gap-4 px-5 py-4 sm:px-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                 <Calendar className="w-3.5 h-3.5 flex-shrink-0" style={{ color: colors.textMuted }} />
                 <div>
                   <p className="text-xs uppercase tracking-[0.1em] mb-0.5" style={{ color: colors.textMuted }}>Member since</p>
@@ -232,13 +232,13 @@ export default function Account() {
 
               {/* User ID + sign out */}
               <div className="flex-1 flex flex-col justify-end">
-                <div className="px-7 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                <div className="px-5 py-4 sm:px-7" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                   <div className="flex items-center justify-between w-full">
                     <p className="text-xs uppercase tracking-[0.1em]" style={{ color: colors.textMuted }}>User ID</p>
                     <code className="text-xs font-mono" style={{ color: colors.textMuted }}>{user.id}</code>
                   </div>
                 </div>
-                <div className="px-7 py-4">
+                <div className="px-5 py-4 sm:px-7">
                   <button
                     onClick={logout}
                     className="px-4 py-2 rounded-md text-sm transition-all duration-200 cursor-pointer"
@@ -274,7 +274,7 @@ export default function Account() {
               ) : activeKey ? (
                 <>
                   {/* Key header */}
-                  <div className="flex items-center gap-4 px-6 py-5" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                  <div className="flex items-center gap-4 px-5 py-4 sm:px-6 sm:py-5" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                     <KeyRound className="w-4 h-4 flex-shrink-0" style={{ color: accent }} />
                     <div>
                       <p className="text-sm font-semibold" style={{ color: colors.textPrimary }}>{activeKey.name || 'API Key'}</p>
@@ -283,7 +283,7 @@ export default function Account() {
                   </div>
 
                   {/* Masked key */}
-                  <div className="px-6 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+                  <div className="px-5 py-4 sm:px-6" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                     <div className="flex items-center px-4 py-2.5 rounded-md" style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderSubtle}` }}>
                       <code className="text-xs font-mono flex-1">
                         <span style={{ color: accent }}>{activeKey.key_prefix}</span>
@@ -294,11 +294,11 @@ export default function Account() {
 
                   {/* Created / last used */}
                   <div className="grid grid-cols-2 divide-x" style={{ borderBottom: `1px solid ${colors.borderSubtle}`, borderColor: colors.borderSubtle }}>
-                    <div className="px-6 py-4">
+                    <div className="px-4 py-4 sm:px-6">
                       <p className="text-xs uppercase tracking-[0.1em] mb-1" style={{ color: colors.textMuted }}>Created</p>
                       <p className="text-sm" style={{ color: colors.textSecondary }}>{fmtShort(activeKey.created_at)}</p>
                     </div>
-                    <div className="px-6 py-4">
+                    <div className="px-4 py-4 sm:px-6">
                       <p className="text-xs uppercase tracking-[0.1em] mb-1" style={{ color: colors.textMuted }}>Last used</p>
                       <p className="flex items-center gap-1.5 text-sm" style={{ color: colors.textSecondary }}>
                         <Clock className="w-3.5 h-3.5" style={{ color: colors.textMuted }} />

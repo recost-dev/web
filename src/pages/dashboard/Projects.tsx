@@ -104,7 +104,7 @@ export default function Projects() {
               <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>
                 Projects
               </p>
-              <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Your Projects</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: colors.textPrimary }}>Your Projects</h1>
               <p className="mt-1 text-sm" style={{ color: colors.textMuted }}>
                 {projects.length} / {MAX_PROJECTS} used
               </p>
@@ -185,7 +185,7 @@ export default function Projects() {
                 key={p.id}
                 role="button"
                 tabIndex={0}
-                className="group flex items-center gap-5 px-5 py-4 rounded-lg transition-all duration-150 cursor-pointer"
+                className="group flex items-center gap-3 sm:gap-5 px-4 py-3.5 sm:px-5 sm:py-4 rounded-lg transition-all duration-150 cursor-pointer"
                 style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
                 onClick={() => navigate(`/dashboard/projects/${p.id}`)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(`/dashboard/projects/${p.id}`); }}
@@ -223,7 +223,7 @@ export default function Projects() {
                   <button
                     aria-label={`Delete ${p.name}`}
                     onClick={(e) => { e.stopPropagation(); setDeleteId(p.id); }}
-                    className="opacity-30 group-hover:opacity-100 focus-visible:opacity-100 p-2 rounded-md transition-all duration-150 cursor-pointer"
+                    className="opacity-30 group-hover:opacity-100 focus-visible:opacity-100 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-md transition-all duration-150 cursor-pointer"
                     style={{ color: colors.textMuted }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.error; (e.currentTarget as HTMLButtonElement).style.background = colors.errorSubtle; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.textMuted; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}

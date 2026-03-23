@@ -51,7 +51,7 @@ export default function GettingStarted() {
           <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>
             Get Started
           </p>
-          <h1 className="text-3xl font-bold text-[#fafafa]">Hey, {firstName}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#fafafa]">Hey, {firstName}</h1>
           <p className="mt-1 text-sm text-[#737373]">Here's how to get up and running in a few minutes.</p>
         </Motion.div>
 
@@ -61,7 +61,7 @@ export default function GettingStarted() {
             <Motion.div
               key={step}
               {...FADE(0.05 + i * 0.06)}
-              className="flex items-start gap-5 px-5 py-5 rounded-xl"
+              className="flex items-start gap-4 sm:gap-5 px-4 py-4 sm:px-5 sm:py-5 rounded-xl"
               style={{ background: '#111111', border: '1px solid #262626' }}
             >
               <div className="p-2.5 rounded-lg flex-shrink-0 mt-0.5" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>

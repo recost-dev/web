@@ -78,32 +78,34 @@ export default function DashboardLayout() {
 
       {/* Top header */}
       <header
-        className="flex-shrink-0 flex items-center px-6 h-14"
+        className="flex-shrink-0 flex items-center px-6 h-14 min-w-0"
         style={{ borderBottom: `1px solid ${colors.borderSubtle}`, background: colors.bgHeader }}
       >
-        <Link to="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity" style={{ textDecoration: 'none' }}>
+        <Link to="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity flex-shrink-0" style={{ textDecoration: 'none' }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="20" height="20">
             <path d="M55 85 L240 85 L240 140 L105 140 L105 315 L55 315 Z" fill="none" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
             <path d="M345 315 L160 315 L160 260 L295 260 L295 85 L345 85 Z" fill="#fafafa" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
           </svg>
           <span className="font-mono text-sm font-bold tracking-tight" style={{ color: colors.textPrimary }}>recost</span>
         </Link>
-        {segments.map((seg, i) => (
-          <span key={i} className="flex items-center">
-            <span className="mx-3 text-sm" style={{ color: colors.borderHover }}>/</span>
-            {seg.href ? (
-              <Link
-                to={seg.href}
-                className="text-sm hover:text-[#fafafa] transition-colors"
-                style={{ color: colors.textMuted, textDecoration: 'none' }}
-              >
-                {seg.label}
-              </Link>
-            ) : (
-              <span className="text-sm" style={{ color: colors.textPrimary }}>{seg.label}</span>
-            )}
-          </span>
-        ))}
+        <div className="flex items-center min-w-0 overflow-hidden">
+          {segments.map((seg, i) => (
+            <span key={i} className="flex items-center min-w-0">
+              <span className="mx-2 sm:mx-3 text-sm flex-shrink-0" style={{ color: colors.borderHover }}>/</span>
+              {seg.href ? (
+                <Link
+                  to={seg.href}
+                  className="text-sm hover:text-[#fafafa] transition-colors flex-shrink-0"
+                  style={{ color: colors.textMuted, textDecoration: 'none' }}
+                >
+                  {seg.label}
+                </Link>
+              ) : (
+                <span className="text-sm truncate" style={{ color: colors.textPrimary }}>{seg.label}</span>
+              )}
+            </span>
+          ))}
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">

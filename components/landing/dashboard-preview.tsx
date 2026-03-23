@@ -40,9 +40,9 @@ export function DashboardPreview() {
           </div>
 
           {/* Dashboard Content */}
-          <div className="grid gap-6 p-6 lg:grid-cols-2">
+          <div className="grid gap-4 p-4 sm:gap-6 sm:p-6 lg:grid-cols-2">
             {/* Cost Breakdown */}
-            <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-6">
+            <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium text-[#fafafa]">Cost by Provider</h3>
                 <span className="text-xs text-[#737373]">Last 30 days</span>
@@ -77,7 +77,7 @@ export function DashboardPreview() {
             </div>
 
             {/* API Call Volume Chart */}
-            <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-6">
+            <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium text-[#fafafa]">API Call Volume</h3>
                 <span className="text-xs text-[#737373]">Last 7 days</span>
@@ -100,7 +100,7 @@ export function DashboardPreview() {
             </div>
 
             {/* API Keys Table */}
-            <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-6 lg:col-span-2">
+            <div className="hidden sm:block rounded-lg border border-[#262626] bg-[#0a0a0a] p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium text-[#fafafa]">API Keys</h3>
                 <button className="text-xs text-[#d4900a] hover:underline">+ Create key</button>

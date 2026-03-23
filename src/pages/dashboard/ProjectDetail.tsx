@@ -103,7 +103,7 @@ export default function ProjectDetail() {
         ) : project ? (
           <Motion.div {...FADE(0.05)} className="mb-10">
             <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>Project</p>
-            <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>{project.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold break-words" style={{ color: colors.textPrimary }}>{project.name}</h1>
             {project.description && (
               <p className="mt-2 text-sm" style={{ color: colors.textMuted }}>{project.description}</p>
             )}
@@ -149,7 +149,7 @@ export default function ProjectDetail() {
                 style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
               >
                 <div
-                  className="flex items-center justify-between px-5 py-4"
+                  className="flex items-center justify-between px-3 py-3 sm:px-5 sm:py-4"
                   style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}
                 >
                   <div className="flex items-center gap-3">
@@ -200,12 +200,12 @@ export default function ProjectDetail() {
                         iconColor: hasSuggestions ? accent : colors.textMuted,
                       },
                     ].map(({ icon: Icon, label, value, valueColor, iconColor }) => (
-                      <div key={label} className="px-5 py-4">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Icon className="w-3 h-3" style={{ color: iconColor }} />
-                          <p className="text-xs uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>{label}</p>
+                      <div key={label} className="px-2.5 py-3 sm:px-5 sm:py-4">
+                        <div className="flex items-center gap-1 sm:gap-1.5 mb-1">
+                          <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" style={{ color: iconColor }} />
+                          <p className="text-[10px] sm:text-xs uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>{label}</p>
                         </div>
-                        <p className="text-base font-bold font-mono" style={{ color: valueColor }}>{value}</p>
+                        <p className="text-sm sm:text-base font-bold font-mono" style={{ color: valueColor }}>{value}</p>
                       </div>
                     ));
                   })()}
