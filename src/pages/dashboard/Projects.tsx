@@ -173,7 +173,7 @@ export default function Projects() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = colors.borderHover; (e.currentTarget as HTMLDivElement).style.background = colors.bgHover; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = colors.borderDefault; (e.currentTarget as HTMLDivElement).style.background = colors.bgBase; }}
               >
-                <FolderKanban className="w-4 h-4 flex-shrink-0" style={{ color: colors.textMuted }} />
+                <FolderKanban className="w-4 h-4 flex-shrink-0" style={{ color: p.latestScanId ? accent : colors.textMuted }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold truncate" style={{ color: colors.textPrimary }}>{p.name}</p>
                   <div className="flex items-center gap-3 mt-0.5 flex-wrap">

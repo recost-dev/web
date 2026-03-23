@@ -41,16 +41,16 @@ export function HowItWorks() {
           {steps.map((step, index) => (
             <div 
               key={step.title}
-              className="group relative rounded-xl border border-[#262626] bg-[#111111] p-8 transition-colors hover:border-[#34d399]/30"
+              className="group relative rounded-xl border border-[#262626] bg-[#111111] p-8 transition-colors hover:border-[#d4900a]/30"
             >
               {/* Step number */}
-              <span className="absolute -top-3 right-6 font-mono text-sm text-[#34d399]">
+              <span className="absolute -top-3 right-6 font-mono text-sm text-[#d4900a]">
                 {step.step}
               </span>
               
               {/* Icon */}
-              <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-[#262626] bg-[#0a0a0a] transition-colors group-hover:border-[#34d399]/30">
-                <step.icon className="h-6 w-6 text-[#34d399]" />
+              <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-[#262626] bg-[#0a0a0a] transition-colors group-hover:border-[#d4900a]/30">
+                <step.icon className="h-6 w-6 text-[#d4900a]" />
               </div>
 
               {/* Content */}

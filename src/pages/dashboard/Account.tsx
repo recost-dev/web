@@ -11,7 +11,7 @@ const DEV = import.meta.env.VITE_DEV_AUTH === 'true';
 const MOCK_KEY: ApiKey = {
   id: 'mock-key-1',
   name: 'production',
-  key_prefix: 'rk_live_',
+  key_prefix: 'rc-',
   last_used_at: '2026-03-19T08:00:00Z',
   created_at: '2026-01-15T10:00:00Z',
 };
@@ -258,8 +258,9 @@ export default function Account() {
                   {/* Masked key */}
                   <div className="px-6 py-4" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
                     <div className="flex items-center px-4 py-2.5 rounded-md" style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderSubtle}` }}>
-                      <code className="text-xs font-mono flex-1" style={{ color: colors.textMuted }}>
-                        {activeKey.key_prefix}••••••••••••••••••••
+                      <code className="text-xs font-mono flex-1">
+                        <span style={{ color: accent }}>{activeKey.key_prefix}</span>
+                        <span style={{ color: colors.textMuted }}>••••••••••••••••••••</span>
                       </code>
                     </div>
                   </div>

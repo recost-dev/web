@@ -47,8 +47,8 @@ export function CodeBlock() {
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 text-[#34d399]" />
-              <span className="text-[#34d399]">Copied</span>
+              <Check className="h-3.5 w-3.5 text-[#22c55e]" />
+              <span className="text-[#22c55e]">Copied</span>
             </>
           ) : (
             <>
@@ -122,7 +122,7 @@ export function CodeBlock() {
             {"\n\n"}
             <span className="text-[#6b7280]">{"// Cost telemetry is logged automatically"}</span>
             {"\n"}
-            <span className="text-[#34d399]">{"// → Provider: openai | Model: gpt-4 | Cost: $0.0032"}</span>
+            <span className="text-[#d4900a]">{"// → Provider: openai | Model: gpt-4 | Cost: $0.0032"}</span>
           </code>
         </pre>
       </div>

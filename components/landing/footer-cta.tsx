@@ -19,7 +19,7 @@ export function FooterCTA() {
             <WaitlistModal>
               <Button
                 size="lg"
-                className="h-12 bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium glow-green"
+                className="h-12 bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium glow-green"
               >
                 Join waitlist
               </Button>

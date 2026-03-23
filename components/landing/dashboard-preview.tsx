@@ -1,5 +1,5 @@
 const providers = [
-  { name: "OpenAI", cost: "$127.45", calls: "12,847", color: "#34d399" },
+  { name: "OpenAI", cost: "$127.45", calls: "12,847", color: "#d4900a" },
   { name: "Anthropic", cost: "$89.23", calls: "8,421", color: "#3b82f6" },
   { name: "Cohere", cost: "$23.67", calls: "2,156", color: "#f59e0b" },
 ]
@@ -34,7 +34,7 @@ export function DashboardPreview() {
               <span className="text-sm text-[#a3a3a3]">Dashboard</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-[#34d399] animate-pulse" />
+              <div className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
               <span className="text-xs text-[#a3a3a3]">Live</span>
             </div>
           </div>
@@ -72,7 +72,7 @@ export function DashboardPreview() {
               {/* Total */}
               <div className="mt-6 pt-4 border-t border-[#262626] flex items-center justify-between">
                 <span className="text-sm text-[#a3a3a3]">Total</span>
-                <span className="font-mono text-lg font-bold text-[#34d399]">$240.35</span>
+                <span className="font-mono text-lg font-bold text-[#d4900a]">$240.35</span>
               </div>
             </div>
 
@@ -88,7 +88,7 @@ export function DashboardPreview() {
                 {[65, 45, 80, 55, 90, 70, 85].map((height, i) => (
                   <div key={i} className="flex-1 flex flex-col items-center gap-2">
                     <div 
-                      className="w-full rounded-t bg-[#34d399]/80 transition-all duration-500 hover:bg-[#34d399]"
+                      className="w-full rounded-t bg-[#d4900a]/80 transition-all duration-500 hover:bg-[#d4900a]"
                       style={{ height: `${height}%` }}
                     />
                     <span className="text-xs text-[#737373]">
@@ -103,7 +103,7 @@ export function DashboardPreview() {
             <div className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-6 lg:col-span-2">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-medium text-[#fafafa]">API Keys</h3>
-                <button className="text-xs text-[#34d399] hover:underline">+ Create key</button>
+                <button className="text-xs text-[#d4900a] hover:underline">+ Create key</button>
               </div>
               
               <div className="overflow-x-auto">
@@ -124,11 +124,11 @@ export function DashboardPreview() {
                         <td className="py-3">
                           <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs ${
                             key.status === "active" 
-                              ? "bg-[#34d399]/10 text-[#34d399]" 
+                              ? "bg-[#d4900a]/10 text-[#d4900a]" 
                               : "bg-[#737373]/10 text-[#737373]"
                           }`}>
                             <span className={`h-1.5 w-1.5 rounded-full ${
-                              key.status === "active" ? "bg-[#34d399]" : "bg-[#737373]"
+                              key.status === "active" ? "bg-[#d4900a]" : "bg-[#737373]"
                             }`} />
                             {key.status}
                           </span>

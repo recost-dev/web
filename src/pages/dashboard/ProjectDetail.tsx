@@ -174,19 +174,41 @@ export default function ProjectDetail() {
                   )}
                 </div>
                 <div className="grid grid-cols-3 divide-x" style={{ borderColor: colors.borderSubtle }}>
-                  {[
-                    { icon: Layers,      label: 'Endpoints',     value: scan.summary?.totalEndpoints ?? '—' },
-                    { icon: DollarSign,  label: 'Monthly cost',  value: scan.summary?.totalMonthlyCost != null ? fmtCost(scan.summary.totalMonthlyCost) : '—' },
-                    { icon: Zap,         label: 'Suggestions',   value: scan.summary?.totalSuggestions ?? '—' },
-                  ].map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="px-5 py-4">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Icon className="w-3 h-3" style={{ color: colors.textMuted }} />
-                        <p className="text-xs uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>{label}</p>
+                  {(() => {
+                    const hasCost = scan.summary?.totalMonthlyCost != null;
+                    const hasSuggestions = (scan.summary?.totalSuggestions ?? 0) > 0;
+                    return [
+                      {
+                        icon: Layers,
+                        label: 'Endpoints',
+                        value: scan.summary?.totalEndpoints ?? '—',
+                        valueColor: colors.textPrimary,
+                        iconColor: colors.textMuted,
+                      },
+                      {
+                        icon: DollarSign,
+                        label: 'Monthly cost',
+                        value: hasCost ? fmtCost(scan.summary.totalMonthlyCost) : '—',
+                        valueColor: hasCost ? accent : colors.textPrimary,
+                        iconColor: hasCost ? accent : colors.textMuted,
+                      },
+                      {
+                        icon: Zap,
+                        label: 'Suggestions',
+                        value: scan.summary?.totalSuggestions ?? '—',
+                        valueColor: hasSuggestions ? accent : colors.textPrimary,
+                        iconColor: hasSuggestions ? accent : colors.textMuted,
+                      },
+                    ].map(({ icon: Icon, label, value, valueColor, iconColor }) => (
+                      <div key={label} className="px-5 py-4">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Icon className="w-3 h-3" style={{ color: iconColor }} />
+                          <p className="text-xs uppercase tracking-[0.08em]" style={{ color: colors.textMuted }}>{label}</p>
+                        </div>
+                        <p className="text-base font-bold font-mono" style={{ color: valueColor }}>{value}</p>
                       </div>
-                      <p className="text-base font-bold font-mono" style={{ color: colors.textPrimary }}>{value}</p>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               </div>
             ))}

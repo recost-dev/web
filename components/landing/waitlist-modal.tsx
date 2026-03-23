@@ -38,7 +38,7 @@ function RoleDropdown({ value, onChange }: { value: string; onChange: (v: string
       <button
         type="button"
         onClick={() => setDropdownOpen((o) => !o)}
-        className="h-11 w-full flex items-center justify-between rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-left cursor-pointer focus:border-[#34d399] focus:outline-none focus:ring-1 focus:ring-[#34d399]/20 transition-colors"
+        className="h-11 w-full flex items-center justify-between rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-left cursor-pointer focus:border-[#d4900a] focus:outline-none focus:ring-1 focus:ring-[#d4900a]/20 transition-colors"
       >
         <span className={selected ? "text-[#fafafa]" : "text-[#737373]"}>
           {selected ? selected.label : "Select your role"}
@@ -57,7 +57,7 @@ function RoleDropdown({ value, onChange }: { value: string; onChange: (v: string
               type="button"
               onClick={() => { onChange(r.value); setDropdownOpen(false) }}
               className="w-full px-3 py-2.5 text-sm text-left transition-colors hover:bg-[#1a1a1a]"
-              style={{ color: value === r.value ? "#34d399" : "#a3a3a3" }}
+              style={{ color: value === r.value ? "#d4900a" : "#a3a3a3" }}
             >
               {r.label}
             </button>
@@ -113,7 +113,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2 pb-2">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="waitlist-email" className="text-sm text-[#a3a3a3]">
-              Email <span className="text-[#34d399]">*</span>
+              Email <span className="text-[#d4900a]">*</span>
             </label>
             <input
               id="waitlist-email"
@@ -121,7 +121,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
               name="email"
               required
               placeholder="you@example.com"
-              className="h-11 rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#34d399] focus:outline-none focus:ring-1 focus:ring-[#34d399]/20 [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0a0a0a] [&:-webkit-autofill]:[-webkit-text-fill-color:#fafafa]"
+              className="h-11 rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#d4900a] focus:outline-none focus:ring-1 focus:ring-[#d4900a]/20 [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#0a0a0a] [&:-webkit-autofill]:[-webkit-text-fill-color:#fafafa]"
             />
           </div>
 
@@ -135,7 +135,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
                 type="text"
                 name="roleOther"
                 placeholder="Please specify your role"
-                className="h-11 rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#34d399] focus:outline-none focus:ring-1 focus:ring-[#34d399]/20"
+                className="h-11 rounded-md border border-[#262626] bg-[#0a0a0a] px-3 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#d4900a] focus:outline-none focus:ring-1 focus:ring-[#d4900a]/20"
               />
             )}
           </div>
@@ -150,7 +150,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
               name="problem"
               rows={3}
               placeholder="Describe the problem you're trying to solve..."
-              className="rounded-md border border-[#262626] bg-[#0a0a0a] px-3 py-2.5 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#34d399] focus:outline-none focus:ring-1 focus:ring-[#34d399]/20 resize-none"
+              className="rounded-md border border-[#262626] bg-[#0a0a0a] px-3 py-2.5 text-sm text-[#fafafa] placeholder:text-[#737373] focus:border-[#d4900a] focus:outline-none focus:ring-1 focus:ring-[#d4900a]/20 resize-none"
             />
           </div>
 
@@ -160,7 +160,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
                 type="checkbox"
                 name="mailingList"
                 value="yes"
-                className="peer h-4 w-4 appearance-none rounded border border-[#262626] bg-[#0a0a0a] checked:bg-[#34d399] checked:border-[#34d399] focus:outline-none focus:ring-1 focus:ring-[#34d399]/20 cursor-pointer"
+                className="peer h-4 w-4 appearance-none rounded border border-[#262626] bg-[#0a0a0a] checked:bg-[#d4900a] checked:border-[#d4900a] focus:outline-none focus:ring-1 focus:ring-[#d4900a]/20 cursor-pointer"
               />
               <svg
                 className="pointer-events-none absolute h-3 w-3 text-[#0a0a0a] opacity-0 peer-checked:opacity-100"
@@ -180,7 +180,7 @@ export function WaitlistModal({ children }: { children: React.ReactNode }) {
           <Button
             type="submit"
             disabled={submitting}
-            className="mt-1 h-11 bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium w-full disabled:opacity-60"
+            className="mt-1 h-11 bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium w-full disabled:opacity-60"
           >
             {submitting ? "Submitting..." : "Submit"}
           </Button>

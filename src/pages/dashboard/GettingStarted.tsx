@@ -2,8 +2,7 @@ import { motion as Motion } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { FolderKanban, KeyRound, Terminal, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/src/lib/auth-context';
-
-const accent = '#34d399';
+import { accent } from '@/src/lib/tokens';
 
 const FADE = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },

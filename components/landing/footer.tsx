@@ -77,7 +77,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-1 text-sm text-[#737373]">
             <span>Built with</span>
-            <span className="text-[#34d399]">{"♥"}</span>
+            <span className="text-[#d4900a]">{"♥"}</span>
             <span>for developers</span>
           </div>
         </div>

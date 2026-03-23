@@ -17,7 +17,7 @@ import {
   Globe,
 } from 'lucide-react';
 
-const ACCENT = '#34d399';
+const ACCENT = '#d4900a';
 
 const FADE = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -49,7 +49,7 @@ function Section({
     >
       {/* Badge */}
       <div className="inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#0a0a0a] px-3 py-1 mb-4">
-        <Icon size={12} className="text-[#34d399]" />
+        <Icon size={12} className="text-[#d4900a]" />
         <span className="text-xs text-[#a3a3a3] font-mono">{badge}</span>
       </div>
 
@@ -93,7 +93,7 @@ export default function About() {
       <section className="relative pt-32 pb-16">
         <Motion.div {...FADE(0)} className="relative mx-auto max-w-5xl px-6 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance">
-            About <span className="text-[#34d399]">Recost</span>
+            About <span className="text-[#d4900a]">Recost</span>
           </h1>
           <p className="mt-6 text-lg text-[#a3a3a3] text-balance">
             A full-stack platform to analyze your codebase&apos;s API usage, estimate costs, surface risks, and suggest optimizations across three integrated surfaces.

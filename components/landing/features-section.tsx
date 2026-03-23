@@ -50,10 +50,10 @@ export function FeaturesSection() {
           {features.slice(0, 3).map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#34d399]/30 hover:bg-[#111111]"
+              className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#d4900a]/30 hover:bg-[#111111]"
             >
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#34d399]/10">
-                <feature.icon className="h-5 w-5 text-[#34d399]" />
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#d4900a]/10">
+                <feature.icon className="h-5 w-5 text-[#d4900a]" />
               </div>
               <h3 className="text-lg font-semibold text-[#fafafa]">{feature.title}</h3>
               <p className="mt-2 text-sm text-[#a3a3a3] leading-relaxed">{feature.description}</p>
@@ -64,10 +64,10 @@ export function FeaturesSection() {
           {features.slice(3).map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#34d399]/30 hover:bg-[#111111]"
+              className="group rounded-xl border border-[#262626] bg-[#111111]/50 p-6 transition-all hover:border-[#d4900a]/30 hover:bg-[#111111]"
             >
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#34d399]/10">
-                <feature.icon className="h-5 w-5 text-[#34d399]" />
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#d4900a]/10">
+                <feature.icon className="h-5 w-5 text-[#d4900a]" />
               </div>
               <h3 className="text-lg font-semibold text-[#fafafa]">{feature.title}</h3>
               <p className="mt-2 text-sm text-[#a3a3a3] leading-relaxed">{feature.description}</p>

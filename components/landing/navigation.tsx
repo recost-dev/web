@@ -58,7 +58,7 @@ export function Navigation() {
         <div className="hidden items-center gap-3 md:flex">
           {isAuthenticated ? (
             <Button
-              className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+              className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
               asChild
             >
               <Link to="/dashboard">Dashboard</Link>
@@ -73,7 +73,7 @@ export function Navigation() {
                 Sign in
               </Button>
               <Button
-                className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                 onClick={() => setSignInOpen(true)}
               >
                 Get started
@@ -122,7 +122,7 @@ export function Navigation() {
             <div className="flex flex-col gap-2 pt-4 border-t border-[#262626]">
               {isAuthenticated ? (
                 <Button
-                  className="w-full bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                  className="w-full bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                   asChild
                 >
                   <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
@@ -137,7 +137,7 @@ export function Navigation() {
                     Sign in
                   </Button>
                   <Button
-                    className="w-full bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                    className="w-full bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                     onClick={() => { setMobileMenuOpen(false); setSignInOpen(true) }}
                   >
                     Get started

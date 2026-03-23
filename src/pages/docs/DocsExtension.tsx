@@ -300,16 +300,16 @@ function SectionCard({
           <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
             {title}
           </h2>
-          <p className="text-[13px]" style={{ color: '#34d399', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
+          <p className="text-[13px]" style={{ color: '#d4900a', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
             {subtitle}
           </p>
         </div>
         <div
           className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest flex-shrink-0"
           style={{
-            background: `${'#34d399'}22`,
-            color: '#34d399',
-            border: `1px solid ${'#34d399'}44`,
+            background: `${'#d4900a'}22`,
+            color: '#d4900a',
+            border: `1px solid ${'#d4900a'}44`,
             fontFamily: "'JetBrains Mono', monospace",
           }}
         >
@@ -508,9 +508,9 @@ export default function Extension() {
                   >
                     <div
                       className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#34d399'}18` }}
+                      style={{ background: `${'#d4900a'}18` }}
                     >
-                      <Icon size={13} style={{ color: '#34d399' }} />
+                      <Icon size={13} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
                       <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>
@@ -685,9 +685,9 @@ cd extension && npm run watch:webview`}</CodeBlock>
                   >
                     <div
                       className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#34d399'}18` }}
+                      style={{ background: `${'#d4900a'}18` }}
                     >
-                      <Icon size={13} style={{ color: '#34d399' }} />
+                      <Icon size={13} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
                       <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>

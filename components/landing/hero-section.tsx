@@ -17,14 +17,14 @@ export function HeroSection() {
         <div className="flex flex-col items-center text-center">
           {/* Badge */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm">
-            <span className="h-2 w-2 rounded-full bg-[#34d399] animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
             <span className="text-[#a3a3a3]">Now in public beta</span>
           </div>
 
           {/* Headline */}
           <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl lg:text-7xl text-balance">
             Know exactly what your{" "}
-            <span className="text-[#34d399]">APIs cost</span>
+            <span className="text-[#d4900a]">APIs cost</span>
           </h1>
 
           {/* Subheadline */}
@@ -37,7 +37,7 @@ export function HeroSection() {
             <WaitlistModal>
               <Button
                 size="lg"
-                className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium px-8 glow-green"
+                className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium px-8 glow-green"
               >
                 Join waitlist
               </Button>

@@ -58,7 +58,7 @@ function CodeBlock({ children }: { children: string }) {
 // ─── MethodBadge ─────────────────────────────────────────────────────────────
 
 const METHOD_COLORS: Record<string, { text: string; bg: string; border: string }> = {
-  GET:    { text: '#4ade80', bg: 'rgba(74,222,128,0.1)',  border: 'rgba(74,222,128,0.25)'  },
+  GET:    { text: '#d4900a', bg: 'rgba(212,144,10,0.1)',  border: 'rgba(212,144,10,0.25)'  },
   POST:   { text: '#60a5fa', bg: 'rgba(96,165,250,0.1)',  border: 'rgba(96,165,250,0.25)'  },
   PATCH:  { text: '#fbbf24', bg: 'rgba(251,191,36,0.1)',  border: 'rgba(251,191,36,0.25)'  },
   DELETE: { text: '#f87171', bg: 'rgba(248,113,113,0.1)', border: 'rgba(248,113,113,0.25)' },
@@ -90,7 +90,7 @@ function MethodBadge({ method }: { method: string }) {
 
 function StatusBadge({ code, label }: { code: string; label: string }) {
   const isOk = code.startsWith('2');
-  const color = isOk ? '#4ade80' : '#f87171';
+  const color = isOk ? '#d4900a' : '#f87171';
   return (
     <span
       style={{
@@ -163,7 +163,7 @@ function FieldTable({ fields }: { fields: Field[] }) {
             <tr key={f.name} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
               <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#60a5fa' }}>{f.name}</td>
               <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#fbbf24' }}>{f.type}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: f.required ? '#4ade80' : 'rgba(255,255,255,0.3)' }}>{f.required ? 'yes' : 'no'}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: f.required ? '#d4900a' : 'rgba(255,255,255,0.3)' }}>{f.required ? 'yes' : 'no'}</td>
               <td style={{ padding: '7px 10px', fontFamily: "'Inter', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{f.desc}</td>
             </tr>
           ))}
@@ -255,16 +255,16 @@ function SectionCard({
           <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
             {title}
           </h2>
-          <p className="text-[13px]" style={{ color: '#34d399', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
+          <p className="text-[13px]" style={{ color: '#d4900a', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
             {subtitle}
           </p>
         </div>
         <div
           className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest flex-shrink-0"
           style={{
-            background: `${'#34d399'}22`,
-            color: '#34d399',
-            border: `1px solid ${'#34d399'}44`,
+            background: `${'#d4900a'}22`,
+            color: '#d4900a',
+            border: `1px solid ${'#d4900a'}44`,
             fontFamily: "'JetBrains Mono', monospace",
           }}
         >
@@ -295,9 +295,9 @@ function SectionLabel({
       <div
         className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] uppercase tracking-widest shrink-0"
         style={{
-          background: `${'#34d399'}18`,
-          color: '#34d399',
-          border: `1px solid ${'#34d399'}33`,
+          background: `${'#d4900a'}18`,
+          color: '#d4900a',
+          border: `1px solid ${'#d4900a'}33`,
           fontFamily: "'JetBrains Mono', monospace",
         }}
       >

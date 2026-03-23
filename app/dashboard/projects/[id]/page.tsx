@@ -78,11 +78,11 @@ const SEVERITY_STYLE = {
 };
 
 const METHOD_COLOR: Record<string, string> = {
-  GET: '#34d399', POST: '#3b82f6', PUT: '#f59e0b', PATCH: '#f59e0b', DELETE: '#f87171',
+  GET: '#d4900a', POST: '#3b82f6', PUT: '#f59e0b', PATCH: '#f59e0b', DELETE: '#f87171',
 };
 
 const PROVIDER_COLOR: Record<string, string> = {
-  openai: '#34d399', anthropic: '#3b82f6', cohere: '#f59e0b',
+  openai: '#d4900a', anthropic: '#3b82f6', cohere: '#f59e0b',
   google: '#a78bfa', azure: '#60a5fa', mistral: '#fb923c',
 };
 
@@ -99,7 +99,7 @@ function PanelSpinner() {
   return (
     <div className="flex items-center justify-center py-12">
       <div className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-        style={{ borderColor: 'rgba(52,211,153,0.25)', borderTopColor: '#34d399' }} />
+        style={{ borderColor: 'rgba(212,144,10,0.25)', borderTopColor: '#d4900a' }} />
     </div>
   );
 }
@@ -154,7 +154,7 @@ export default function ProjectDetail() {
     return (
       <div className="min-h-full flex items-center justify-center" style={{ background: '#0a0a0a' }}>
         <div className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: 'rgba(52,211,153,0.25)', borderTopColor: '#34d399' }} />
+          style={{ borderColor: 'rgba(212,144,10,0.25)', borderTopColor: '#d4900a' }} />
       </div>
     );
   }
@@ -210,7 +210,7 @@ export default function ProjectDetail() {
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
           {([
-            { label: 'Monthly Cost',  value: summary ? fmtCost(summary.totalMonthlyCost)   : '—', icon: DollarSign,  color: '#34d399' },
+            { label: 'Monthly Cost',  value: summary ? fmtCost(summary.totalMonthlyCost)   : '—', icon: DollarSign,  color: '#d4900a' },
             { label: 'Endpoints',     value: summary ? fmtNum(summary.totalEndpoints)        : '—', icon: Layers,      color: '#3b82f6' },
             { label: 'Calls / Day',   value: summary ? fmtNum(summary.totalCallsPerDay)      : '—', icon: Activity,    color: '#f59e0b' },
             { label: 'High Risk',     value: summary ? fmtNum(summary.highRiskCount)          : '—', icon: ShieldAlert, color: '#f87171' },
@@ -267,7 +267,7 @@ export default function ProjectDetail() {
                 </div>
                 <div className="mt-6 pt-4 flex items-center justify-between" style={{ borderTop: '1px solid #262626' }}>
                   <span className="text-sm" style={{ color: '#a3a3a3' }}>Total</span>
-                  <span className="font-bold" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span className="font-bold" style={{ color: '#d4900a', fontFamily: "'JetBrains Mono', monospace" }}>
                     {fmtCost(byProvider.reduce((s, p) => s + p.monthlyCost, 0))}
                   </span>
                 </div>
@@ -301,7 +301,7 @@ export default function ProjectDetail() {
                       </span>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs truncate" style={{ color: '#a3a3a3' }}>{s.description}</p>
-                        <p className="text-xs mt-0.5" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                        <p className="text-xs mt-0.5" style={{ color: '#d4900a', fontFamily: "'JetBrains Mono', monospace" }}>
                           saves {fmtCost(s.estimatedMonthlySavings)}/mo
                         </p>
                       </div>
@@ -367,7 +367,7 @@ export default function ProjectDetail() {
                       <td className="px-6 py-3.5 text-xs" style={{ color: '#fafafa', fontFamily: "'JetBrains Mono', monospace" }}>
                         {fmtNum(ep.callsPerDay)}
                       </td>
-                      <td className="px-6 py-3.5 text-xs" style={{ color: '#34d399', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <td className="px-6 py-3.5 text-xs" style={{ color: '#d4900a', fontFamily: "'JetBrains Mono', monospace" }}>
                         {fmtCost(ep.monthlyCost)}
                       </td>
                       <td className="px-6 py-3.5">

@@ -11,7 +11,7 @@ export function OpenSourceSection() {
           {/* MIT Badge */}
           <Badge 
             variant="outline" 
-            className="mb-6 border-[#34d399]/30 bg-[#34d399]/10 text-[#34d399] px-4 py-1"
+            className="mb-6 border-[#d4900a]/30 bg-[#d4900a]/10 text-[#d4900a] px-4 py-1"
           >
             AGPL Licensed
           </Badge>
@@ -30,7 +30,7 @@ export function OpenSourceSection() {
               href="https://github.com/recost-dev"
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-3 rounded-lg border border-[#262626] bg-[#111111] px-6 py-3 transition-all hover:border-[#34d399]/30 hover:bg-[#1a1a1a]"
+              className="group inline-flex items-center gap-3 rounded-lg border border-[#262626] bg-[#111111] px-6 py-3 transition-all hover:border-[#d4900a]/30 hover:bg-[#1a1a1a]"
             >
               <svg
                 className="h-6 w-6 text-[#fafafa]"

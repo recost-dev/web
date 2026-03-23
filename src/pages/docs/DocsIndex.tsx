@@ -14,12 +14,12 @@ export default function DocsPage() {
       <section className="relative pt-32 pb-16">
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm">
-            <BookOpen className="h-3.5 w-3.5 text-[#34d399]" />
+            <BookOpen className="h-3.5 w-3.5 text-[#d4900a]" />
             <span className="text-[#a3a3a3]">Documentation</span>
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance">
             Everything you need to{' '}
-            <span className="text-[#34d399]">get started</span>
+            <span className="text-[#d4900a]">get started</span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-[#a3a3a3] text-balance">
             Learn how to integrate the Recost SDK, set up cost tracking, and use the browser extension — all in one place.
@@ -33,10 +33,10 @@ export default function DocsPage() {
 
           {/* API Docs card */}
           <Link to="/docs/api" className="group block">
-            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#34d399]/40 hover:bg-[#111111]/80 glow-green">
+            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#d4900a]/40 hover:bg-[#111111]/80 glow-green">
               {/* Icon */}
-              <div className="mb-6 inline-flex rounded-xl border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#34d399]/30 transition-colors duration-200">
-                <Code2 className="h-6 w-6 text-[#34d399]" />
+              <div className="mb-6 inline-flex rounded-xl border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#d4900a]/30 transition-colors duration-200">
+                <Code2 className="h-6 w-6 text-[#d4900a]" />
               </div>
 
               <h2 className="text-xl font-bold text-[#fafafa] mb-2">API Documentation</h2>
@@ -56,7 +56,7 @@ export default function DocsPage() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 text-sm font-medium text-[#34d399]">
+              <div className="flex items-center gap-2 text-sm font-medium text-[#d4900a]">
                 View API docs
                 <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
               </div>
@@ -65,10 +65,10 @@ export default function DocsPage() {
 
           {/* Extension Docs card */}
           <Link to="/docs/extension" className="group block">
-            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#34d399]/40 hover:bg-[#111111]/80">
+            <div className="relative h-full rounded-2xl border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#d4900a]/40 hover:bg-[#111111]/80">
               {/* Icon */}
-              <div className="mb-6 inline-flex rounded-xl border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#34d399]/30 transition-colors duration-200">
-                <PuzzleIcon className="h-6 w-6 text-[#34d399]" />
+              <div className="mb-6 inline-flex rounded-xl border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#d4900a]/30 transition-colors duration-200">
+                <PuzzleIcon className="h-6 w-6 text-[#d4900a]" />
               </div>
 
               <h2 className="text-xl font-bold text-[#fafafa] mb-2">Extension Documentation</h2>
@@ -88,7 +88,7 @@ export default function DocsPage() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 text-sm font-medium text-[#34d399]">
+              <div className="flex items-center gap-2 text-sm font-medium text-[#d4900a]">
                 View extension docs
                 <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
               </div>
@@ -102,23 +102,23 @@ export default function DocsPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <Link
               to="/docs/api#installation"
-              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#34d399]/30 hover:text-[#fafafa] transition-all duration-150"
+              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#d4900a]/30 hover:text-[#fafafa] transition-all duration-150"
             >
-              <Terminal className="h-4 w-4 text-[#34d399] flex-shrink-0" />
+              <Terminal className="h-4 w-4 text-[#d4900a] flex-shrink-0" />
               SDK Installation
             </Link>
             <Link
               to="/docs/api#authentication"
-              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#34d399]/30 hover:text-[#fafafa] transition-all duration-150"
+              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#d4900a]/30 hover:text-[#fafafa] transition-all duration-150"
             >
-              <Zap className="h-4 w-4 text-[#34d399] flex-shrink-0" />
+              <Zap className="h-4 w-4 text-[#d4900a] flex-shrink-0" />
               Authentication
             </Link>
             <Link
               to="/docs/extension#installation"
-              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#34d399]/30 hover:text-[#fafafa] transition-all duration-150"
+              className="flex items-center gap-3 rounded-xl border border-[#262626] bg-[#0a0a0a] px-4 py-3 text-sm text-[#a3a3a3] hover:border-[#d4900a]/30 hover:text-[#fafafa] transition-all duration-150"
             >
-              <PuzzleIcon className="h-4 w-4 text-[#34d399] flex-shrink-0" />
+              <PuzzleIcon className="h-4 w-4 text-[#d4900a] flex-shrink-0" />
               Extension Setup
             </Link>
           </div>
