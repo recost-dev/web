@@ -2,6 +2,7 @@
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { X } from "lucide-react"
 import { useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { useGoogleAuth } from "@/src/hooks/useGoogleAuth"
 
 interface SignInModalProps {
@@ -11,7 +12,7 @@ interface SignInModalProps {
 
 export function SignInModal({ open, onClose }: SignInModalProps) {
   const onSuccess = useCallback((token: string) => {
-    localStorage.setItem("ecoapi_token", token)
+    localStorage.setItem("recost_token", token)
     window.location.href = "/dashboard"
   }, [])
 
@@ -23,7 +24,7 @@ export function SignInModal({ open, onClose }: SignInModalProps) {
     return () => document.removeEventListener("keydown", onKey)
   }, [open, onClose])
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <Motion.div
@@ -101,6 +102,7 @@ export function SignInModal({ open, onClose }: SignInModalProps) {
           </Motion.div>
         </Motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

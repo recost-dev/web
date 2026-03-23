@@ -4,7 +4,7 @@ const DEV = import.meta.env.VITE_DEV_AUTH === 'true';
 let isRedirectingToLogin = false;
 
 function getToken(): string | null {
-  return localStorage.getItem('ecoapi_token');
+  return localStorage.getItem('recost_token');
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -20,7 +20,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (res.status === 401) {
     if (!isRedirectingToLogin) {
       isRedirectingToLogin = true;
-      localStorage.removeItem('ecoapi_token');
+      localStorage.removeItem('recost_token');
       window.location.href = '/login';
     }
     throw new Error('Unauthorized');

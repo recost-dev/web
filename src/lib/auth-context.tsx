@@ -56,18 +56,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    // Migrate legacy key name
+    const legacy = localStorage.getItem('ecoapi_token');
+    if (legacy) {
+      localStorage.setItem('recost_token', legacy);
+      localStorage.removeItem('ecoapi_token');
+    }
+
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     let activeToken: string | null;
 
     if (urlToken) {
-      localStorage.setItem('ecoapi_token', urlToken);
+      localStorage.setItem('recost_token', urlToken);
       const url = new URL(window.location.href);
       url.searchParams.delete('token');
       window.history.replaceState({}, '', url.toString());
       activeToken = urlToken;
     } else {
-      activeToken = localStorage.getItem('ecoapi_token');
+      activeToken = localStorage.getItem('recost_token');
     }
 
     if (!activeToken) {
@@ -76,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     if (isTokenExpired(activeToken)) {
-      localStorage.removeItem('ecoapi_token');
+      localStorage.removeItem('recost_token');
       setIsLoading(false);
       return;
     }
@@ -89,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
       .then((r) => {
         if (r.status === 401) {
-          localStorage.removeItem('ecoapi_token');
+          localStorage.removeItem('recost_token');
           setToken(null);
           return null;
         }
@@ -99,14 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (res) setUser(res.data);
       })
       .catch(() => {
-        localStorage.removeItem('ecoapi_token');
+        localStorage.removeItem('recost_token');
         setToken(null);
       })
       .finally(() => setIsLoading(false));
   }, []);
 
   function logout() {
-    localStorage.removeItem('ecoapi_token');
+    localStorage.removeItem('recost_token');
     setToken(null);
     setUser(null);
     window.location.href = '/';
