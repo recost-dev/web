@@ -2,8 +2,7 @@ import { motion as Motion } from 'motion/react';
 import { useNavigate } from 'react-router';
 import { FolderKanban, KeyRound, Terminal, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/src/lib/auth-context';
-
-const accent = '#34d399';
+import { accent } from '@/src/lib/tokens';
 
 const FADE = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -49,27 +48,27 @@ export default function GettingStarted() {
 
         {/* Header */}
         <Motion.div {...FADE(0)} className="mb-8">
-          <p className="text-xs uppercase tracking-[0.15em] mb-2" style={{ color: accent, fontFamily: "'Geist Mono Variable', monospace" }}>
+          <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>
             Get Started
           </p>
-          <h1 className="text-3xl font-bold text-[#fafafa]">Hey, {firstName}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#fafafa]">Hey, {firstName}</h1>
           <p className="mt-1 text-sm text-[#737373]">Here's how to get up and running in a few minutes.</p>
         </Motion.div>
 
         {/* Steps */}
-        <div className="space-y-2">
+        <div className="space-y-3">
           {STEPS.map(({ icon: Icon, step, title, body, action, cta }, i) => (
             <Motion.div
               key={step}
               {...FADE(0.05 + i * 0.06)}
-              className="flex items-start gap-5 px-5 py-5 rounded-xl"
+              className="flex items-start gap-4 sm:gap-5 px-4 py-4 sm:px-5 sm:py-5 rounded-xl"
               style={{ background: '#111111', border: '1px solid #262626' }}
             >
               <div className="p-2.5 rounded-lg flex-shrink-0 mt-0.5" style={{ background: `${accent}14`, border: `1px solid ${accent}28` }}>
                 <Icon size={16} style={{ color: accent }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs mb-1 text-[#525252]" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>Step {step}</p>
+                <p className="text-xs mb-1" style={{ color: '#7a7a7a' }}>Step {step}</p>
                 <p className="text-sm font-semibold text-[#fafafa] mb-1">{title}</p>
                 <p className="text-sm text-[#737373] leading-relaxed mb-3">{body}</p>
                 <button

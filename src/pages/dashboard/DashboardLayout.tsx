@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation, Navigate } from 'react-router';
 import { useAuth } from '@/src/lib/auth-context';
 import { useQueryClient } from '@tanstack/react-query';
+import { colors, accent } from '@/src/lib/tokens';
 import { Sparkles, FolderKanban, User, LogOut } from 'lucide-react';
 
 const NAV = [
@@ -8,8 +9,6 @@ const NAV = [
   { href: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
   { href: '/dashboard/account', icon: User, label: 'Account' },
 ];
-
-const accent = '#34d399';
 
 function useBreadcrumb() {
   const { pathname } = useLocation();
@@ -35,8 +34,8 @@ function useBreadcrumb() {
 
 function Spinner() {
   return (
-    <div className="flex h-screen items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
-      <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: `${accent}33`, borderTopColor: accent }} />
+    <div className="flex h-screen items-center justify-center" style={{ backgroundColor: colors.bgPage }}>
+      <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: colors.accentSubtle, borderTopColor: accent }} />
     </div>
   );
 }
@@ -46,19 +45,19 @@ function NavItem({ href, icon: Icon, label, exact }: { href: string; icon: React
   const isActive = exact ? pathname === href : pathname.startsWith(href);
 
   return (
-    <Link to={href} style={{ textDecoration: 'none' }}>
-      <div
-        className="flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-[14px] transition-all duration-150 cursor-pointer"
-        style={{
-          fontWeight: isActive ? 600 : 400,
-          background: isActive ? `${accent}14` : 'transparent',
-          border: isActive ? `1px solid ${accent}30` : '1px solid transparent',
-          color: isActive ? accent : '#737373',
-        }}
-      >
-        <Icon style={{ width: '16px', height: '16px', flexShrink: 0 }} />
-        <span>{label}</span>
-      </div>
+    <Link
+      to={href}
+      className="flex items-center gap-3.5 px-4 py-2.5 rounded-md text-[14px] transition-all duration-150"
+      style={{
+        textDecoration: 'none',
+        fontWeight: isActive ? 600 : 400,
+        background: isActive ? colors.accentSubtle : 'transparent',
+        border: isActive ? `1px solid ${colors.accentBorder}` : '1px solid transparent',
+        color: isActive ? accent : colors.textMuted,
+      }}
+    >
+      <Icon style={{ width: '16px', height: '16px', flexShrink: 0 }} />
+      <span>{label}</span>
     </Link>
   );
 }
@@ -75,36 +74,46 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={{ backgroundColor: '#0a0a0a' }}>
+    <div className="flex flex-col h-screen overflow-hidden" style={{ backgroundColor: colors.bgPage }}>
 
       {/* Top header */}
-      <header className="flex-shrink-0 flex items-center px-6 h-14" style={{ borderBottom: '1px solid #1e1e1e', background: '#0d0d0d' }}>
-        <Link to="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity" style={{ textDecoration: 'none' }}>
+      <header
+        className="flex-shrink-0 flex items-center px-6 h-14 min-w-0"
+        style={{ borderBottom: `1px solid ${colors.borderSubtle}`, background: colors.bgHeader }}
+      >
+        <Link to="/" className="flex items-center gap-2 hover:opacity-75 transition-opacity flex-shrink-0" style={{ textDecoration: 'none' }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="20" height="20">
             <path d="M55 85 L240 85 L240 140 L105 140 L105 315 L55 315 Z" fill="none" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
             <path d="M345 315 L160 315 L160 260 L295 260 L295 85 L345 85 Z" fill="#fafafa" stroke="#fafafa" strokeWidth="14" strokeLinejoin="round" strokeLinecap="round"/>
           </svg>
-          <span className="font-mono text-sm font-bold tracking-tight text-[#fafafa]">recost</span>
+          <span className="font-mono text-sm font-bold tracking-tight" style={{ color: colors.textPrimary }}>recost</span>
         </Link>
-        {segments.map((seg, i) => (
-          <span key={i} className="flex items-center gap-2.5">
-            <span className="mx-2.5 text-sm text-[#525252]">/</span>
-            {seg.href ? (
-              <Link to={seg.href} className="text-sm text-[#737373] hover:text-[#fafafa] transition-colors" style={{ textDecoration: 'none' }}>{seg.label}</Link>
-            ) : (
-              <span className="text-sm text-[#fafafa]">{seg.label}</span>
-            )}
-          </span>
-        ))}
+        <div className="flex items-center min-w-0 overflow-hidden">
+          {segments.map((seg, i) => (
+            <span key={i} className="flex items-center min-w-0">
+              <span className="mx-2 sm:mx-3 text-sm flex-shrink-0" style={{ color: colors.borderHover }}>/</span>
+              {seg.href ? (
+                <Link
+                  to={seg.href}
+                  className="text-sm hover:text-[#fafafa] transition-colors flex-shrink-0"
+                  style={{ color: colors.textMuted, textDecoration: 'none' }}
+                >
+                  {seg.label}
+                </Link>
+              ) : (
+                <span className="text-sm truncate" style={{ color: colors.textPrimary }}>{seg.label}</span>
+              )}
+            </span>
+          ))}
+        </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar — desktop only */}
         <aside
           className="hidden md:flex flex-col w-56 flex-shrink-0"
-          style={{ borderRight: '1px solid #1e1e1e', background: '#0d0d0d' }}
+          style={{ borderRight: `1px solid ${colors.borderSubtle}`, background: colors.bgHeader }}
         >
-          {/* Nav */}
           <nav className="flex-1 px-3 py-4 space-y-0.5">
             {NAV.map(({ href, icon, label, exact }) => (
               <NavItem key={href} href={href} icon={icon} label={label} exact={exact} />
@@ -112,7 +121,7 @@ export default function DashboardLayout() {
           </nav>
 
           {/* User section */}
-          <div className="px-3 py-4" style={{ borderTop: '1px solid #1e1e1e' }}>
+          <div className="px-3 py-4" style={{ borderTop: `1px solid ${colors.borderSubtle}` }}>
             {user && (
               <div className="flex items-center gap-3 px-4 py-3 mb-1">
                 {user.avatarUrl ? (
@@ -120,16 +129,21 @@ export default function DashboardLayout() {
                     src={user.avatarUrl}
                     alt={user.name ?? ''}
                     className="w-7 h-7 rounded-full flex-shrink-0"
-                    style={{ outline: '1px solid #262626' }}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ outline: `1px solid ${colors.borderDefault}` }}
                   />
                 ) : (
-                  <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[11px] font-semibold" style={{ background: `${accent}20`, color: accent }}>
+                  <div
+                    className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-[11px] font-semibold"
+                    style={{ background: colors.accentSubtle, color: accent }}
+                  >
                     {(user.name ?? user.email)[0].toUpperCase()}
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] text-[#fafafa] font-medium truncate">{user.name}</p>
-                  <p className="text-[11px] truncate mt-0.5" style={{ color: '#525252', fontFamily: "'Geist Mono Variable', monospace" }}>
+                  <p className="text-[13px] font-medium truncate" style={{ color: colors.textPrimary }}>{user.name}</p>
+                  <p className="text-[11px] truncate mt-0.5 font-mono" style={{ color: colors.textMuted }}>
                     {user.email}
                   </p>
                 </div>
@@ -137,10 +151,11 @@ export default function DashboardLayout() {
             )}
             <button
               onClick={logout}
-              className="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-[13px] transition-all duration-150 cursor-pointer"
-              style={{ color: '#525252', background: 'transparent', border: 'none' }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#f87171'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(248,113,113,0.06)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#525252'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+              aria-label="Sign out"
+              className="flex items-center gap-3 w-full px-4 py-2.5 rounded-md text-[13px] transition-all duration-150 cursor-pointer"
+              style={{ color: colors.textMuted, background: 'transparent', border: 'none' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.error; (e.currentTarget as HTMLButtonElement).style.background = colors.errorSubtle; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.textMuted; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               <LogOut style={{ width: '15px', height: '15px', flexShrink: 0 }} />
               <span>Sign out</span>
@@ -157,15 +172,15 @@ export default function DashboardLayout() {
       {/* Bottom nav — mobile only */}
       <nav
         className="flex md:hidden fixed bottom-0 inset-x-0 z-50 items-center justify-around px-2 py-1"
-        style={{ background: 'rgba(10,10,10,0.95)', borderTop: '1px solid #1e1e1e', backdropFilter: 'blur(20px)' }}
+        style={{ background: colors.bgPage, borderTop: `1px solid ${colors.borderSubtle}` }}
       >
         {NAV.map(({ href, icon: Icon, label, exact }) => {
           const isActive = exact ? pathname === href : pathname.startsWith(href);
           return (
             <Link key={href} to={href} style={{ textDecoration: 'none', flex: 1 }}>
               <div
-                className="flex flex-col items-center gap-1 py-2 rounded-lg mx-1 transition-all duration-150"
-                style={{ color: isActive ? accent : '#525252' }}
+                className="flex flex-col items-center gap-1 py-2.5 rounded-md mx-1 transition-all duration-150"
+                style={{ color: isActive ? accent : colors.textMuted }}
               >
                 <Icon style={{ width: '20px', height: '20px' }} />
                 <span style={{ fontSize: '10px', fontWeight: isActive ? 600 : 400 }}>{label}</span>

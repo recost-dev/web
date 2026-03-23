@@ -33,9 +33,9 @@ export const galaxySunsetTheme: ThemeColors = {
   groundColor2: '#000000',
   treeBarkGrad: ['#451a03', '#78350f', '#451a03'],
   foliageColor: GREEN_FOLIAGE,
-  particleColors: ['rgba(34, 197, 94, 1)', 'rgba(74, 222, 128, 0.8)'],
-  btnGradient: ['#16a34a', '#15803d'],
-  btnShadow: 'rgba(22, 163, 74, 0.2)',
-  textTitleGrad: ['#ffffff', '#4ade80'],
+  particleColors: ['rgba(212, 144, 10, 1)', 'rgba(212, 144, 10, 0.8)'],
+  btnGradient: ['#d4900a', '#b87408'],
+  btnShadow: 'rgba(212, 144, 10, 0.2)',
+  textTitleGrad: ['#ffffff', '#d4900a'],
   textTagline: 'rgba(255, 255, 255, 0.9)',
 };

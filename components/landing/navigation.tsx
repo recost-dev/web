@@ -8,6 +8,7 @@ import { SignInModal } from "./sign-in-modal"
 export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [signInOpen, setSignInOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const { isAuthenticated } = useAuth()
   const location = useLocation()
 
@@ -17,9 +18,15 @@ export function Navigation() {
     }
   }, [location.state])
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md">
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-[#0a0a0a]/80 backdrop-blur-md border-b ${scrolled ? 'border-[#262626]' : 'border-transparent'}`}>
       <nav className="mx-auto flex h-16 w-[85.7%] items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-mono text-xl font-bold tracking-tight text-[#fafafa] hover:opacity-75 transition-opacity">
@@ -58,7 +65,7 @@ export function Navigation() {
         <div className="hidden items-center gap-3 md:flex">
           {isAuthenticated ? (
             <Button
-              className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+              className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
               asChild
             >
               <Link to="/dashboard">Dashboard</Link>
@@ -73,7 +80,7 @@ export function Navigation() {
                 Sign in
               </Button>
               <Button
-                className="bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                className="bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                 onClick={() => setSignInOpen(true)}
               >
                 Get started
@@ -122,7 +129,7 @@ export function Navigation() {
             <div className="flex flex-col gap-2 pt-4 border-t border-[#262626]">
               {isAuthenticated ? (
                 <Button
-                  className="w-full bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                  className="w-full bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                   asChild
                 >
                   <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
@@ -137,7 +144,7 @@ export function Navigation() {
                     Sign in
                   </Button>
                   <Button
-                    className="w-full bg-[#34d399] text-[#0a0a0a] hover:bg-[#34d399]/90 font-medium"
+                    className="w-full bg-[#d4900a] text-[#0a0a0a] hover:bg-[#d4900a]/90 font-medium"
                     onClick={() => { setMobileMenuOpen(false); setSignInOpen(true) }}
                   >
                     Get started

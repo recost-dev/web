@@ -59,11 +59,11 @@ The api-client also uses `VITE_API_URL` (default: `https://api.recost.dev`) to s
 - Text primary: `#fafafa`
 - Text secondary: `#a3a3a3`
 - Text muted: `#737373`
-- Accent (positive metrics, success): `#22c55e` (green)
-- Accent (cost / highlight): `#f59e0b` (amber), used sparingly
+- Accent (cost / value / highlight): `#d4900a` (amber) — primary accent; amber = cost intelligence
+- Status only (live/beta pulse dots, copied state): `#22c55e` (green), used sparingly
 - Destructive: `#ef4444` (red)
 
-**Typography:** Geist (sans-serif), Geist Mono (monospace)
+**Typography:** Plus Jakarta Sans (sans-serif), Geist Mono (monospace)
 
 **Layout:**
 - Dashboard pages: no `max-w-*` width constraints — go wide

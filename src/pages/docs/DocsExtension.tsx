@@ -40,7 +40,7 @@ function CodeBlock({ children }: { children: string }) {
   return (
     <pre
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '11px',
         lineHeight: 1.7,
         backgroundColor: 'rgba(0,0,0,0.6)',
@@ -80,7 +80,7 @@ function OSBadges() {
             borderRadius: '999px',
             backgroundColor: 'rgba(255,255,255,0.06)',
             border: '1px solid rgba(255,255,255,0.1)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'inherit',
             fontSize: '11px',
             color: 'rgba(255,255,255,0.55)',
           }}
@@ -99,7 +99,7 @@ function SubHeading({ children }: { children: React.ReactNode }) {
   return (
     <p
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Geist Mono Variable', monospace",
         fontSize: '10px',
         letterSpacing: '0.12em',
         textTransform: 'uppercase',
@@ -129,7 +129,7 @@ function FieldTable({ fields }: { fields: Field[] }) {
                 style={{
                   textAlign: 'left',
                   padding: '6px 10px',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Geist Mono Variable', monospace",
                   fontSize: '10px',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -145,10 +145,10 @@ function FieldTable({ fields }: { fields: Field[] }) {
         <tbody>
           {fields.map((f) => (
             <tr key={f.name} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#60a5fa' }}>{f.name}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#fbbf24' }}>{f.type}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>{f.default ?? '-'}</td>
-              <td style={{ padding: '7px 10px', fontFamily: "'Inter', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{f.desc}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: '#60a5fa' }}>{f.name}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: '#fbbf24' }}>{f.type}</td>
+              <td style={{ padding: '7px 10px', fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>{f.default ?? '-'}</td>
+              <td style={{ padding: '7px 10px', fontFamily: 'inherit', fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{f.desc}</td>
             </tr>
           ))}
         </tbody>
@@ -171,7 +171,7 @@ function DataTable({ rows, headers }: { rows: string[][]; headers: string[] }) {
                 style={{
                   textAlign: 'left',
                   padding: '6px 10px',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Geist Mono Variable', monospace",
                   fontSize: '10px',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
@@ -192,7 +192,7 @@ function DataTable({ rows, headers }: { rows: string[][]; headers: string[] }) {
                   key={j}
                   style={{
                     padding: '7px 10px',
-                    fontFamily: j === 0 ? "'JetBrains Mono', monospace" : "'Inter', sans-serif",
+                    fontFamily: j === 0 ? "'Geist Mono Variable', monospace" : 'inherit',
                     fontSize: j === 0 ? '11px' : '12px',
                     color: j === 0 ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.45)',
                   }}
@@ -248,7 +248,7 @@ function DashboardScreenshots() {
             key={i}
             onClick={() => api?.scrollTo(i)}
             style={{
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "'Geist Mono Variable', monospace",
               fontSize: '10px',
               letterSpacing: '0.07em',
               textTransform: 'uppercase',
@@ -297,20 +297,20 @@ function SectionCard({
     >
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h2 className="text-[22px] text-white mb-1" style={{ fontFamily: 'inherit', fontWeight: 700 }}>
             {title}
           </h2>
-          <p className="text-[13px]" style={{ color: '#34d399', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
+          <p className="text-[13px]" style={{ color: '#d4900a', fontFamily: 'inherit', fontWeight: 500 }}>
             {subtitle}
           </p>
         </div>
         <div
-          className="flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest flex-shrink-0"
+          className="flex items-center gap-2 px-3 py-1 rounded text-[11px] uppercase tracking-widest flex-shrink-0"
           style={{
-            background: `${'#34d399'}22`,
-            color: '#34d399',
-            border: `1px solid ${'#34d399'}44`,
-            fontFamily: "'JetBrains Mono', monospace",
+            background: `${'#d4900a'}22`,
+            color: '#d4900a',
+            border: `1px solid ${'#d4900a'}44`,
+            fontFamily: "'Geist Mono Variable', monospace",
           }}
         >
           <Icon size={12} />
@@ -359,7 +359,7 @@ function TOCSidebar({ activeSection }: { activeSection: string }) {
           <div key={section.label}>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'inherit',
                 fontSize: '14px',
                 fontWeight: 600,
                 letterSpacing: '0.1em',
@@ -378,7 +378,7 @@ function TOCSidebar({ activeSection }: { activeSection: string }) {
                   key={id}
                   href={`#${id}`}
                   style={{
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'inherit',
                     fontSize: isActive ? '16px' : '15px',
                     fontWeight: isActive ? 600 : 400,
                     color: isActive ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.3)',
@@ -469,11 +469,11 @@ export default function Extension() {
             <Motion.div {...FADE(0)} className="px-4 pt-14 pb-6">
               <h1
                 className="text-[40px] md:text-[52px] text-white mb-3"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, lineHeight: 1.05 }}
+                style={{ fontFamily: 'inherit', fontWeight: 700, lineHeight: 1.05 }}
               >
                 Extension Docs
               </h1>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '16px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
                 VSCode extension that scans your workspace for API call patterns, estimates costs, and surfaces optimization opportunities, without leaving your editor.
               </p>
             </Motion.div>
@@ -487,12 +487,10 @@ export default function Extension() {
               subtitle="VS Code Extension Host · TypeScript · Webview UI"
               delay={0.05}
             >
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
                 ECO is a VS Code extension that analyzes your entire codebase for API call patterns. Install it and scan your workspace in one click from the Activity Bar sidebar. Because it runs on the VS Code extension host, it works natively in any compatible editor: VS Code, Cursor, Windsurf, and more.
               </p>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                 {[
                   { icon: Search, label: 'Workspace scan', desc: 'Scans TS, JS, Python, Go, Java, and Ruby files for API calls' },
                   { icon: AlertTriangle, label: 'Risk detection', desc: 'Surfaces N+1, redundant calls, cacheable endpoints, and rate-limit risks' },
@@ -501,20 +499,16 @@ export default function Extension() {
                   { icon: Globe, label: 'Editor compatible', desc: 'VS Code, Cursor, Windsurf, any extension-host-compatible editor' },
                   { icon: LayoutDashboard, label: 'Open Dashboard', desc: 'Launch a full local dashboard in the browser from the sidebar button' },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-3 p-3.5 rounded-xl"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
-                  >
+                  <div key={label} className="flex items-start gap-3">
                     <div
-                      className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#34d399'}18` }}
+                      className="mt-0.5 p-1.5 rounded-md shrink-0"
+                      style={{ background: `${'#d4900a'}14` }}
                     >
-                      <Icon size={13} style={{ color: '#34d399' }} />
+                      <Icon size={12} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
-                      <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>
-                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>{desc}</p>
+                      <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{label}</p>
+                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit' }}>{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -531,18 +525,18 @@ export default function Extension() {
               delay={0.1}
             >
               <SubHeading>From .vsix (production)</SubHeading>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
-                Open the Command Palette (<code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Cmd+Shift+P</code> / <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Ctrl+Shift+P</code>), run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Extensions: Install from VSIX...</strong>, and select the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>eco-api-analyzer-*.vsix</code> file. Reload the window when prompted.
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
+                Open the Command Palette (<code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Cmd+Shift+P</code> / <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Ctrl+Shift+P</code>), run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Extensions: Install from VSIX...</strong>, and select the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>eco-api-analyzer-*.vsix</code> file. Reload the window when prompted.
               </p>
               <SubHeading>Dev mode (F5)</SubHeading>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
-                Open the <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>extension/</code> folder in VS Code. Build the extension first (see Setup below), then press <strong style={{ color: 'rgba(255,255,255,0.75)' }}>F5</strong> to launch an Extension Development Host with the extension loaded.
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
+                Open the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>extension/</code> folder in VS Code. Build the extension first (see Setup below), then press <strong style={{ color: 'rgba(255,255,255,0.75)' }}>F5</strong> to launch an Extension Development Host with the extension loaded.
               </p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                 <SubHeading>Build & package .vsix (local install)</SubHeading>
                 <OSBadges />
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
                 Use the provided build script — it handles dependencies, build, and packaging in one step. Run in a bash terminal from the project root (Git Bash / WSL on Windows — not PowerShell or CMD):
               </p>
               <CodeBlock>{`bash extension/scripts/build-vsix.sh
@@ -585,7 +579,7 @@ cd ../dashboard && npm install`}</CodeBlock>
 npm run build`}</CodeBlock>
 
               <SubHeading>Dev workflow (watch mode)</SubHeading>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
                 Run these in parallel in two terminals, then press F5 to launch the Extension Development Host:
               </p>
               <CodeBlock>{`# Terminal 1: extension backend
@@ -661,15 +655,13 @@ cd extension && npm run watch:webview`}</CodeBlock>
               subtitle="Full local dashboard launched from the sidebar, no remote API required"
               delay={0.25}
             >
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
                 After scanning your workspace, click <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Open Dashboard</strong> in the sidebar panel. This launches a full React dashboard in your browser backed entirely by local scan data, the same data collected by the extension scan, with no remote API calls.
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
-                The dashboard is built with <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>VITE_LOCAL_MODE=true</code>, so navigating to <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/</code> automatically redirects to <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/projects/local</code>, the local project view.
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+                The dashboard is built with <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>VITE_LOCAL_MODE=true</code>, so navigating to <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/</code> automatically redirects to <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>/projects/local</code>, the local project view.
               </p>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5"
-              >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-5">
                 {[
                   { icon: LayoutDashboard, label: 'Project overview', desc: 'Eco Score gauge, stat cards, provider cost breakdown' },
                   { icon: Globe, label: 'Endpoints explorer', desc: 'Filter by provider, HTTP method, or status' },
@@ -678,20 +670,16 @@ cd extension && npm run watch:webview`}</CodeBlock>
                   { icon: DollarSign, label: 'Cost analytics', desc: 'Monthly cost estimates and potential savings totals' },
                   { icon: MessageSquare, label: 'AI chat', desc: 'In-dashboard AI assistant with context from your scan results' },
                 ].map(({ icon: Icon, label, desc }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-3 p-3.5 rounded-xl"
-                    style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
-                  >
+                  <div key={label} className="flex items-start gap-3">
                     <div
-                      className="mt-0.5 p-1.5 rounded-lg shrink-0"
-                      style={{ background: `${'#34d399'}18` }}
+                      className="mt-0.5 p-1.5 rounded-md shrink-0"
+                      style={{ background: `${'#d4900a'}14` }}
                     >
-                      <Icon size={13} style={{ color: '#34d399' }} />
+                      <Icon size={12} style={{ color: '#d4900a' }} />
                     </div>
                     <div>
-                      <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'JetBrains Mono', monospace" }}>{label}</p>
-                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: "'Inter', sans-serif" }}>{desc}</p>
+                      <p className="text-[12px] text-white mb-0.5" style={{ fontFamily: "'Geist Mono Variable', monospace" }}>{label}</p>
+                      <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.38)', fontFamily: 'inherit' }}>{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -715,8 +703,8 @@ npm run build:dashboard`}</CodeBlock>
                 <SubHeading>Option 1: install as .vsix (recommended)</SubHeading>
                 <OSBadges />
               </div>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
-                Use the build script to install all dependencies, build everything, and produce a <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>.vsix</code> file — no dev environment needed. Run in a bash terminal (Git Bash / WSL on Windows — not PowerShell or CMD):
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+                Use the build script to install all dependencies, build everything, and produce a <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>.vsix</code> file — no dev environment needed. Run in a bash terminal (Git Bash / WSL on Windows — not PowerShell or CMD):
               </p>
               <CodeBlock>{`bash extension/scripts/build-vsix.sh
 
@@ -725,8 +713,8 @@ code --install-extension eco-api-analyzer-*.vsix
 # or: Ctrl+Shift+P → "Extensions: Install from VSIX..."`}</CodeBlock>
 
               <SubHeading>Option 2: automated script (for developing on the extension)</SubHeading>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
-                For contributors and developers working on the extension itself. Run <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>start-extension-full.sh</code> from the project root — it installs all dependencies (including the dashboard), builds everything, and opens the extension folder in your editor ready for F5 development.
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
+                For contributors and developers working on the extension itself. Run <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>start-extension-full.sh</code> from the project root — it installs all dependencies (including the dashboard), builds everything, and opens the extension folder in your editor ready for F5 development.
               </p>
               <CodeBlock>{`bash start-extension-full.sh`}</CodeBlock>
 
@@ -743,7 +731,7 @@ npm run build
 #    → Extension Development Host launches with ECO loaded`}</CodeBlock>
 
               <SubHeading>After launch</SubHeading>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
                 Click the leaf icon in the Activity Bar to open the ECO sidebar. Press the scan button (or run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>ECO: Scan Workspace</strong> from the Command Palette) to analyze your codebase. Results appear immediately in the sidebar, and you can click <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Open Dashboard</strong> to view the full dashboard in your browser.
               </p>
             </SectionCard>

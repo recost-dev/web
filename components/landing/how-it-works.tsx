@@ -1,4 +1,6 @@
+import { useRef } from "react"
 import { Download, Zap, BarChart3 } from "lucide-react"
+import { motion as Motion, useInView, useReducedMotion } from "motion/react"
 
 const steps = [
   {
@@ -21,49 +23,67 @@ const steps = [
   }
 ]
 
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
+}
+
 export function HowItWorks() {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-80px" })
+  const shouldReduceMotion = useReducedMotion()
+
+  const vis = shouldReduceMotion ? "visible" : (isInView ? "visible" : "hidden")
+
   return (
-    <section className="relative border-t border-[#262626] bg-[#0a0a0a]">
+    <section className="relative overflow-hidden border-t border-[#262626] bg-[#0a0a0a]">
       <div className="glow-orb-sm w-[1050px] h-[450px] -top-20 left-1/2 -translate-x-1/2" />
-      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+      <div ref={ref} className="mx-auto max-w-6xl px-6 py-24 md:py-32">
         {/* Section Header */}
-        <div className="text-center">
+        <Motion.div variants={itemVariants} initial="hidden" animate={vis}>
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">
             How it works
           </h2>
-          <p className="mt-4 text-lg text-[#a3a3a3]">
+          <p className="mt-3 text-lg text-[#a3a3a3]">
             Start tracking in under 2 minutes
           </p>
-        </div>
+        </Motion.div>
 
         {/* Steps */}
-        <div className="mt-16 grid gap-8 md:grid-cols-3">
+        <Motion.div
+          className="mt-16 grid gap-8 md:grid-cols-3"
+          variants={containerVariants}
+          initial="hidden"
+          animate={vis}
+        >
           {steps.map((step, index) => (
-            <div 
+            <Motion.div
               key={step.title}
-              className="group relative rounded-xl border border-[#262626] bg-[#111111] p-8 transition-colors hover:border-[#34d399]/30"
+              className="group relative rounded-xl border border-[#262626] bg-[#111111] p-6 transition-colors hover:border-[#d4900a]/30"
+              variants={itemVariants}
             >
-              {/* Step number */}
-              <span className="absolute -top-3 right-6 font-mono text-sm text-[#34d399]">
+              <span className="absolute -top-3 right-6 font-mono text-sm text-[#d4900a]">
                 {step.step}
               </span>
-              
-              {/* Icon */}
-              <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-[#262626] bg-[#0a0a0a] transition-colors group-hover:border-[#34d399]/30">
-                <step.icon className="h-6 w-6 text-[#34d399]" />
+
+              <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-lg border border-[#262626] bg-[#0a0a0a] transition-colors group-hover:border-[#d4900a]/30">
+                <step.icon className="h-6 w-6 text-[#d4900a]" />
               </div>
 
-              {/* Content */}
               <h3 className="text-xl font-semibold text-[#fafafa]">{step.title}</h3>
               <p className="mt-3 text-[#a3a3a3] leading-relaxed">{step.description}</p>
 
-              {/* Connector line (except last) */}
               {index < steps.length - 1 && (
                 <div className="absolute -right-4 top-1/2 hidden h-px w-8 bg-gradient-to-r from-[#262626] to-transparent md:block" />
               )}
-            </div>
+            </Motion.div>
           ))}
-        </div>
+        </Motion.div>
       </div>
     </section>
   )
