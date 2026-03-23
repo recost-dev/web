@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import { FolderKanban, Plus, Trash2, Clock, X, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -37,6 +37,7 @@ export default function Projects() {
   const [newName, setNewName] = useState('');
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [createError, setCreateError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   const { data: projects = [], isLoading, isError, refetch } = useQuery<Project[]>({
     queryKey: ['dashboard-projects'],
@@ -63,10 +64,28 @@ export default function Projects() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['dashboard-projects'] });
       setDeleteId(null);
+      setDeleteError('');
     },
+    onError: (e: Error) => setDeleteError(e.message),
   });
 
   const atLimit = projects.length >= MAX_PROJECTS;
+  const projectToDelete = projects.find(p => p.id === deleteId);
+  const NAME_LIMIT = 64;
+
+  useEffect(() => {
+    if (!showCreate) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowCreate(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [showCreate]);
+
+  useEffect(() => {
+    if (!deleteId) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setDeleteId(null); setDeleteError(''); } };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [deleteId]);
 
   function handleCreate(e: { preventDefault(): void }) {
     e.preventDefault();
@@ -265,14 +284,23 @@ export default function Projects() {
                     id="project-name"
                     autoFocus
                     value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
+                    onChange={(e) => setNewName(e.target.value.slice(0, NAME_LIMIT))}
                     placeholder="my-api-project"
+                    maxLength={NAME_LIMIT}
                     className="w-full px-4 py-2.5 rounded-md text-sm placeholder-[#525252] focus:outline-none transition-all"
                     style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textPrimary }}
                     onFocus={(e) => { e.currentTarget.style.borderColor = colors.accentBorder; }}
                     onBlur={(e) => { e.currentTarget.style.borderColor = colors.borderDefault; }}
                   />
-                  {createError && <p className="text-xs mt-2" style={{ color: colors.error }}>{createError}</p>}
+                  <div className="flex items-center justify-between mt-1.5">
+                    {createError
+                      ? <p className="text-xs" style={{ color: colors.error }}>{createError}</p>
+                      : <span />
+                    }
+                    <p className="text-xs tabular-nums" style={{ color: newName.length >= NAME_LIMIT ? colors.error : colors.textMuted }}>
+                      {newName.length}/{NAME_LIMIT}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex gap-3 pt-1">
                   <button
@@ -307,7 +335,7 @@ export default function Projects() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
-            onClick={(e) => { if (e.target === e.currentTarget) setDeleteId(null); }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setDeleteId(null); setDeleteError(''); } }}
           >
             <Motion.div
               role="dialog"
@@ -322,23 +350,30 @@ export default function Projects() {
             >
               <div className="flex items-start gap-3 mb-5">
                 <Trash2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: colors.error }} />
-                <div>
-                  <h2 id="delete-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>Delete project?</h2>
+                <div className="min-w-0">
+                  <h2 id="delete-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>
+                    Delete &ldquo;<span className="truncate">{projectToDelete?.name ?? 'this project'}</span>&rdquo;?
+                  </h2>
                   <p className="text-sm leading-relaxed" style={{ color: colors.textMuted }}>
                     This permanently deletes the project and all its scans. Cannot be undone.
                   </p>
                 </div>
               </div>
+              {deleteError && (
+                <p className="text-xs mb-4 px-3 py-2 rounded-md" style={{ color: colors.error, background: colors.errorSubtle, border: `1px solid ${colors.errorBorder}` }}>
+                  {deleteError}
+                </p>
+              )}
               <div className="flex gap-3">
                 <button
-                  onClick={() => setDeleteId(null)}
+                  onClick={() => { setDeleteId(null); setDeleteError(''); }}
                   className="flex-1 px-4 py-2.5 rounded-md text-sm transition-all cursor-pointer"
                   style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textMuted }}
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={() => deleteMutation.mutate(deleteId)}
+                  onClick={() => deleteMutation.mutate(deleteId!)}
                   disabled={deleteMutation.isPending}
                   className="flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer disabled:opacity-40"
                   style={{ background: colors.errorSubtle, border: `1px solid ${colors.errorBorder}`, color: colors.error }}

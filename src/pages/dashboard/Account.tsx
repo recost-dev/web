@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import { Mail, Calendar, KeyRound, Copy, Check, Clock, RefreshCw, Plus, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -44,10 +44,14 @@ function fmtLong(dateStr?: string) {
 
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
-  function copy() {
-    navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard permission denied — do nothing, button stays in default state
+    }
   }
   return (
     <button
@@ -87,6 +91,29 @@ export default function Account() {
     setShowRevealModal(false);
     setRevealedKey(null);
   }
+
+  const KEY_NAME_LIMIT = 64;
+
+  useEffect(() => {
+    if (!showRevealModal) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') dismissReveal(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [showRevealModal]);
+
+  useEffect(() => {
+    if (!showGenerate) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setShowGenerate(false); setKeyName(''); setGenerateError(''); } };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [showGenerate]);
+
+  useEffect(() => {
+    if (!confirmRotate) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setConfirmRotate(false); setRotateError(''); } };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [confirmRotate]);
 
   const { data: keys = [], isLoading: keysLoading, isError: keysError, refetch: refetchKeys } = useQuery<ApiKey[]>({
     queryKey: ['dashboard-keys'],
@@ -179,9 +206,9 @@ export default function Account() {
                     <div className="w-1.5 h-1.5 bg-white rounded-full" />
                   </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold" style={{ color: colors.textPrimary }}>{user.name ?? user.email}</h2>
-                  <p className="text-xs mt-1 font-mono" style={{ color: colors.textMuted }}>{user.email}</p>
+                <div className="min-w-0">
+                  <h2 className="text-lg font-bold truncate" style={{ color: colors.textPrimary }}>{user.name ?? user.email}</h2>
+                  <p className="text-xs mt-1 font-mono truncate" style={{ color: colors.textMuted }}>{user.email}</p>
                 </div>
               </div>
 
@@ -336,7 +363,7 @@ export default function Account() {
                 <KeyRound className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: accent }} />
                 <div>
                   <h2 id="reveal-dialog-title" className="text-[15px] font-bold mb-1" style={{ color: colors.textPrimary }}>Your API Key</h2>
-                  <p className="text-sm font-mono" style={{ color: colors.textMuted }}>{revealedKey.name}</p>
+                  <p className="text-sm font-mono truncate" style={{ color: colors.textMuted }}>{revealedKey.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-4">
@@ -390,14 +417,23 @@ export default function Account() {
                 <input
                   autoFocus
                   value={keyName}
-                  onChange={(e) => setKeyName(e.target.value.slice(0, 64))}
+                  onChange={(e) => setKeyName(e.target.value.slice(0, KEY_NAME_LIMIT))}
                   placeholder="e.g. production"
-                  className="w-full px-4 py-2.5 rounded-md text-sm placeholder-[#525252] focus:outline-none transition-all mb-1"
+                  maxLength={KEY_NAME_LIMIT}
+                  className="w-full px-4 py-2.5 rounded-md text-sm placeholder-[#525252] focus:outline-none transition-all"
                   style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, color: colors.textPrimary }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = colors.accentBorder; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = colors.borderDefault; }}
                 />
-                {generateError && <p className="text-xs mb-3" style={{ color: colors.error }}>{generateError}</p>}
+                <div className="flex items-center justify-between mt-1.5 mb-1">
+                  {generateError
+                    ? <p className="text-xs" style={{ color: colors.error }}>{generateError}</p>
+                    : <span />
+                  }
+                  <p className="text-xs tabular-nums" style={{ color: keyName.length >= KEY_NAME_LIMIT ? colors.error : colors.textMuted }}>
+                    {keyName.length}/{KEY_NAME_LIMIT}
+                  </p>
+                </div>
                 <div className="flex gap-3 mt-4">
                   <button
                     type="button"

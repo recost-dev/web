@@ -617,8 +617,8 @@ export default function Docs() {
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.7, marginTop: '10px', marginBottom: '16px' }}>
                   Generate your API key in the{' '}
                   <Link
-                    href="/dashboard/account"
-                    style={{ color: '#4EAA57', textDecoration: 'underline', fontFamily: 'inherit' }}
+                    to="/dashboard/account"
+                    style={{ color: '#d4900a', textDecoration: 'underline' }}
                   >
                     dashboard → Account
                   </Link>
