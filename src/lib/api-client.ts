@@ -62,7 +62,7 @@ async function mockRequest<T>(path: string): Promise<T> {
   }
 
   if (path.match(/^\/projects\/[^/]+\/scans\/latest$/)) return { data: MOCK_LATEST_SCAN } as T;
-  if (path.match(/^\/projects\/[^/]+\/scans(\/|\?|$)/)) return paginated(MOCK_SCANS) as T;
+  if (path.match(/^\/projects\/[^/]+\/scans(\?|$)/)) return paginated(MOCK_SCANS) as T;
   if (path.match(/^\/projects\/[^/]+\/endpoints/)) return paginated(MOCK_ENDPOINTS) as T;
   if (path.match(/^\/projects\/[^/]+\/suggestions/)) return paginated(MOCK_SUGGESTIONS) as T;
   if (path.match(/^\/projects\/[^/]+\/cost\/by-provider/)) return paginated(MOCK_COST_BY_PROVIDER) as T;
