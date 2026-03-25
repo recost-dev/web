@@ -41,8 +41,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 async function mockRequest<T>(path: string): Promise<T> {
   const {
-    MOCK_PROJECTS, MOCK_LATEST_SCAN, MOCK_ENDPOINTS,
-    MOCK_SUGGESTIONS, MOCK_COST_BY_PROVIDER, MOCK_COST_BY_FILE, MOCK_SCANS, MOCK_KEYS,
+    MOCK_PROJECTS, MOCK_KEYS,
+    MOCK_ENDPOINTS_MAP, MOCK_SUGGESTIONS_MAP, MOCK_COST_BY_PROVIDER_MAP,
+    MOCK_COST_BY_FILE_MAP, MOCK_SCANS_MAP, MOCK_LATEST_SCAN_MAP, MOCK_COST_SUMMARY_MAP,
   } = await import('@/app/lib/mock-data');
 
   await new Promise((r) => setTimeout(r, 100));
@@ -61,14 +62,26 @@ async function mockRequest<T>(path: string): Promise<T> {
     return { data: proj } as T;
   }
 
-  if (path.match(/^\/projects\/[^/]+\/scans\/latest$/)) return { data: MOCK_LATEST_SCAN } as T;
-  if (path.match(/^\/projects\/[^/]+\/scans(\?|$)/)) return paginated(MOCK_SCANS) as T;
-  if (path.match(/^\/projects\/[^/]+\/endpoints/)) return paginated(MOCK_ENDPOINTS) as T;
-  if (path.match(/^\/projects\/[^/]+\/suggestions/)) return paginated(MOCK_SUGGESTIONS) as T;
-  if (path.match(/^\/projects\/[^/]+\/cost\/by-provider/)) return paginated(MOCK_COST_BY_PROVIDER) as T;
-  if (path.match(/^\/projects\/[^/]+\/cost\/by-file/)) return paginated(MOCK_COST_BY_FILE) as T;
-  if (path.match(/^\/projects\/[^/]+\/cost$/)) {
-    return { data: { totalMonthlyCost: 247.85, totalCallsPerDay: 4820, endpointCount: 12 } } as T;
+  const subMatch = path.match(/^\/projects\/([^/]+)\/(.+)$/);
+  if (subMatch) {
+    const pid = subMatch[1];
+    const sub = subMatch[2];
+
+    const endpoints = MOCK_ENDPOINTS_MAP[pid] ?? MOCK_ENDPOINTS_MAP[MOCK_PROJECTS[0].id];
+    const suggestions = MOCK_SUGGESTIONS_MAP[pid] ?? MOCK_SUGGESTIONS_MAP[MOCK_PROJECTS[0].id];
+    const scans = MOCK_SCANS_MAP[pid] ?? MOCK_SCANS_MAP[MOCK_PROJECTS[0].id];
+    const latestScan = MOCK_LATEST_SCAN_MAP[pid] ?? MOCK_LATEST_SCAN_MAP[MOCK_PROJECTS[0].id];
+    const costByProvider = MOCK_COST_BY_PROVIDER_MAP[pid] ?? MOCK_COST_BY_PROVIDER_MAP[MOCK_PROJECTS[0].id];
+    const costByFile = MOCK_COST_BY_FILE_MAP[pid] ?? MOCK_COST_BY_FILE_MAP[MOCK_PROJECTS[0].id];
+    const costSummary = MOCK_COST_SUMMARY_MAP[pid] ?? MOCK_COST_SUMMARY_MAP[MOCK_PROJECTS[0].id];
+
+    if (sub === 'scans/latest') return { data: latestScan } as T;
+    if (sub.match(/^scans(\?|$)/)) return paginated(scans) as T;
+    if (sub.match(/^endpoints/)) return paginated(endpoints) as T;
+    if (sub.match(/^suggestions/)) return paginated(suggestions) as T;
+    if (sub.match(/^cost\/by-provider/)) return paginated(costByProvider) as T;
+    if (sub.match(/^cost\/by-file/)) return paginated(costByFile) as T;
+    if (sub === 'cost') return { data: costSummary } as T;
   }
 
   console.warn(`[mock] unhandled GET ${path}`);

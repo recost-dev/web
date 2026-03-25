@@ -7,13 +7,6 @@ import { apiClient } from '@/src/lib/api-client';
 import { colors, accent, FADE } from '@/src/lib/tokens';
 
 const MAX_PROJECTS = 20;
-const DEV = import.meta.env.VITE_DEV_AUTH === 'true';
-
-const MOCK_PROJECTS: Project[] = [
-  { id: 'mock-1', name: 'my-backend-api', createdAt: '2026-01-15T10:00:00Z', updatedAt: '2026-03-10T14:30:00Z', latestScanId: 'scan-1', endpointCount: 24 },
-  { id: 'mock-2', name: 'payment-service', createdAt: '2026-02-01T09:00:00Z', updatedAt: '2026-03-18T11:00:00Z', latestScanId: 'scan-2', endpointCount: 7 },
-  { id: 'mock-3', name: 'analytics-worker', createdAt: '2026-03-01T12:00:00Z', updatedAt: '2026-03-01T12:00:00Z' },
-];
 
 interface Project {
   id: string;
@@ -43,8 +36,6 @@ export default function Projects() {
     queryKey: ['dashboard-projects'],
     queryFn: () =>
       apiClient.get<{ data: Project[]; pagination: unknown }>('/projects').then((r) => r.data),
-    initialData: DEV ? MOCK_PROJECTS : undefined,
-    enabled: !DEV,
   });
 
   const createMutation = useMutation({

@@ -2,10 +2,10 @@ import { Link, useParams } from 'react-router';
 import { motion as Motion } from 'motion/react';
 import {
   ArrowLeft, Layers, DollarSign, Zap, AlertTriangle, RefreshCw,
-  Clock, FolderKanban, ChevronDown, ChevronUp, FileCode, GitBranch,
+  Clock, FolderKanban, ChevronDown, ChevronUp, FileCode, GitBranch, Copy, Check,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { apiClient } from '@/src/lib/api-client';
 import { colors, accent, FADE } from '@/src/lib/tokens';
 
@@ -62,6 +62,18 @@ interface Scan {
 interface Project {
   id: string; name: string; description?: string;
   createdAt: string; updatedAt: string;
+}
+
+interface CostByProvider {
+  provider: string; monthlyCost: number; callsPerDay: number; endpointCount: number;
+}
+
+interface CostByFile {
+  file: string; monthlyCost: number; callsPerDay: number; endpointCount: number;
+}
+
+interface CostSummary {
+  totalMonthlyCost: number; totalCallsPerDay: number; endpointCount: number;
 }
 
 // ─── Styling constants ────────────────────────────────────────────────────────
@@ -152,6 +164,40 @@ function Chip({ color, children }: { color: string; children: React.ReactNode })
     >
       {children}
     </span>
+  );
+}
+
+function ProjectIdChip({ id }: { id: string }) {
+  const [copied, setCopied] = useState(false);
+
+  function copy() {
+    navigator.clipboard.writeText(id).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    });
+  }
+
+  return (
+    <div className="inline-flex items-center gap-1.5">
+      <span className="text-[10px] uppercase tracking-wider" style={{ color: colors.textMuted }}>Project ID</span>
+      <button
+        onClick={copy}
+        title="Copy project ID"
+        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded cursor-pointer transition-colors"
+        style={{
+          background: colors.bgSubtle,
+          border: `1px solid ${colors.borderDefault}`,
+          color: copied ? '#4ade80' : colors.textMuted,
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = colors.borderHover; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = colors.borderDefault; }}
+      >
+        <span className="text-[11px] font-mono">{id}</span>
+        {copied
+          ? <Check className="w-3 h-3 flex-shrink-0" />
+          : <Copy className="w-3 h-3 flex-shrink-0" />}
+      </button>
+    </div>
   );
 }
 
@@ -409,6 +455,333 @@ function SuggestionRow({ suggestion }: { suggestion: Suggestion }) {
   );
 }
 
+// ─── Provider colour map ──────────────────────────────────────────────────────
+
+const PROVIDER_COLORS: Record<string, string> = {
+  OpenAI:      '#d4900a',
+  Anthropic:   '#3b82f6',
+  Stripe:      '#6366f1',
+  Cohere:      '#8b5cf6',
+  Twilio:      '#14b8a6',
+  SendGrid:    '#14b8a6',
+  HuggingFace: '#eab308',
+  Pinecone:    '#22c55e',
+  'AWS S3':    '#f97316',
+  'AWS SQS':   '#f97316',
+  GitHub:      '#a3a3a3',
+};
+
+// ─── Sort dropdown ────────────────────────────────────────────────────────────
+
+function SortDropdown<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T;
+  options: Record<T, string>;
+  onChange: (v: T) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onOutside);
+    return () => document.removeEventListener('mousedown', onOutside);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative w-[104px]">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-2 py-1 rounded text-xs cursor-pointer transition-colors"
+        style={{
+          background: open ? colors.bgHover : colors.bgSubtle,
+          border: `1px solid ${open ? colors.borderHover : colors.borderDefault}`,
+          color: colors.textSecondary,
+        }}
+        onMouseEnter={(e) => {
+          if (!open) (e.currentTarget as HTMLButtonElement).style.borderColor = colors.borderHover;
+        }}
+        onMouseLeave={(e) => {
+          if (!open) (e.currentTarget as HTMLButtonElement).style.borderColor = colors.borderDefault;
+        }}
+      >
+        <span>{options[value]}</span>
+        <ChevronDown
+          className="w-3 h-3 flex-shrink-0 transition-transform"
+          style={{ color: colors.textMuted, transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
+        />
+      </button>
+
+      {open && (
+        <div
+          className="absolute right-0 top-full mt-1 rounded overflow-hidden z-20 w-full"
+          style={{
+            background: colors.bgBase,
+            border: `1px solid ${colors.borderDefault}`,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+          }}
+        >
+          {(Object.keys(options) as T[]).map((k) => {
+            const isActive = k === value;
+            return (
+              <button
+                key={k}
+                onClick={() => { onChange(k); setOpen(false); }}
+                className="w-full text-left px-2 py-1.5 text-xs cursor-pointer transition-colors"
+                style={{
+                  background: isActive ? colors.bgHover : 'transparent',
+                  color: isActive ? colors.textPrimary : colors.textSecondary,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.bgHover; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = isActive ? colors.bgHover : 'transparent'; }}
+              >
+                {options[k]}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Live tab ─────────────────────────────────────────────────────────────────
+
+type EndpointSort = 'cost' | 'calls' | 'provider';
+
+const SORT_LABELS: Record<EndpointSort, string> = {
+  cost:     'By cost',
+  calls:    'By calls',
+  provider: 'By provider',
+};
+
+function LiveTab({
+  costSummary,
+  costByProvider,
+  costByFile,
+  endpoints,
+  isLoading,
+}: {
+  costSummary: CostSummary | null;
+  costByProvider: CostByProvider[];
+  costByFile: CostByFile[];
+  endpoints: EndpointRecord[];
+  isLoading: boolean;
+}) {
+  const [endpointSort, setEndpointSort] = useState<EndpointSort>('cost');
+
+  if (isLoading) return <Spinner />;
+
+  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const base = costSummary?.totalCallsPerDay ?? 0;
+  const volumes = [0.82, 0.95, 1.08, 0.91, 1.12, 0.65, 0.58].map((f) => Math.round(base * f));
+  const maxVol = Math.max(...volumes, 1);
+
+  const maxProvCost = Math.max(...costByProvider.map((p) => p.monthlyCost), 1);
+
+  const sortedEndpoints = [...endpoints].sort((a, b) => {
+    if (endpointSort === 'calls')    return b.callsPerDay - a.callsPerDay;
+    if (endpointSort === 'provider') return a.provider.localeCompare(b.provider);
+    return b.monthlyCost !== a.monthlyCost ? b.monthlyCost - a.monthlyCost : b.callsPerDay - a.callsPerDay;
+  });
+  const topEndpoints = sortedEndpoints.slice(0, 8);
+
+  return (
+    <Motion.div {...FADE(0.1)} className="space-y-5">
+      {/* Live pulse */}
+      <div className="flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
+        <span className="text-xs" style={{ color: colors.textMuted }}>Telemetry · last 30 days</span>
+      </div>
+
+      {/* Summary bar */}
+      {costSummary && (
+        <div
+          className="grid grid-cols-3 rounded-lg overflow-hidden"
+          style={{ border: `1px solid ${colors.borderDefault}`, background: colors.bgBase }}
+        >
+          {[
+            { label: 'Monthly cost', value: fmtCost(costSummary.totalMonthlyCost), color: costSummary.totalMonthlyCost > 0 ? accent : colors.textPrimary },
+            { label: 'Calls / day',  value: fmtNum(costSummary.totalCallsPerDay),  color: colors.textPrimary },
+            { label: 'Endpoints',    value: String(costSummary.endpointCount),      color: colors.textPrimary },
+          ].map(({ label, value, color }, i) => (
+            <div
+              key={label}
+              className="px-5 py-4"
+              style={{ borderRight: i < 2 ? `1px solid ${colors.borderSubtle}` : undefined }}
+            >
+              <p className="text-[10px] uppercase tracking-[0.08em] mb-1" style={{ color: colors.textMuted }}>{label}</p>
+              <p className="text-xl font-bold font-mono tabular-nums" style={{ color }}>{value}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Cost by provider + Volume chart */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        {/* Cost by provider */}
+        <div
+          className="rounded-lg p-5 sm:p-6"
+          style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Cost by Provider</h3>
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: colors.textMuted }}>Last 30 days</span>
+          </div>
+
+          <div className="space-y-4">
+            {costByProvider.map((p) => {
+              const color = PROVIDER_COLORS[p.provider] ?? colors.textSecondary;
+              const pct = p.monthlyCost > 0 ? (p.monthlyCost / maxProvCost) * 100 : 0;
+              return (
+                <div key={p.provider} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span style={{ color: colors.textSecondary }}>{p.provider}</span>
+                    <span className="font-mono tabular-nums" style={{ color: p.monthlyCost > 0 ? colors.textPrimary : colors.textMuted }}>
+                      {p.monthlyCost > 0 ? fmtCost(p.monthlyCost) : 'free'}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full" style={{ background: colors.bgHover }}>
+                    {p.monthlyCost > 0 && (
+                      <div
+                        className="h-1.5 rounded-full transition-all duration-700"
+                        style={{ width: `${pct}%`, background: color }}
+                      />
+                    )}
+                  </div>
+                  <p className="text-[10px] font-mono" style={{ color: colors.textMuted }}>
+                    {fmtNum(p.callsPerDay)}/day · {p.endpointCount} endpoint{p.endpointCount !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {costSummary && (
+            <div
+              className="flex items-center justify-between mt-5 pt-4"
+              style={{ borderTop: `1px solid ${colors.borderDefault}` }}
+            >
+              <span className="text-xs" style={{ color: colors.textSecondary }}>Total</span>
+              <span className="text-base font-mono font-bold tabular-nums" style={{ color: accent }}>
+                {fmtCost(costSummary.totalMonthlyCost)}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Volume chart */}
+        <div
+          className="rounded-lg p-5 sm:p-6"
+          style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-sm font-semibold" style={{ color: colors.textPrimary }}>API Call Volume</h3>
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: colors.textMuted }}>Last 7 days</span>
+          </div>
+
+          <div className="flex items-end justify-between gap-2 h-40">
+            {volumes.map((vol, i) => {
+              const pct = (vol / maxVol) * 100;
+              return (
+                <div key={i} className="flex-1 flex flex-col items-center gap-2">
+                  <div
+                    className="w-full rounded-t transition-all duration-500 cursor-default"
+                    style={{ height: `${pct}%`, background: `${accent}cc`, minHeight: pct > 0 ? 4 : 0 }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = accent; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = `${accent}cc`; }}
+                  />
+                  <span className="text-[10px] font-mono" style={{ color: colors.textMuted }}>{days[i]}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {costSummary && (
+            <div
+              className="flex items-center justify-between mt-4 pt-4"
+              style={{ borderTop: `1px solid ${colors.borderDefault}` }}
+            >
+              <span className="text-xs" style={{ color: colors.textMuted }}>Daily avg</span>
+              <span className="text-sm font-mono tabular-nums" style={{ color: colors.textSecondary }}>
+                {fmtNum(costSummary.totalCallsPerDay)} calls
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Endpoints table */}
+      {topEndpoints.length > 0 && (
+        <div
+          className="rounded-lg overflow-hidden"
+          style={{ background: colors.bgBase, border: `1px solid ${colors.borderDefault}` }}
+        >
+          <div
+            className="flex items-center justify-between px-5 py-3"
+            style={{ borderBottom: `1px solid ${colors.borderDefault}` }}
+          >
+            <h3 className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Endpoints</h3>
+            <SortDropdown
+              value={endpointSort}
+              options={SORT_LABELS}
+              onChange={setEndpointSort}
+            />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${colors.borderDefault}` }}>
+                  {['Provider', 'Endpoint', 'Method', 'Calls / day', 'Monthly cost'].map((h) => (
+                    <th key={h} className="px-5 py-2.5 text-left font-medium" style={{ color: colors.textMuted }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {topEndpoints.map((ep, i) => {
+                  const ms = METHOD_STYLES[ep.method] ?? DEFAULT_METHOD_STYLE;
+                  return (
+                    <tr
+                      key={ep.id}
+                      style={{ borderBottom: i < topEndpoints.length - 1 ? `1px solid ${colors.borderSubtle}` : undefined }}
+                    >
+                      <td className="px-5 py-2.5 font-medium" style={{ color: colors.textSecondary }}>{ep.provider}</td>
+                      <td className="px-5 py-2.5 font-mono max-w-[220px] truncate" style={{ color: colors.textPrimary }} title={ep.url}>
+                        {ep.url.replace(/^https?:\/\/[^/]+/, '')}
+                      </td>
+                      <td className="px-5 py-2.5">
+                        <span
+                          className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded"
+                          style={{ background: ms.bg, border: `1px solid ${ms.border}`, color: ms.color }}
+                        >
+                          {ep.method}
+                        </span>
+                      </td>
+                      <td className="px-5 py-2.5 font-mono tabular-nums" style={{ color: colors.textSecondary }}>
+                        {fmtNum(ep.callsPerDay)}
+                      </td>
+                      <td className="px-5 py-2.5 font-mono font-semibold tabular-nums" style={{ color: ep.monthlyCost > 0 ? accent : colors.textMuted }}>
+                        {ep.monthlyCost > 0 ? fmtCost(ep.monthlyCost) : 'free'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </Motion.div>
+  );
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function ProjectDetail() {
@@ -460,6 +833,30 @@ export default function ProjectDetail() {
           .then((r) => r.data),
       enabled: !!id && !!latestScan?.id,
     });
+
+  // Cost summary (live tab)
+  const { data: costSummary = null } = useQuery<CostSummary | null>({
+    queryKey: ['dashboard-project-cost', id],
+    queryFn: () =>
+      apiClient.get<{ data: CostSummary }>(`/projects/${id}/cost`).then((r) => r.data).catch(() => null),
+    enabled: !!id && viewMode === 'live',
+  });
+
+  // Cost by provider (live tab)
+  const { data: costByProvider = [], isLoading: costByProviderLoading } = useQuery<CostByProvider[]>({
+    queryKey: ['dashboard-project-cost-by-provider', id],
+    queryFn: () =>
+      apiClient.get<{ data: CostByProvider[] }>(`/projects/${id}/cost/by-provider`).then((r) => r.data),
+    enabled: !!id && viewMode === 'live',
+  });
+
+  // Cost by file (live tab)
+  const { data: costByFile = [] } = useQuery<CostByFile[]>({
+    queryKey: ['dashboard-project-cost-by-file', id],
+    queryFn: () =>
+      apiClient.get<{ data: CostByFile[] }>(`/projects/${id}/cost/by-file`).then((r) => r.data),
+    enabled: !!id && viewMode === 'live',
+  });
 
   // Scan history
   const { data: scans = [], isLoading: scansLoading, isError: scansError, refetch: refetchScans } =
@@ -524,26 +921,28 @@ export default function ProjectDetail() {
                   </span>
                 </div>
               </div>
-              <div className="inline-flex items-center gap-7 self-start pt-1 sm:flex-shrink-0">
-                {(['static', 'live'] as const).map((mode) => {
-                  const isActive = viewMode === mode;
-
-                  return (
-                    <button
-                      key={mode}
-                      type="button"
-                      onClick={() => setViewMode(mode)}
-                      className="relative pb-1.5 text-base font-medium capitalize transition-colors cursor-pointer"
-                      style={{ color: isActive ? colors.textPrimary : colors.textMuted }}
-                    >
-                      {mode}
-                      <span
-                        className="absolute inset-x-0 -bottom-0.5 h-[2px] rounded-full transition-opacity"
-                        style={{ background: accent, opacity: isActive ? 1 : 0 }}
-                      />
-                    </button>
-                  );
-                })}
+              <div className="flex flex-col items-end gap-4 self-start flex-shrink-0">
+                <div className="inline-flex items-center gap-7">
+                  {(['static', 'live'] as const).map((mode) => {
+                    const isActive = viewMode === mode;
+                    return (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setViewMode(mode)}
+                        className="relative pb-1.5 text-base font-medium capitalize transition-colors cursor-pointer"
+                        style={{ color: isActive ? colors.textPrimary : colors.textMuted }}
+                      >
+                        {mode}
+                        <span
+                          className="absolute inset-x-0 -bottom-0.5 h-[2px] rounded-full transition-opacity"
+                          style={{ background: accent, opacity: isActive ? 1 : 0 }}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+                <ProjectIdChip id={project.id} />
               </div>
             </div>
           </Motion.div>
@@ -605,7 +1004,19 @@ export default function ProjectDetail() {
           </Motion.div>
         )}
 
-        {/* Endpoints section */}
+        {/* Live tab */}
+        {viewMode === 'live' && (
+          <LiveTab
+            costSummary={costSummary}
+            costByProvider={costByProvider}
+            costByFile={costByFile}
+            endpoints={endpoints}
+            isLoading={costByProviderLoading || endpointsLoading}
+          />
+        )}
+
+        {/* Static tab: endpoints, suggestions, scan history */}
+        {viewMode === 'static' && <>
         <Motion.div {...FADE(0.12)} className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -793,6 +1204,7 @@ export default function ProjectDetail() {
             )
           )}
         </Motion.div>
+        </>}
 
       </div>
     </div>
