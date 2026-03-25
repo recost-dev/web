@@ -415,6 +415,7 @@ export default function ProjectDetail() {
   const params = useParams();
   const id = params.id as string;
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'static' | 'live'>('static');
 
   const { data: project, isLoading: projectLoading, isError: projectError, refetch: refetchProject } =
     useQuery<Project>({
@@ -484,7 +485,6 @@ export default function ProjectDetail() {
   return (
     <div className="min-h-full">
       <div className="w-full px-6 md:px-10 pt-8 pb-16">
-
         {/* Back */}
         <Motion.div {...FADE(0)} className="mb-8">
           <Link
@@ -509,17 +509,42 @@ export default function ProjectDetail() {
         ) : project ? (
           <Motion.div {...FADE(0.05)} className="mb-8">
             <p className="text-xs uppercase tracking-[0.12em] mb-2" style={{ color: accent }}>Project</p>
-            <h1 className="text-2xl sm:text-3xl font-bold break-words" style={{ color: colors.textPrimary }}>
-              {project.name}
-            </h1>
-            {project.description && (
-              <p className="mt-2 text-sm" style={{ color: colors.textMuted }}>{project.description}</p>
-            )}
-            <div className="flex items-center gap-2 mt-3">
-              <Clock className="w-3 h-3" style={{ color: colors.textMuted }} />
-              <span className="text-xs font-mono" style={{ color: colors.textMuted }}>
-                Created {fmt(project.createdAt)}
-              </span>
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold break-words" style={{ color: colors.textPrimary }}>
+                  {project.name}
+                </h1>
+                {project.description && (
+                  <p className="mt-2 text-sm" style={{ color: colors.textMuted }}>{project.description}</p>
+                )}
+                <div className="flex items-center gap-2 mt-3">
+                  <Clock className="w-3 h-3" style={{ color: colors.textMuted }} />
+                  <span className="text-xs font-mono" style={{ color: colors.textMuted }}>
+                    Created {fmt(project.createdAt)}
+                  </span>
+                </div>
+              </div>
+              <div className="inline-flex items-center gap-7 self-start pt-1 sm:flex-shrink-0">
+                {(['static', 'live'] as const).map((mode) => {
+                  const isActive = viewMode === mode;
+
+                  return (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setViewMode(mode)}
+                      className="relative pb-1.5 text-base font-medium capitalize transition-colors cursor-pointer"
+                      style={{ color: isActive ? colors.textPrimary : colors.textMuted }}
+                    >
+                      {mode}
+                      <span
+                        className="absolute inset-x-0 -bottom-0.5 h-[2px] rounded-full transition-opacity"
+                        style={{ background: accent, opacity: isActive ? 1 : 0 }}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </Motion.div>
         ) : null}

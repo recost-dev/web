@@ -18,6 +18,8 @@ import {
   GitBranch,
   DollarSign,
   Search,
+  Leaf,
+  ScanSearch,
 } from 'lucide-react';
 import {
   type CarouselApi,
@@ -488,16 +490,18 @@ export default function Extension() {
               delay={0.05}
             >
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
-                ECO is a VS Code extension that analyzes your entire codebase for API call patterns. Install it and scan your workspace in one click from the Activity Bar sidebar. Because it runs on the VS Code extension host, it works natively in any compatible editor: VS Code, Cursor, Windsurf, and more.
+                ReCost is a VS Code extension that analyzes your entire codebase for API call patterns. Install it and scan your workspace in one click from the Activity Bar sidebar. Because it runs on the VS Code extension host, it works natively in any compatible editor: VS Code, Cursor, Windsurf, and more.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                 {[
                   { icon: Search, label: 'Workspace scan', desc: 'Scans TS, JS, Python, Go, Java, and Ruby files for API calls' },
+                  { icon: ScanSearch, label: 'AST-powered analysis', desc: 'Web-Tree-Sitter detects API calls across imports, aliases, and cross-file wrappers' },
                   { icon: AlertTriangle, label: 'Risk detection', desc: 'Surfaces N+1, redundant calls, cacheable endpoints, and rate-limit risks' },
                   { icon: DollarSign, label: 'Cost estimation', desc: 'Monthly cost estimates per API provider' },
-                  { icon: MessageSquare, label: 'AI chat', desc: 'Ask GPT-4o about any finding or suggestion directly in the sidebar' },
+                  { icon: MessageSquare, label: 'AI chat', desc: 'Ask any of 8 supported AI providers about findings directly in the sidebar' },
                   { icon: Globe, label: 'Editor compatible', desc: 'VS Code, Cursor, Windsurf, any extension-host-compatible editor' },
                   { icon: LayoutDashboard, label: 'Open Dashboard', desc: 'Launch a full local dashboard in the browser from the sidebar button' },
+                  { icon: Leaf, label: 'Sustainability tracking', desc: 'CO₂, electricity, and water estimates per API call with AI vs non-AI breakdown' },
                 ].map(({ icon: Icon, label, desc }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div
@@ -526,7 +530,7 @@ export default function Extension() {
             >
               <SubHeading>From .vsix (production)</SubHeading>
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
-                Open the Command Palette (<code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Cmd+Shift+P</code> / <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Ctrl+Shift+P</code>), run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Extensions: Install from VSIX...</strong>, and select the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>eco-api-analyzer-*.vsix</code> file. Reload the window when prompted.
+                Open the Command Palette (<code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Cmd+Shift+P</code> / <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>Ctrl+Shift+P</code>), run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Extensions: Install from VSIX...</strong>, and select the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>recost-api-analyzer-*.vsix</code> file. Reload the window when prompted.
               </p>
               <SubHeading>Dev mode (F5)</SubHeading>
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
@@ -540,10 +544,10 @@ export default function Extension() {
                 Use the provided build script — it handles dependencies, build, and packaging in one step. Run in a bash terminal from the project root (Git Bash / WSL on Windows — not PowerShell or CMD):
               </p>
               <CodeBlock>{`bash extension/scripts/build-vsix.sh
-# → outputs eco-api-analyzer-*.vsix in extension/
+# → outputs recost-api-analyzer-*.vsix in extension/
 
 # Install (pick one)
-code --install-extension eco-api-analyzer-*.vsix
+code --install-extension recost-api-analyzer-*.vsix
 # or: Ctrl+Shift+P → "Extensions: Install from VSIX..."`}</CodeBlock>
             </SectionCard>
 
@@ -595,49 +599,49 @@ cd extension && npm run watch:webview`}</CodeBlock>
               icon={Settings}
               badge="Config"
               title="Extension Settings"
-              subtitle="Configure via VS Code Settings (Cmd+, / Ctrl+,) under ECO API Analyzer"
+              subtitle="Configure via VS Code Settings (Cmd+, / Ctrl+,) under ReCost"
               delay={0.2}
             >
               <FieldTable
                 fields={[
                   {
-                    name: 'eco.scanGlob',
+                    name: 'recost.scanGlob',
                     type: 'string',
                     default: '**/*.{ts,tsx,js,jsx,py,go,java,rb}',
                     desc: 'Glob pattern for files to include in the workspace scan',
                   },
                   {
-                    name: 'eco.excludeGlob',
+                    name: 'recost.excludeGlob',
                     type: 'string',
                     default: '**/node_modules/**,**/dist/**,...',
                     desc: 'Comma-separated glob patterns for files and directories to exclude',
                   },
                   {
-                    name: 'eco.aiReview.enabled',
+                    name: 'recost.aiReview.enabled',
                     type: 'boolean',
                     default: 'true',
                     desc: 'Enable the AI second-pass review of scan results',
                   },
                   {
-                    name: 'eco.aiReview.minConfidence',
+                    name: 'recost.aiReview.minConfidence',
                     type: 'number',
                     default: '0.7',
                     desc: 'Minimum confidence threshold (0–1) for AI findings to be accepted',
                   },
                   {
-                    name: 'eco.aiReview.maxFiles',
+                    name: 'recost.aiReview.maxFiles',
                     type: 'number',
                     default: '25',
                     desc: 'Maximum number of files to include in the AI review context (1–100)',
                   },
                   {
-                    name: 'eco.aiReview.maxCharsPerFile',
+                    name: 'recost.aiReview.maxCharsPerFile',
                     type: 'number',
                     default: '6000',
                     desc: 'Maximum characters per file excerpt sent to AI review (500–20000)',
                   },
                   {
-                    name: 'eco.aiReview.model',
+                    name: 'recost.aiReview.model',
                     type: 'string',
                     default: 'gpt-4.1-mini',
                     desc: 'OpenAI model used for AI review (e.g. gpt-4.1-mini, gpt-4o)',
@@ -663,12 +667,13 @@ cd extension && npm run watch:webview`}</CodeBlock>
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 mb-5">
                 {[
-                  { icon: LayoutDashboard, label: 'Project overview', desc: 'Eco Score gauge, stat cards, provider cost breakdown' },
+                  { icon: LayoutDashboard, label: 'Project overview', desc: 'Stat cards and provider cost breakdown' },
                   { icon: Globe, label: 'Endpoints explorer', desc: 'Filter by provider, HTTP method, or status' },
                   { icon: AlertTriangle, label: 'Suggestions', desc: 'Severity-grouped optimizations with code fix previews and savings estimates' },
                   { icon: GitBranch, label: 'Dependency graph', desc: 'Interactive file → endpoint visualization with clustering' },
                   { icon: DollarSign, label: 'Cost analytics', desc: 'Monthly cost estimates and potential savings totals' },
-                  { icon: MessageSquare, label: 'AI chat', desc: 'In-dashboard AI assistant with context from your scan results' },
+                  { icon: MessageSquare, label: 'AI chat', desc: 'Multi-provider AI assistant with context from your scan results' },
+                  { icon: Leaf, label: 'Sustainability', desc: 'Per-provider CO₂, electricity, and water footprint with AI vs non-AI breakdown' },
                 ].map(({ icon: Icon, label, desc }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div
@@ -709,7 +714,7 @@ npm run build:dashboard`}</CodeBlock>
               <CodeBlock>{`bash extension/scripts/build-vsix.sh
 
 # Then install the generated .vsix
-code --install-extension eco-api-analyzer-*.vsix
+code --install-extension recost-api-analyzer-*.vsix
 # or: Ctrl+Shift+P → "Extensions: Install from VSIX..."`}</CodeBlock>
 
               <SubHeading>Option 2: automated script (for developing on the extension)</SubHeading>
@@ -728,11 +733,11 @@ cd ../dashboard && npm install && cd ../extension
 npm run build
 
 # 3. Open extension/ in VS Code and press F5
-#    → Extension Development Host launches with ECO loaded`}</CodeBlock>
+#    → Extension Development Host launches with ReCost loaded`}</CodeBlock>
 
               <SubHeading>After launch</SubHeading>
               <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
-                Click the leaf icon in the Activity Bar to open the ECO sidebar. Press the scan button (or run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>ECO: Scan Workspace</strong> from the Command Palette) to analyze your codebase. Results appear immediately in the sidebar, and you can click <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Open Dashboard</strong> to view the full dashboard in your browser.
+                Click the ReCost icon in the Activity Bar to open the ReCost sidebar. Press the scan button (or run <strong style={{ color: 'rgba(255,255,255,0.75)' }}>ReCost: Scan Workspace</strong> from the Command Palette) to analyze your codebase. Results appear immediately in the sidebar, and you can click <strong style={{ color: 'rgba(255,255,255,0.75)' }}>Open Dashboard</strong> to view the full dashboard in your browser.
               </p>
             </SectionCard>
 

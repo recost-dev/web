@@ -14,6 +14,10 @@ import {
   MessageSquare,
   ArrowRight,
   Globe,
+  Leaf,
+  Clock,
+  ScanSearch,
+  TreePine,
 } from 'lucide-react';
 
 const ACCENT = '#d4900a';
@@ -37,6 +41,8 @@ const SECTIONS = [
       { icon: DollarSign, label: 'Cost analytics', desc: 'Per-provider cost breakdown with monthly estimates' },
       { icon: AlertTriangle, label: 'Risk detection', desc: 'N+1, rate limit, redundancy, and cache opportunities' },
       { icon: GitBranch, label: 'Dependency graph', desc: 'File → endpoint relationships, cluster by provider or cost' },
+      { icon: Leaf, label: 'Sustainability stats', desc: 'Electricity, water, and CO₂ footprint per provider with AI vs non-AI breakdown' },
+      { icon: Clock, label: 'Real-time telemetry', desc: '30-second windowed cost aggregation, delivered via WebSocket or HTTPS' },
     ],
   },
   {
@@ -49,12 +55,30 @@ const SECTIONS = [
     features: [
       { icon: Zap, label: 'One-click scan', desc: 'Scan your workspace instantly from the sidebar' },
       { icon: AlertTriangle, label: 'Inline findings', desc: 'Severity-grouped suggestions with code fix previews' },
-      { icon: MessageSquare, label: 'AI chat', desc: 'Ask GPT-4o about any endpoint or suggestion' },
+      { icon: MessageSquare, label: 'AI chat', desc: 'Ask any of 8 AI providers about any endpoint or suggestion' },
       { icon: Globe, label: 'Extension host compatible', desc: 'VS Code, Cursor, Windsurf, any host-compatible editor' },
+      { icon: ScanSearch, label: 'AST-powered analysis', desc: 'Web-Tree-Sitter detects API calls across imports, aliases, and cross-file wrappers' },
+      { icon: Leaf, label: 'Sustainability tracking', desc: 'CO₂, electricity, and water estimates per API call with AI vs non-AI breakdown' },
     ],
   },
   {
     num: '03',
+    icon: TreePine,
+    badge: 'SDKs',
+    title: 'Node.js & Python SDKs',
+    subtitle: '@recost/node · recost (Python) · Zero config',
+    description: 'Drop in one line at process startup and every outbound HTTP call is automatically intercepted, matched against the built-in provider registry, and aggregated into 30-second windows. The Node SDK patches globalThis.fetch, http, and https. The Python SDK patches urllib3 (requests), httpx, and aiohttp. Both ship framework adapters so you can initialize via middleware instead of a bare init() call.',
+    features: [
+      { icon: Zap, label: 'One-line setup', desc: 'init() patches your HTTP clients automatically. No wrappers, no manual instrumentation.' },
+      { icon: Globe, label: 'Framework adapters', desc: 'Express, Fastify (Node) and FastAPI, Flask (Python) — thin wrappers around init()' },
+      { icon: Clock, label: '30-second windows', desc: 'Events aggregated into time windows with p50/p95 latency, cost, and byte totals' },
+      { icon: DollarSign, label: 'Provider registry', desc: 'Built-in rules for OpenAI, Anthropic, Stripe, Twilio, SendGrid, Pinecone, AWS, and more' },
+      { icon: GitBranch, label: 'Custom providers', desc: 'Extend the registry with your own host patterns, endpoint categories, and cost estimates' },
+      { icon: Leaf, label: 'Two transport modes', desc: 'Cloud mode posts to api.recost.dev; local mode streams to the VS Code extension via WebSocket' },
+    ],
+  },
+  {
+    num: '04',
     icon: LayoutDashboard,
     badge: 'Web Dashboard',
     title: 'Recost Dashboard',
@@ -65,6 +89,8 @@ const SECTIONS = [
       { icon: Server, label: 'Endpoints explorer', desc: 'Filter by provider, status, or HTTP method' },
       { icon: DollarSign, label: 'Savings summary', desc: 'Total estimated monthly savings across all suggestions' },
       { icon: GitBranch, label: 'Graph view', desc: 'Interactive file → endpoint dependency visualization' },
+      { icon: Leaf, label: 'Sustainability view', desc: 'Per-provider CO₂, electricity, and water footprint on the project dashboard' },
+      { icon: MessageSquare, label: 'AI chat', desc: 'Multi-provider AI assistant with full context from your scan results' },
     ],
   },
 ];
@@ -81,7 +107,7 @@ export default function About() {
         <Motion.div {...FADE(0)} className="relative mx-auto max-w-5xl px-6">
           <p className="text-xs uppercase tracking-[0.12em] mb-3" style={{ color: ACCENT }}>About</p>
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance leading-tight">
-            Three surfaces.<br className="hidden sm:block" /> One cost picture.
+            Four surfaces.<br className="hidden sm:block" /> One cost picture.
           </h1>
           <p className="mt-6 text-lg text-[#a3a3a3] max-w-2xl">
             A full-stack platform to analyze your codebase&apos;s API usage, estimate costs, surface risks, and suggest optimizations.
@@ -139,11 +165,18 @@ export default function About() {
         ))}
 
         {/* CTA */}
-        <Motion.div {...FADE(0.35)} className="border-t border-[#262626] pt-12">
+        <Motion.div {...FADE(0.35)} className="border-t border-[#262626] pt-12 flex items-center gap-4 flex-wrap">
           <Link
-            to="/docs/extension"
+            to="/docs/sdk"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-[#0a0a0a] text-sm font-medium transition-all hover:-translate-y-0.5"
             style={{ background: ACCENT }}
+          >
+            SDK docs
+            <ArrowRight size={14} />
+          </Link>
+          <Link
+            to="/docs/extension"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-sm font-medium border border-[#262626] text-[#a3a3a3] hover:text-[#fafafa] hover:border-[#404040] transition-all hover:-translate-y-0.5"
           >
             Extension docs
             <ArrowRight size={14} />

@@ -17,21 +17,29 @@ const C = {
 const CODE_LINES: (Token[] | null)[] = [
   [
     { text: 'import', color: C.purple }, { text: ' { ', color: C.white },
-    { text: 'recost', color: C.yellow }, { text: ' } ', color: C.white },
-    { text: 'from', color: C.purple }, { text: " '@recost/sdk'", color: C.str },
+    { text: 'init', color: C.yellow }, { text: ' } ', color: C.white },
+    { text: 'from', color: C.purple }, { text: " '@recost/node'", color: C.str },
     { text: ';', color: C.white },
   ],
   null,
-  [{ text: '// Wrap your HTTP client', color: C.muted }],
+  [{ text: '// One line. Patches fetch, http, and https automatically.', color: C.muted }],
   [
-    { text: 'const', color: C.purple }, { text: ' client = recost.', color: C.white },
-    { text: 'wrap', color: C.blue }, { text: '(fetch);', color: C.white },
+    { text: 'init', color: C.blue }, { text: '({', color: C.white },
   ],
+  [
+    { text: '  apiKey', color: C.white }, { text: ': ', color: C.white },
+    { text: 'process.env.RECOST_API_KEY', color: C.str }, { text: ',', color: C.white },
+  ],
+  [
+    { text: '  projectId', color: C.white }, { text: ': ', color: C.white },
+    { text: 'process.env.RECOST_PROJECT_ID', color: C.str }, { text: ',', color: C.white },
+  ],
+  [{ text: '});', color: C.white }],
   null,
-  [{ text: '// Make API calls as usual', color: C.muted }],
+  [{ text: '// Make API calls as usual. No other changes needed.', color: C.muted }],
   [
     { text: 'const', color: C.purple }, { text: ' response = ', color: C.white },
-    { text: 'await', color: C.purple }, { text: " client(", color: C.white },
+    { text: 'await', color: C.purple }, { text: ' fetch(', color: C.white },
     { text: "'https://api.openai.com/v1/chat/completions'", color: C.str },
     { text: ', {', color: C.white },
   ],
@@ -42,7 +50,7 @@ const CODE_LINES: (Token[] | null)[] = [
     { text: ": `Bearer ${process.env.OPENAI_KEY}` },", color: C.white },
   ],
   [{ text: '  body: JSON.', color: C.white }, { text: 'stringify', color: C.blue }, { text: '({', color: C.white }],
-  [{ text: "    model: ", color: C.white }, { text: "'gpt-4'", color: C.str }, { text: ',', color: C.white }],
+  [{ text: "    model: ", color: C.white }, { text: "'gpt-4o'", color: C.str }, { text: ',', color: C.white }],
   [
     { text: '    messages: [{ role: ', color: C.white },
     { text: "'user'", color: C.str }, { text: ', content: ', color: C.white },
@@ -51,27 +59,30 @@ const CODE_LINES: (Token[] | null)[] = [
   [{ text: '  })', color: C.white }],
   [{ text: '});', color: C.white }],
   null,
-  [{ text: '// Cost telemetry is logged automatically', color: C.muted }],
-  [{ text: '// → Provider: openai | Model: gpt-4 | Cost: $0.0032', color: C.amber }],
+  [{ text: '// Telemetry sent automatically every 30 seconds', color: C.muted }],
+  [{ text: '// → openai · /v1/chat/completions · 142 req · $0.31 today', color: C.amber }],
 ]
 
-const CODE_STRING = `import { recost } from '@recost/sdk';
+const CODE_STRING = `import { init } from '@recost/node';
 
-// Wrap your HTTP client
-const client = recost.wrap(fetch);
+// One line. Patches fetch, http, and https automatically.
+init({
+  apiKey: process.env.RECOST_API_KEY,
+  projectId: process.env.RECOST_PROJECT_ID,
+});
 
-// Make API calls as usual
-const response = await client('https://api.openai.com/v1/chat/completions', {
+// Make API calls as usual. No other changes needed.
+const response = await fetch('https://api.openai.com/v1/chat/completions', {
   method: 'POST',
   headers: { 'Authorization': \`Bearer \${process.env.OPENAI_KEY}\` },
   body: JSON.stringify({
-    model: 'gpt-4',
+    model: 'gpt-4o',
     messages: [{ role: 'user', content: 'Hello!' }]
   })
 });
 
-// Cost telemetry is logged automatically
-// → Provider: openai | Model: gpt-4 | Cost: $0.0032`
+// Telemetry sent automatically every 30 seconds
+// → openai · /v1/chat/completions · 142 req · $0.31 today`
 
 
 const containerVariants = {

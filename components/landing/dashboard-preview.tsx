@@ -1,7 +1,7 @@
 const providers = [
   { name: "OpenAI", cost: "$127.45", calls: "12,847", color: "#d4900a" },
   { name: "Anthropic", cost: "$89.23", calls: "8,421", color: "#3b82f6" },
-  { name: "Cohere", cost: "$23.67", calls: "2,156", color: "#f59e0b" },
+  { name: "Stripe", cost: "$23.67", calls: "2,156", color: "#6366f1" },
 ]
 
 const apiKeys = [
@@ -14,13 +14,13 @@ export function DashboardPreview() {
   return (
     <section className="relative overflow-hidden border-t border-[#262626] bg-[#0a0a0a]">
       <div className="glow-orb-sm w-[900px] h-[400px] -top-10 left-1/2 -translate-x-1/2" />
-      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32 relative">
+      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28 relative">
         {/* Section Header */}
-        <div className="text-center">
+        <div>
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">
             Dashboard preview
           </h2>
-          <p className="mt-4 text-lg text-[#a3a3a3]">
+          <p className="mt-3 text-lg text-[#a3a3a3]">
             Real-time insights into your API spending
           </p>
         </div>

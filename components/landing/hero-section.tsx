@@ -36,24 +36,24 @@ export function HeroSection() {
         }
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0 dot-grid opacity-40" />
       <div className="absolute inset-0 animated-gradient" />
-      {/* Glow orbs — multi-color blend centered on hero */}
+      {/* Glow orbs */}
       <div className="glow-orb w-[1500px] h-[750px] top-0 left-1/2 -translate-x-1/2" />
       <div className="glow-orb-purple w-[1000px] h-[600px] -top-10 left-[28%] -translate-x-1/2" />
       <div className="glow-orb-blue w-[900px] h-[540px] top-28 left-[70%] -translate-x-1/2" />
       <div className="glow-orb-teal w-[800px] h-[500px] top-16 left-1/2 -translate-x-1/2" />
 
       {/* Content */}
-      <div className="relative mx-auto max-w-6xl px-6 pt-24 sm:pt-32 pb-20">
-        <div className="flex flex-col items-center text-center">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-6 py-20 sm:py-24">
+        <div className="flex w-full flex-col items-center text-center">
 
           {/* Badge */}
           <Motion.div
             {...fade(0)}
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm"
           >
             <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
             <span className="text-[#a3a3a3]">Now in public beta</span>
@@ -61,7 +61,7 @@ export function HeroSection() {
 
           {/* Headline — word-by-word stagger */}
           <Motion.h1
-            className="max-w-4xl text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl lg:text-7xl text-balance"
+            className="max-w-4xl text-4xl font-bold tracking-tight text-[#fafafa] text-balance sm:text-5xl md:text-[3.6rem] lg:text-[4.35rem]"
             variants={shouldReduceMotion ? undefined : headlineVariants}
             initial={shouldReduceMotion ? undefined : 'hidden'}
             animate={shouldReduceMotion ? undefined : 'visible'}
@@ -83,13 +83,13 @@ export function HeroSection() {
           {/* Subheadline */}
           <Motion.p
             {...fade(0.55)}
-            className="mt-6 max-w-2xl text-lg text-[#a3a3a3] md:text-xl text-balance"
+            className="mt-5 max-w-2xl text-base text-[#a3a3a3] text-balance md:text-lg"
           >
-            One-line SDK install. Zero-config cost tracking. Full visibility into every API call across OpenAI, Anthropic, and more.
+            One-line SDK install. Zero-config cost tracking. Full visibility into every API call across OpenAI, Anthropic, Stripe, Twilio, and more.
           </Motion.p>
 
           {/* CTA Buttons */}
-          <Motion.div {...fade(0.68)} className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <Motion.div {...fade(0.68)} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <MailingListModal>
               <Button
                 size="lg"
@@ -109,7 +109,7 @@ export function HeroSection() {
           </Motion.div>
 
           {/* Code Block */}
-          <Motion.div {...fade(0.82)} className="mt-16 w-full max-w-3xl">
+          <Motion.div {...fade(0.82)} className="mt-10 w-full max-w-3xl md:mt-12">
             <CodeBlock />
           </Motion.div>
 

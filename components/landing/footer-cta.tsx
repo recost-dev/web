@@ -27,10 +27,10 @@ export function FooterCTA() {
       >
         <div className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl lg:text-5xl">
-            Start tracking in 2 minutes
+            Full cost visibility.<br className="hidden sm:block" /> From day one.
           </h2>
           <p className="mt-4 max-w-xl text-lg text-[#a3a3a3]">
-            Join thousands of developers who have already shipped with full cost visibility.
+            One npm install away. No billing surprises, no delayed data, no guesswork.
           </p>
 
           <div className="mt-10 flex justify-center">
