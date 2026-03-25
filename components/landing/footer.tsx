@@ -15,6 +15,7 @@ const footerLinks = {
   Company: [
     { name: "About", href: "/about" },
     { name: "Privacy", href: "/privacy" },
+    { name: "Terms", href: "/terms" },
   ],
   Connect: [
     { name: "GitHub", href: "https://github.com/recost-dev" },

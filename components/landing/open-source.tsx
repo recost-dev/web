@@ -1,5 +1,4 @@
 import { useRef } from "react"
-import { Badge } from "@/components/ui/badge"
 import { motion as Motion, useInView, useReducedMotion } from "motion/react"
 
 const itemVariants = {
@@ -21,24 +20,17 @@ export function OpenSourceSection() {
 
       <Motion.div
         ref={ref}
-        className="relative mx-auto max-w-6xl px-6 py-24 md:py-32"
+        className="relative mx-auto max-w-6xl px-6 py-16 md:py-24"
         variants={itemVariants}
         initial="hidden"
         animate={vis}
       >
         <div className="flex flex-col items-center text-center">
-          <Badge
-            variant="outline"
-            className="mb-6 border-[#d4900a]/30 bg-[#d4900a]/10 text-[#d4900a] px-4 py-1"
-          >
-            AGPL Licensed
-          </Badge>
-
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">
             Open source. Free forever.
           </h2>
           <p className="mt-4 max-w-xl text-lg text-[#a3a3a3]">
-            Recost SDKs are AGPL licensed. Use them in production, fork them, contribute back. No vendor lock-in.
+            The Node.js and Python SDKs are AGPL licensed. Full source, no vendor lock-in. Use in production, fork, contribute back.
           </p>
 
           <div className="mt-10 flex justify-center">
@@ -60,17 +52,17 @@ export function OpenSourceSection() {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="font-medium text-[#fafafa]">recost-dev/</span>
+              <span className="font-medium text-[#fafafa]">recost-dev</span>
             </a>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
-            {["TypeScript"].map((lang) => (
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+            {["TypeScript", "Python", "AGPL-3.0"].map((tag) => (
               <span
-                key={lang}
-                className="rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-sm text-[#a3a3a3]"
+                key={tag}
+                className="rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-sm text-[#a3a3a3] font-mono"
               >
-                {lang}
+                {tag}
               </span>
             ))}
           </div>

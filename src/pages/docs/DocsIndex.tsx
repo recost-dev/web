@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { Navigation } from '@/components/landing/navigation'
 import { Footer } from '@/components/landing/footer'
-import { Code2, PuzzleIcon, ArrowRight, Terminal, Zap } from 'lucide-react'
+import { Code2, PuzzleIcon, ArrowRight, Terminal, Zap, TreePine } from 'lucide-react'
 
 export default function DocsPage() {
   return (
@@ -26,7 +26,7 @@ export default function DocsPage() {
 
       {/* Doc cards */}
       <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
           {/* API Docs card */}
           <Link to="/docs/api" className="group block">
@@ -67,7 +67,7 @@ export default function DocsPage() {
 
               <h2 className="text-xl font-bold text-[#fafafa] mb-2">Extension Documentation</h2>
               <p className="text-[#a3a3a3] text-sm leading-relaxed mb-6">
-                Set up and use the Recost browser extension. Covers installation across platforms, configuration, real-time cost overlays, and dashboard integration.
+                Set up and use the Recost VS Code extension. Covers installation across platforms, configuration, real-time cost overlays, and dashboard integration.
               </p>
 
               <div className="flex flex-wrap gap-1.5 mb-8">
@@ -83,6 +83,36 @@ export default function DocsPage() {
 
               <div className="flex items-center gap-2 text-sm font-medium text-[#d4900a]">
                 View extension docs
+                <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
+              </div>
+            </div>
+          </Link>
+
+          {/* SDK Docs card */}
+          <Link to="/docs/sdk" className="group block">
+            <div className="relative h-full rounded-lg border border-[#262626] bg-[#111111] p-8 transition-all duration-200 hover:border-[#d4900a]/40">
+              <div className="mb-6 inline-flex rounded-lg border border-[#262626] bg-[#0a0a0a] p-3 group-hover:border-[#d4900a]/30 transition-colors duration-200">
+                <TreePine className="h-6 w-6 text-[#d4900a]" />
+              </div>
+
+              <h2 className="text-xl font-bold text-[#fafafa] mb-2">SDK Documentation</h2>
+              <p className="text-[#a3a3a3] text-sm leading-relaxed mb-6">
+                Integrate the Node.js and Python SDKs. One call to init() patches your HTTP clients and starts streaming cost telemetry automatically.
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 mb-8">
+                {['Node.js', 'Python', 'Express', 'FastAPI', 'Flask'].map(label => (
+                  <span
+                    key={label}
+                    className="rounded border border-[#262626] px-2.5 py-1 text-xs text-[#737373]"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 text-sm font-medium text-[#d4900a]">
+                View SDK docs
                 <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-1" />
               </div>
             </div>
@@ -113,6 +143,20 @@ export default function DocsPage() {
             >
               <PuzzleIcon className="h-3.5 w-3.5 text-[#d4900a] flex-shrink-0" />
               Extension Setup
+            </Link>
+            <Link
+              to="/docs/sdk#node-quick-start"
+              className="flex items-center gap-2 text-sm text-[#a3a3a3] hover:text-[#fafafa] transition-colors duration-150"
+            >
+              <TreePine className="h-3.5 w-3.5 text-[#d4900a] flex-shrink-0" />
+              Node.js Quick Start
+            </Link>
+            <Link
+              to="/docs/sdk#python-quick-start"
+              className="flex items-center gap-2 text-sm text-[#a3a3a3] hover:text-[#fafafa] transition-colors duration-150"
+            >
+              <TreePine className="h-3.5 w-3.5 text-[#d4900a] flex-shrink-0" />
+              Python Quick Start
             </Link>
           </div>
         </div>

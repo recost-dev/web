@@ -572,20 +572,20 @@ export default function Docs() {
               <p
                 style={{ fontFamily: 'inherit', fontSize: '16px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}
               >
-                Complete reference for every EcoApi endpoint: request shapes, response formats, rate limits, and curl examples.
+                Complete reference for every Recost API endpoint: request shapes, response formats, rate limits, and curl examples.
               </p>
             </Motion.div>
 
             {/* ── 1. Overview ─────────────────────────────────────── */}
-              <SectionCard id="overview" icon={Zap} badge="Overview" title="What is EcoApi?" subtitle="Analyze · Estimate · Optimize · Sustainability" delay={0.05}>
+              <SectionCard id="overview" icon={Zap} badge="Overview" title="What is the Recost API?" subtitle="Analyze · Estimate · Optimize · Sustainability" delay={0.05}>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '12px' }}>
-                  EcoApi is a REST API that turns parsed API call data from your codebase into actionable diagnostics.
+                  The Recost API is a REST API that turns parsed API call data from your codebase into actionable diagnostics.
                   Send a list of outbound HTTP calls found in your source files and the engine detects inefficiencies,
                   estimates monthly costs per provider, surfaces N+1 and rate-limit hotspots, and generates code-level
                   optimization suggestions with estimated savings.
                 </p>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
-                  EcoApi also computes <strong style={{ color: 'rgba(255,255,255,0.8)' }}>sustainability stats</strong>: electricity (kWh),
+                  The Recost API also computes <strong style={{ color: 'rgba(255,255,255,0.8)' }}>sustainability stats</strong>: electricity (kWh),
                   water (L), and CO₂ (g) footprint estimated from API call volume, with an AI vs non-AI breakdown, so your
                   team can measure the environmental cost of every API call.
                 </p>
@@ -613,7 +613,7 @@ export default function Docs() {
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '10px' }}>
                   All requests to protected endpoints require a Bearer token in the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px' }}>Authorization</code> header:
                 </p>
-                <CodeBlock>{`Authorization: Bearer eco-xxxxxxxxxxxx`}</CodeBlock>
+                <CodeBlock>{`Authorization: Bearer rc-xxxxxxxxxxxx`}</CodeBlock>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.38)', lineHeight: 1.7, marginTop: '10px', marginBottom: '16px' }}>
                   Generate your API key in the{' '}
                   <Link
@@ -627,7 +627,7 @@ export default function Docs() {
                 <SubHeading>Quick start</SubHeading>
                 <CodeBlock>{`cd api
 npm install
-npx wrangler d1 create eco-db          # create D1 database
+npx wrangler d1 create recost-db       # create D1 database
 # paste returned database_id into api/wrangler.toml
 npx wrangler kv namespace create rate-limit
 # paste returned id + preview_id into wrangler.toml [[kv_namespaces]]
@@ -1223,7 +1223,7 @@ npm run dev                             # → http://localhost:8787`}</CodeBlock
               <SectionCard id="request-format" icon={Code2} badge="Request Format" title="ApiCall Schema" subtitle="POST /projects/:id/scans → body.apiCalls[]" delay={0.41}>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
                   Each element of the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '12px' }}>apiCalls</code> array represents one outbound HTTP call found in source code.
-                  The scanner (extension or CI script) extracts these and POSTs them to EcoApi.
+                  The scanner (extension or CI script) extracts these and POSTs them to the Recost API.
                 </p>
                 <FieldTable fields={[
                   { name: 'file',      type: 'string',          required: true,  desc: 'Relative path to the source file containing the call' },
@@ -1370,7 +1370,7 @@ curl -s https://api.recost.dev/projects/{projectId}/sustainability`}</CodeBlock>
               {/* ── 17. Pricing Table ───────────────────────────────── */}
               <SectionCard id="pricing" icon={DollarSign} badge="Pricing" title="Provider Pricing" subtitle="api/src/config/pricing.ts: cost per API call" delay={0.45}>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '14px' }}>
-                  EcoApi uses these per-call costs to estimate monthly spend. Provider detection is URL keyword matching.
+                  Recost uses these per-call costs to estimate monthly spend. Provider detection is URL keyword matching.
                   Unrecognized URLs fall back to the internal rate.
                   Monthly cost = <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>calls_per_day × cost_per_call × 30</code>.
                 </p>
@@ -1392,7 +1392,7 @@ curl -s https://api.recost.dev/projects/{projectId}/sustainability`}</CodeBlock>
               <SectionCard id="frequency" icon={Cpu} badge="Frequency Heuristics" title="Frequency Heuristics" subtitle="frequency field → calls/day conversion" delay={0.46}>
                 <p style={{ fontFamily: 'inherit', fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginBottom: '14px' }}>
                   When the <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}>frequency</code> field is a keyword or
-                  <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}> N/day</code> pattern, EcoApi converts it to a
+                  <code style={{ fontFamily: "'Geist Mono Variable', monospace", fontSize: '11px' }}> N/day</code> pattern, Recost converts it to a
                   daily call count used for cost and sustainability calculations.
                 </p>
                 <DataTable

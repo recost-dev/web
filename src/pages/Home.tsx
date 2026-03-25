@@ -15,7 +15,7 @@ export default function Home() {
       <FeaturesSection />
       <div className="hidden md:block"><DashboardPreview /></div>
       <OpenSourceSection />
-<Footer />
+      <Footer />
     </main>
   )
 }
