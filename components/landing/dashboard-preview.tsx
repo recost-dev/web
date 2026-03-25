@@ -14,7 +14,7 @@ export function DashboardPreview() {
   return (
     <section className="relative overflow-hidden border-t border-[#262626] bg-[#0a0a0a]">
       <div className="glow-orb-sm w-[900px] h-[400px] -top-10 left-1/2 -translate-x-1/2" />
-      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28 relative">
+      <div className="mx-auto max-w-6xl px-6 pt-24 pb-20 md:pt-32 md:pb-28 relative">
         {/* Section Header */}
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">

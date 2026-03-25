@@ -90,7 +90,7 @@ export function HeroSection() {
           {/* Subheadline */}
           <Motion.p
             {...fade(0.55)}
-            className="mt-5 max-w-2xl text-base text-[#a3a3a3] text-balance md:text-lg"
+            className="mt-6 max-w-2xl text-base text-[#a3a3a3] text-balance md:text-lg"
           >
             One-line SDK install. Zero-config cost tracking. Full visibility into every API call across OpenAI, Anthropic, Stripe, Twilio, and more.
           </Motion.p>
