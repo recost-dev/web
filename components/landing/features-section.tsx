@@ -49,6 +49,10 @@ export function FeaturesSection() {
   const stickyRef = useRef<HTMLElement>(null)
   const cardRefs = useRef<(HTMLDivElement | null)[]>([])
   const dotRefs = useRef<(HTMLDivElement | null)[]>([])
+  const blurOverlayRefs = useRef<(HTMLDivElement | null)[]>([])
+  const tickingRef = useRef(false)
+  const progressRef = useRef(0)
+  const lastGlowRef = useRef<number[]>(features.map(() => -1))
   const shouldReduceMotion = useReducedMotion()
 
   useEffect(() => {
@@ -61,41 +65,49 @@ export function FeaturesSection() {
       const i = Math.floor(raw)
       if (i >= N - 1) return N - 1
       const frac = raw - i
-      const dwell = 0.55
+      const dwell = 0.7
       const half = dwell / 2
       if (frac <= half) return i
       if (frac >= 1 - half) return i + 1
       const t = (frac - half) / (1 - dwell)
-      const eased = t * t // quadratic ease-in: slow exit, snappy entry
+      const eased = t * t
       return i + eased
     }
 
-    function onScroll() {
-      const sec = stickyRef.current
-      if (!sec) return
-      const rect = sec.getBoundingClientRect()
-      const progress = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)))
-
+    function updateCarousel(progress: number) {
       const activeFloat = shapedFloat(progress)
       const activeIndex = Math.round(activeFloat)
       const cards = cardRefs.current
       const dots = dotRefs.current
+      const overlays = blurOverlayRefs.current
 
       cards.forEach((card, i) => {
         if (!card) return
         const pos = i - activeFloat
         const absPos = Math.abs(pos)
-        const t = Math.min(absPos, 1) // 0 = active, 1+ = offscreen
-        const blur = absPos <= 1 ? absPos * 1 : 1 + (absPos - 1) * 5
+        const t = Math.min(absPos, 1)
         const glowOpacity = Math.max(0, 1 - absPos)
+
+        // compositor-only properties
         card.style.translate = `${pos * 85}% 0px`
         card.style.scale = String(1 - t * 0.2)
-        card.style.filter = `brightness(${1 - t * 0.6}) blur(${blur}px)`
-        card.style.boxShadow = glowOpacity > 0
-          ? `0 0 80px rgba(212,144,10,${(glowOpacity * 0.1).toFixed(3)}), 0 0 160px rgba(212,144,10,${(glowOpacity * 0.05).toFixed(3)})`
-          : "none"
+        // brightness only — blur moved to overlay
+        card.style.filter = `brightness(${(1 - t * 0.6).toFixed(3)})`
         card.style.zIndex = String(10 - Math.round(absPos))
         card.style.pointerEvents = Math.round(pos) === 0 ? "auto" : "none"
+
+        // blur overlay: opacity is compositor-only
+        const overlay = overlays[i]
+        if (overlay) overlay.style.opacity = String(Math.min(absPos, 1).toFixed(3))
+
+        // boxShadow: only write when glow changes meaningfully (threshold 0.01)
+        const prev = lastGlowRef.current[i]
+        if (Math.abs(glowOpacity - prev) > 0.01) {
+          lastGlowRef.current[i] = glowOpacity
+          card.style.boxShadow = glowOpacity > 0
+            ? `0 0 80px rgba(212,144,10,${(glowOpacity * 0.1).toFixed(3)}), 0 0 160px rgba(212,144,10,${(glowOpacity * 0.05).toFixed(3)})`
+            : "none"
+        }
       })
 
       dots.forEach((dot, i) => {
@@ -103,6 +115,20 @@ export function FeaturesSection() {
         dot.classList.toggle("bg-[#d4900a]", i === activeIndex)
         dot.classList.toggle("bg-[#262626]", i !== activeIndex)
       })
+    }
+
+    function onScroll() {
+      const sec = stickyRef.current
+      if (!sec) return
+      const rect = sec.getBoundingClientRect()
+      progressRef.current = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)))
+      if (!tickingRef.current) {
+        requestAnimationFrame(() => {
+          updateCarousel(progressRef.current)
+          tickingRef.current = false
+        })
+        tickingRef.current = true
+      }
     }
 
     window.addEventListener("scroll", onScroll, { passive: true })
@@ -146,7 +172,7 @@ export function FeaturesSection() {
       <section
         ref={stickyRef}
         className="relative border-t border-[#262626] bg-[#111111]"
-        style={{ height: "300vh" }}
+        style={{ height: "450vh" }}
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           <div className="absolute inset-0 dot-grid opacity-20 pointer-events-none" />
@@ -177,10 +203,24 @@ export function FeaturesSection() {
                       zIndex: 10 - i,
                       pointerEvents: i === 0 ? "auto" : "none",
                       borderColor: "#d4900a40",
+                      willChange: "transform, filter",
+                      transition: "box-shadow 0.15s ease-out",
                     }}
                     className="absolute top-0 bottom-0 left-0 w-[58%] flex flex-col items-center justify-center rounded-2xl border bg-[#141414] p-8"
                   >
-                    <div className="w-[85%]">
+                    {/* Blur overlay — opacity driven, compositor-only */}
+                    <div
+                      ref={el => { blurOverlayRefs.current[i] = el }}
+                      style={{
+                        position: "absolute", inset: 0,
+                        backdropFilter: "blur(8px)",
+                        borderRadius: "inherit",
+                        opacity: i === 0 ? 0 : 1,
+                        willChange: "opacity",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    <div className="w-[85%] relative">
                       <div className="flex items-start gap-4 mb-8">
                         <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d4900a]/10 mt-1">
                           <feature.icon className="h-7 w-7 text-[#d4900a]" />
