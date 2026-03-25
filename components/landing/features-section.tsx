@@ -139,7 +139,7 @@ export function FeaturesSection() {
           <div className="absolute inset-0 dot-grid opacity-20 pointer-events-none" />
           <div className="glow-orb-sm absolute h-[450px] w-[1050px] -top-20 left-1/2 -translate-x-1/2 pointer-events-none" />
 
-          <div className="relative h-full flex flex-col justify-center -mt-6">
+          <div className="relative h-full flex flex-col justify-center mt-12">
             <div className="mx-auto w-full max-w-6xl px-6 flex flex-col gap-48">
               {/* Section header */}
               <div>
