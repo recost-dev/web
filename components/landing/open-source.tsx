@@ -50,14 +50,9 @@ export function OpenSourceSection() {
               The Node.js and Python SDKs are AGPL licensed. Full source, no vendor lock-in. Use in production, fork, contribute back.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              {["TypeScript", "Python", "AGPL-3.0"].map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-sm text-[#a3a3a3] font-mono"
-                >
-                  {tag}
-                </span>
-              ))}
+              <span className="rounded-md border border-[#3b82f6]/30 bg-[#3b82f6]/8 px-3 py-1.5 text-sm text-[#93c5fd] font-mono">TypeScript</span>
+              <span className="rounded-md border border-[#fbbf24]/30 bg-[#fbbf24]/8 px-3 py-1.5 text-sm text-[#fcd34d] font-mono">Python</span>
+              <span className="rounded-md border border-[#262626] bg-[#111111] px-3 py-1.5 text-sm text-[#a3a3a3] font-mono">AGPL-3.0</span>
             </div>
           </div>
           <a

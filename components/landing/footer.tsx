@@ -30,7 +30,7 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-6">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link to="/" className="font-mono text-xl font-bold tracking-tight text-[#fafafa]">
+            <Link to="/" className="font-mono text-xl font-extrabold tracking-tight text-[#fafafa]">
               recost
             </Link>
             <p className="mt-4 max-w-xs text-sm text-[#a3a3a3]">

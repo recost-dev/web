@@ -60,15 +60,15 @@ export function HeroSection() {
           {/* Badge */}
           <Motion.div
             {...fade(0)}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#22c55e]/25 bg-[#22c55e]/5 px-4 py-1.5 text-sm"
           >
             <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
-            <span className="text-[#a3a3a3]">Now in public beta</span>
+            <span className="text-[#22c55e]/80">Now in public beta</span>
           </Motion.div>
 
           {/* Headline — word-by-word stagger */}
           <Motion.h1
-            className="max-w-4xl text-4xl font-bold tracking-tight text-[#fafafa] text-balance sm:text-5xl md:text-[3.6rem] lg:text-[4.35rem]"
+            className="max-w-4xl text-[clamp(2.25rem,_1.25rem+4.5vw,_4.5rem)] leading-[1.1] font-bold tracking-tight text-[#fafafa] text-balance"
             variants={shouldReduceMotion ? undefined : headlineVariants}
             initial={shouldReduceMotion ? undefined : 'hidden'}
             animate={shouldReduceMotion ? undefined : 'visible'}

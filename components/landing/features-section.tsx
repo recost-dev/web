@@ -5,26 +5,31 @@ import { motion as Motion, useInView, useReducedMotion } from "motion/react"
 const features = [
   {
     icon: Layers,
+    color: "#d4900a",
     title: "Cost attribution by provider",
     description: "Every API call is tagged to its provider and file, aggregated in 30-second windows. Track spending across OpenAI, Anthropic, Stripe, and more — no delayed billing surprises.",
   },
   {
     icon: ScanSearch,
+    color: "#3b82f6",
     title: "AST-powered static analysis",
     description: "Web-Tree-Sitter parses your entire codebase to map every external API call across imports, aliases, and cross-file wrappers. Complete coverage with zero runtime overhead.",
   },
   {
     icon: Wifi,
+    color: "#14b8a6",
     title: "WebSocket + HTTPS delivery",
     description: "Stream cost events live via WebSocket for real-time dashboards, or batch-collect via HTTPS for ingestion pipelines. Both modes from a single SDK with one line of setup.",
   },
   {
     icon: Code2,
+    color: "#6366f1",
     title: "VS Code extension & Python SDK",
     description: "See cost estimates inline as you write code, before anything ships. The Python SDK auto-intercepts requests, httpx, aiohttp, FastAPI, and Flask with zero configuration.",
   },
   {
     icon: MessageSquare,
+    color: "#8b5cf6",
     title: "AI insights & sustainability",
     description: "Get optimization advice from 8 AI providers in one interface. Every recommendation includes estimated electricity usage, water consumption, and CO2 output per API call.",
   },
@@ -82,9 +87,13 @@ export function FeaturesSection() {
         const absPos = Math.abs(pos)
         const t = Math.min(absPos, 1) // 0 = active, 1+ = offscreen
         const blur = absPos <= 1 ? absPos * 1 : 1 + (absPos - 1) * 5
+        const glowOpacity = Math.max(0, 1 - absPos)
         card.style.translate = `${pos * 85}% 0px`
         card.style.scale = String(1 - t * 0.2)
         card.style.filter = `brightness(${1 - t * 0.6}) blur(${blur}px)`
+        card.style.boxShadow = glowOpacity > 0
+          ? `0 0 80px rgba(212,144,10,${(glowOpacity * 0.1).toFixed(3)}), 0 0 160px rgba(212,144,10,${(glowOpacity * 0.05).toFixed(3)})`
+          : "none"
         card.style.zIndex = String(10 - Math.round(absPos))
         card.style.pointerEvents = Math.round(pos) === 0 ? "auto" : "none"
       })
@@ -111,9 +120,13 @@ export function FeaturesSection() {
           <p className="mt-3 text-lg text-[#a3a3a3]">Everything you need to understand and optimize your API costs</p>
           <div className="mt-14 grid gap-6 sm:grid-cols-2">
             {features.map((f) => (
-              <div key={f.title} className="flex flex-col gap-5 rounded-2xl border border-[#262626] bg-[#141414] p-7">
+              <div
+                key={f.title}
+                className="flex flex-col gap-5 rounded-2xl border bg-[#141414] p-7"
+                style={{ borderColor: "#d4900a40" }}
+              >
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#d4900a]/10">
-                  <f.icon className="h-5 w-5 text-[#d4900a]" />
+                  <f.icon className="h-7 w-7 text-[#d4900a]" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-[#fafafa]">{f.title}</h3>
@@ -163,17 +176,18 @@ export function FeaturesSection() {
                       filter: i === 0 ? "brightness(1)" : "brightness(0.4)",
                       zIndex: 10 - i,
                       pointerEvents: i === 0 ? "auto" : "none",
+                      borderColor: "#d4900a40",
                     }}
-                    className="absolute top-0 bottom-0 left-0 w-[58%] flex flex-col items-center justify-center rounded-2xl border border-[#262626] bg-[#141414] p-8"
+                    className="absolute top-0 bottom-0 left-0 w-[58%] flex flex-col items-center justify-center rounded-2xl border bg-[#141414] p-8"
                   >
                     <div className="w-[85%]">
-                      <div className="flex items-center gap-3 mb-8">
-                        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d4900a]/10">
-                          <feature.icon className="h-5 w-5 text-[#d4900a]" />
+                      <div className="flex items-start gap-4 mb-8">
+                        <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d4900a]/10 mt-1">
+                          <feature.icon className="h-7 w-7 text-[#d4900a]" />
                         </div>
                         <h3 className="text-4xl font-bold text-[#fafafa]">{feature.title}</h3>
                       </div>
-                      <p className="text-lg leading-loose text-[#737373]">{feature.description}</p>
+                      <p className="text-lg leading-relaxed text-[#737373]">{feature.description}</p>
                     </div>
                   </div>
                 ))}
