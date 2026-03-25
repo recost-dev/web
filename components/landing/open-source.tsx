@@ -1,5 +1,21 @@
 import { useRef } from "react"
+import { Cpu, FlaskConical } from "lucide-react"
 import { motion as Motion, useInView, useReducedMotion } from "motion/react"
+
+const comingSoon = [
+  { icon: Cpu, title: "MCP server", description: "Give your LLM direct access to your cost data, endpoint graph, and suggestions. Rich context, no copy-paste." },
+  { icon: FlaskConical, title: "Go, Java, and Ruby AST", description: "Full AST-powered analysis for Go, Java, and Ruby codebases. Same deep call detection as TypeScript and Python." },
+]
+
+const itemVariants2 = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
+}
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -67,6 +83,34 @@ export function OpenSourceSection() {
             ))}
           </div>
         </div>
+
+        <Motion.div
+          className="mt-16 grid gap-x-12 gap-y-6 border-t border-[#262626] pt-12 sm:grid-cols-2"
+          variants={containerVariants}
+          initial="hidden"
+          animate={vis}
+        >
+          {comingSoon.map(({ icon: Icon, title, description }) => (
+            <Motion.div
+              key={title}
+              className="flex flex-col gap-4 rounded-lg border border-dashed border-[#d4900a]/35 bg-[#d4900a]/[0.06] p-5"
+              variants={itemVariants2}
+            >
+              <div className="flex items-center justify-between">
+                <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#d4900a]/20 bg-[#d4900a]/10">
+                  <Icon className="h-4 w-4 text-[#d4900a]" />
+                </div>
+                <span className="rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[#d4900a]/70 border border-[#d4900a]/25">
+                  Soon
+                </span>
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-[#fafafa]">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#737373]">{description}</p>
+              </div>
+            </Motion.div>
+          ))}
+        </Motion.div>
       </Motion.div>
     </section>
   )

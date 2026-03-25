@@ -35,6 +35,13 @@ export function HeroSection() {
           transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] as const },
         }
 
+  const stats = [
+    { value: "30s", label: "telemetry windows" },
+    { value: "10+", label: "SDK frameworks" },
+    { value: "8",   label: "AI providers" },
+    { value: "1",   label: "line to set up" },
+  ]
+
   return (
     <section className="relative overflow-hidden">
       {/* Background layers */}
@@ -46,8 +53,23 @@ export function HeroSection() {
       <div className="glow-orb-blue w-[900px] h-[540px] top-28 left-[70%] -translate-x-1/2" />
       <div className="glow-orb-teal w-[800px] h-[500px] top-16 left-1/2 -translate-x-1/2" />
 
+      {/* Stats bar pinned to bottom of hero viewport */}
+      <Motion.div
+        {...fade(1.0)}
+        className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-[#0a0a0a]/80 backdrop-blur-sm"
+      >
+        <div className="mx-auto max-w-6xl px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {stats.map(({ value, label }) => (
+            <div key={label} className="flex flex-col items-center text-center gap-1">
+              <span className="text-xl font-bold font-mono text-[#d4900a] tabular-nums">{value}</span>
+              <span className="text-xs text-[#737373] tracking-wide">{label}</span>
+            </div>
+          ))}
+        </div>
+      </Motion.div>
+
       {/* Content */}
-      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-6 py-20 sm:py-24">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-6 py-20 pb-32 sm:py-24 sm:pb-32">
         <div className="flex w-full flex-col items-center text-center">
 
           {/* Badge */}

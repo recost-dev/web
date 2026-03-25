@@ -104,7 +104,7 @@ export default function About() {
 
       {/* Hero */}
       <section className="relative pt-32 pb-16">
-        <Motion.div {...FADE(0)} className="relative mx-auto max-w-5xl px-6">
+        <Motion.div {...FADE(0)} className="relative mx-auto max-w-6xl px-6">
           <p className="text-xs uppercase tracking-[0.12em] mb-3" style={{ color: ACCENT }}>About</p>
           <h1 className="text-4xl font-bold tracking-tight text-[#fafafa] sm:text-5xl md:text-6xl text-balance leading-tight">
             Four surfaces.<br className="hidden sm:block" /> One cost picture.
@@ -116,7 +116,7 @@ export default function About() {
       </section>
 
       {/* Sections */}
-      <section className="relative mx-auto max-w-5xl px-6 pb-24">
+      <section className="relative mx-auto max-w-6xl px-6 pb-24">
         {SECTIONS.map(({ num, icon: Icon, badge, title, subtitle, description, features }, i) => (
           <Motion.div
             key={num}
