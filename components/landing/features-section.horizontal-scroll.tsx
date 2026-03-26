@@ -205,6 +205,7 @@ export function FeaturesSection() {
         style={{
           scrollbarWidth: "none",
           WebkitOverflowScrolling: "touch",
+          overscrollBehaviorX: "contain",
           scrollPaddingLeft: "max(1.5rem, calc((100vw - 72rem) / 2))",
           paddingLeft: "max(1.5rem, calc((100vw - 72rem) / 2))",
           paddingTop: "200px",
