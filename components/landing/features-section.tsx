@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Layers, Wifi, Code2, ScanSearch, MessageSquare } from "lucide-react"
-import { motion as Motion, useInView, useReducedMotion } from "motion/react"
+import { useReducedMotion } from "motion/react"
 
 const features = [
   {
@@ -35,15 +35,6 @@ const features = [
   },
 ]
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
-}
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
-}
 
 export function FeaturesSection() {
   const stickyRef = useRef<HTMLElement>(null)
