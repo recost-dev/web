@@ -40,7 +40,7 @@ const features = [
   },
 ]
 
-const GAP = 20 // mr-5 = 20px
+const GAP = -50 // negative margin pulls scaled cards closer together
 
 export function FeaturesSection() {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -104,6 +104,7 @@ export function FeaturesSection() {
         const glowOpacity = Math.max(0, 1 - dist)
 
         card.style.filter = `brightness(${(1 - t * 0.6).toFixed(3)})`
+        card.style.scale = String((1 - t * 0.2).toFixed(3))
         card.style.zIndex = String(Math.round(10 - dist * 5))
 
         const overlay = blurOverlayRefs.current[i]
@@ -218,10 +219,12 @@ export function FeaturesSection() {
           <div
             key={feature.title}
             ref={(el) => { cardRefs.current[i] = el }}
-            className="snap-start shrink-0 w-[min(580px,85vw)] mr-5 last:mr-0 relative flex flex-col justify-center rounded-2xl border bg-[#141414] px-14 py-10 min-h-[380px]"
+            className="snap-start shrink-0 w-[min(580px,85vw)] -mr-[50px] last:mr-0 relative flex flex-col justify-center rounded-2xl border bg-[#141414] px-14 py-10 min-h-[380px]"
             style={{
               borderColor: "#d4900a40",
               filter: i === 0 ? "brightness(1)" : "brightness(0.4)",
+              scale: i === 0 ? "1" : "0.8",
+              transformOrigin: "center",
               zIndex: i === 0 ? 10 : 1,
               willChange: "transform, filter",
               transition: "box-shadow 0.15s ease-out",
