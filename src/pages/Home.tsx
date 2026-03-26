@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/landing/navigation"
 import { HeroSection } from "@/components/landing/hero-section"
-import { FeaturesSection } from "@/components/landing/features-section"
-import { DashboardPreview } from "@/components/landing/dashboard-preview"
+import { FeaturesSection } from "@/components/landing/features-section.horizontal-scroll"
+import { DashboardPreview } from "@/compontents/landing/dashboard-preview"
 import { OpenSourceSection } from "@/components/landing/open-source"
 import { Footer } from "@/components/landing/footer"
 
