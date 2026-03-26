@@ -56,3 +56,13 @@ export function useCreateParserRun() {
     },
   });
 }
+
+export function useDeleteParserRun() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (runId: string) => apiClient.del(`/parser/runs/${runId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['dashboard-parser-runs'] });
+    },
+  });
+}

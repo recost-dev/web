@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import {
   ScanSearch, ChevronDown, ChevronRight,
-  AlertTriangle, RefreshCw, Download, FileText,
+  AlertTriangle, RefreshCw, Download, FileText, X,
 } from 'lucide-react';
 import { colors, accent, FADE } from '@/src/lib/tokens';
 import { useAuth } from '@/src/lib/auth-context';
@@ -11,6 +11,7 @@ import {
   useParserRuns,
   useParserRunResults,
   useCreateParserRun,
+  useDeleteParserRun,
   type ParserRun,
   type ParserResult,
 } from '@/src/lib/parser-hooks';
@@ -90,10 +91,10 @@ function numOf(v: unknown): number {
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
 const STATUS_META: Record<string, { bg: string; border: string; color: string; label: string }> = {
-  queued:  { bg: colors.warningSubtle,          border: colors.warningBorder,          color: colors.warning,       label: 'Queued'  },
-  running: { bg: colors.accentSubtle,           border: colors.accentBorder,           color: accent,               label: 'Running' },
-  done:    { bg: 'rgba(163,163,163,0.08)',       border: 'rgba(163,163,163,0.18)',      color: colors.textSecondary, label: 'Done'    },
-  failed:  { bg: colors.errorSubtle,            border: colors.errorBorder,            color: colors.error,         label: 'Failed'  },
+  queued:  { bg: 'rgba(163,163,163,0.06)',       border: 'rgba(163,163,163,0.18)',      color: colors.textMuted,     label: 'Queued'  },
+  running: { bg: 'rgba(59,130,246,0.10)',         border: 'rgba(59,130,246,0.25)',       color: '#60a5fa',            label: 'Running' },
+  done:    { bg: 'rgba(34,197,94,0.08)',          border: 'rgba(34,197,94,0.20)',        color: '#22c55e',            label: 'Done'    },
+  failed:  { bg: colors.errorSubtle,             border: colors.errorBorder,            color: colors.error,         label: 'Failed'  },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -161,6 +162,8 @@ function exportAllRunsCsv(runs: ParserRun[]): void {
 
 function ExpandedRunDetail({ run }: { run: ParserRun }) {
   const { data: results = [], isLoading, isError, refetch } = useParserRunResults(run.id);
+  const [endpointsOpen, setEndpointsOpen] = useState(true);
+  const [suggestionsOpen, setSuggestionsOpen] = useState(true);
 
   if (isLoading) {
     return (
@@ -194,10 +197,10 @@ function ExpandedRunDetail({ run }: { run: ParserRun }) {
   }
 
   const allEndpoints = results.flatMap((r) =>
-    safeJsonArray(r.endpoints).map((ep) => ({ ...ep, _repo: r.repo }))
+    safeJsonArray(r.endpoints).map((ep) => ({ ...ep, _repo: r.repo } as Record<string, unknown> & { _repo: string }))
   );
   const allSuggestions = results.flatMap((r) =>
-    safeJsonArray(r.suggestions).map((s) => ({ ...s, _repo: r.repo }))
+    safeJsonArray(r.suggestions).map((s) => ({ ...s, _repo: r.repo } as Record<string, unknown> & { _repo: string }))
   );
   const totalScannedFiles = results.reduce((sum, r) => sum + (r.scanned_file_count ?? 0), 0);
   const totalMonthlyCost = results.reduce((sum, r) => {
@@ -247,87 +250,111 @@ function ExpandedRunDetail({ run }: { run: ParserRun }) {
       {/* Endpoints table */}
       {allEndpoints.length > 0 && (
         <div>
-          <p className="text-[11px] uppercase tracking-[0.1em] mb-2 font-medium" style={{ color: colors.textMuted }}>Endpoints</p>
-          <div className="rounded-md overflow-x-auto" style={{ border: `1px solid ${colors.borderDefault}` }}>
-            <div style={{ minWidth: 640 }}>
-              <div
-                className="grid gap-x-4 px-4 py-2"
-                style={{
-                  gridTemplateColumns: '1fr 1.5fr 80px 56px 88px 88px 88px',
-                  borderBottom: `1px solid ${colors.borderSubtle}`,
-                  background: colors.bgBase,
-                }}
-              >
-                {['Repo', 'Endpoint', 'Provider', 'Method', 'Freq. class', 'Cost model', 'Est. / mo'].map((h) => (
-                  <span key={h} style={thStyle}>{h}</span>
-                ))}
-              </div>
-              {allEndpoints.map((ep, i) => (
+          <button
+            type="button"
+            onClick={() => setEndpointsOpen((o) => !o)}
+            className="flex items-center gap-1.5 mb-2 cursor-pointer"
+          >
+            {endpointsOpen
+              ? <ChevronDown className="w-3 h-3" style={{ color: colors.textMuted }} />
+              : <ChevronRight className="w-3 h-3" style={{ color: colors.textMuted }} />
+            }
+            <p className="text-[11px] uppercase tracking-[0.1em] font-medium" style={{ color: colors.textMuted }}>Endpoints</p>
+          </button>
+          {endpointsOpen && (
+            <div className="rounded-md overflow-x-auto" style={{ border: `1px solid ${colors.borderDefault}` }}>
+              <div style={{ minWidth: 640 }}>
                 <div
-                  key={i}
-                  className="grid gap-x-4 px-4 py-2.5"
+                  className="grid gap-x-4 px-4 py-2"
                   style={{
                     gridTemplateColumns: '1fr 1.5fr 80px 56px 88px 88px 88px',
-                    borderBottom: i < allEndpoints.length - 1 ? `1px solid ${colors.borderSubtle}` : undefined,
+                    borderBottom: `1px solid ${colors.borderSubtle}`,
+                    background: colors.bgBase,
                   }}
                 >
-                  <span className="truncate font-mono text-[11px]" style={tdStyle}>{strOf(ep._repo)}</span>
-                  <span className="truncate font-mono text-[11px]" style={{ color: colors.textPrimary }}>{strOf(ep.endpoint ?? ep.url ?? ep.path)}</span>
-                  <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.provider)}</span>
-                  <span className="truncate text-[11px] font-mono uppercase" style={{ color: accent }}>{strOf(ep.method)}</span>
-                  <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.frequencyClass ?? ep.frequency_class)}</span>
-                  <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.costModel ?? ep.cost_model)}</span>
-                  <span className="tabular-nums text-[12px] font-mono" style={{ color: accent }}>
-                    {(ep.estimatedMonthlyCost ?? ep.estimated_monthly_cost ?? ep.monthlyCost ?? ep.monthly_cost) != null
-                      ? fmtMoney(numOf(ep.estimatedMonthlyCost ?? ep.estimated_monthly_cost ?? ep.monthlyCost ?? ep.monthly_cost))
-                      : '—'}
-                  </span>
+                  {['Repo', 'Endpoint', 'Provider', 'Method', 'Freq. class', 'Cost model', 'Est. / mo'].map((h) => (
+                    <span key={h} style={thStyle}>{h}</span>
+                  ))}
                 </div>
-              ))}
+                {allEndpoints.map((ep, i) => (
+                  <div
+                    key={i}
+                    className="grid gap-x-4 px-4 py-2.5"
+                    style={{
+                      gridTemplateColumns: '1fr 1.5fr 80px 56px 88px 88px 88px',
+                      borderBottom: i < allEndpoints.length - 1 ? `1px solid ${colors.borderSubtle}` : undefined,
+                    }}
+                  >
+                    <span className="truncate font-mono text-[11px]" style={tdStyle}>{strOf(ep._repo)}</span>
+                    <span className="truncate font-mono text-[11px]" style={{ color: colors.textPrimary }}>{strOf(ep.endpoint ?? ep.url ?? ep.path)}</span>
+                    <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.provider)}</span>
+                    <span className="truncate text-[11px] font-mono uppercase" style={{ color: accent }}>{strOf(ep.method)}</span>
+                    <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.frequencyClass ?? ep.frequency_class)}</span>
+                    <span className="truncate text-[12px]" style={tdStyle}>{strOf(ep.costModel ?? ep.cost_model)}</span>
+                    <span className="tabular-nums text-[12px] font-mono" style={{ color: accent }}>
+                      {(ep.estimatedMonthlyCost ?? ep.estimated_monthly_cost ?? ep.monthlyCost ?? ep.monthly_cost) != null
+                        ? fmtMoney(numOf(ep.estimatedMonthlyCost ?? ep.estimated_monthly_cost ?? ep.monthlyCost ?? ep.monthly_cost))
+                        : '—'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
       {/* Suggestions table */}
       {allSuggestions.length > 0 && (
         <div>
-          <p className="text-[11px] uppercase tracking-[0.1em] mb-2 font-medium" style={{ color: colors.textMuted }}>Suggestions</p>
-          <div className="rounded-md overflow-x-auto" style={{ border: `1px solid ${colors.borderDefault}` }}>
-            <div style={{ minWidth: 480 }}>
-              <div
-                className="grid gap-x-4 px-4 py-2"
-                style={{
-                  gridTemplateColumns: '1fr 2fr 96px 104px',
-                  borderBottom: `1px solid ${colors.borderSubtle}`,
-                  background: colors.bgBase,
-                }}
-              >
-                {['Repo', 'Title', 'Type', 'Est. saving'].map((h) => (
-                  <span key={h} style={thStyle}>{h}</span>
-                ))}
-              </div>
-              {allSuggestions.map((s, i) => (
+          <button
+            type="button"
+            onClick={() => setSuggestionsOpen((o) => !o)}
+            className="flex items-center gap-1.5 mb-2 cursor-pointer"
+          >
+            {suggestionsOpen
+              ? <ChevronDown className="w-3 h-3" style={{ color: colors.textMuted }} />
+              : <ChevronRight className="w-3 h-3" style={{ color: colors.textMuted }} />
+            }
+            <p className="text-[11px] uppercase tracking-[0.1em] font-medium" style={{ color: colors.textMuted }}>Suggestions</p>
+          </button>
+          {suggestionsOpen && (
+            <div className="rounded-md overflow-x-auto" style={{ border: `1px solid ${colors.borderDefault}` }}>
+              <div style={{ minWidth: 480 }}>
                 <div
-                  key={i}
-                  className="grid gap-x-4 px-4 py-2.5"
+                  className="grid gap-x-4 px-4 py-2"
                   style={{
                     gridTemplateColumns: '1fr 2fr 96px 104px',
-                    borderBottom: i < allSuggestions.length - 1 ? `1px solid ${colors.borderSubtle}` : undefined,
+                    borderBottom: `1px solid ${colors.borderSubtle}`,
+                    background: colors.bgBase,
                   }}
                 >
-                  <span className="truncate font-mono text-[11px]" style={tdStyle}>{strOf(s._repo)}</span>
-                  <span className="truncate text-[12px]" style={{ color: colors.textPrimary }}>{strOf(s.title)}</span>
-                  <span className="truncate text-[12px]" style={tdStyle}>{strOf(s.type)}</span>
-                  <span className="tabular-nums text-[12px] font-mono" style={{ color: accent }}>
-                    {(s.estimatedSaving ?? s.estimated_saving) != null
-                      ? fmtMoney(numOf(s.estimatedSaving ?? s.estimated_saving))
-                      : '—'}
-                  </span>
+                  {['Repo', 'Title', 'Type', 'Est. saving'].map((h) => (
+                    <span key={h} style={thStyle}>{h}</span>
+                  ))}
                 </div>
-              ))}
+                {allSuggestions.map((s, i) => (
+                  <div
+                    key={i}
+                    className="grid gap-x-4 px-4 py-2.5"
+                    style={{
+                      gridTemplateColumns: '1fr 2fr 96px 104px',
+                      borderBottom: i < allSuggestions.length - 1 ? `1px solid ${colors.borderSubtle}` : undefined,
+                    }}
+                  >
+                    <span className="truncate font-mono text-[11px]" style={tdStyle}>{strOf(s._repo)}</span>
+                    <span className="truncate text-[12px]" style={{ color: colors.textPrimary }}>{strOf(s.title)}</span>
+                    <span className="truncate text-[12px]" style={tdStyle}>{strOf(s.type)}</span>
+                    <span className="tabular-nums text-[12px] font-mono" style={{ color: accent }}>
+                      {(s.estimatedSaving ?? s.estimated_saving) != null
+                        ? fmtMoney(numOf(s.estimatedSaving ?? s.estimated_saving))
+                        : '—'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -359,7 +386,7 @@ function ExpandedRunDetail({ run }: { run: ParserRun }) {
 
 // ─── Column template ──────────────────────────────────────────────────────────
 
-const COL = '72px 1fr 80px 80px 88px 96px 36px';
+const COL = '72px 1fr 80px 80px 88px 96px 28px 28px';
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
@@ -372,6 +399,8 @@ function AutoParserPage() {
 
   const { data: runs = [], isLoading, isError, refetch } = useParserRuns();
   const createRun = useCreateParserRun();
+  const deleteRun = useDeleteParserRun();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   function handleRunScan(e: { preventDefault(): void }) {
     e.preventDefault();
@@ -436,7 +465,7 @@ function AutoParserPage() {
             type="button"
             onClick={() => setPanelOpen((o) => !o)}
             className="w-full flex items-center gap-3 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer transition-colors duration-100"
-            style={{ borderBottom: panelOpen ? `1px solid ${colors.borderSubtle}` : undefined, background: 'transparent', border: 'none', borderBottom: panelOpen ? `1px solid ${colors.borderSubtle}` : undefined }}
+            style={{ background: 'transparent', border: 'none', borderBottom: panelOpen ? `1px solid ${colors.borderSubtle}` : undefined }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.bgHover; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
           >
@@ -540,7 +569,7 @@ function AutoParserPage() {
                   background: colors.bgSubtle,
                 }}
               >
-                {['Status', 'Repos', 'Results', 'Duration', 'Triggered', 'Date', ''].map((h, i) => (
+                {['Status', 'Repos', 'Results', 'Duration', 'Triggered', 'Date', '', ''].map((h, i) => (
                   <span key={i} className="text-[11px] uppercase tracking-[0.08em] font-medium" style={{ color: colors.textMuted }}>
                     {h}
                   </span>
@@ -556,7 +585,7 @@ function AutoParserPage() {
                     <div
                       role="button"
                       tabIndex={0}
-                      className="grid gap-x-4 items-center px-4 py-3.5 cursor-pointer transition-colors duration-100"
+                      className="group grid gap-x-4 items-center px-4 py-3.5 cursor-pointer transition-colors duration-100"
                       style={{
                         gridTemplateColumns: COL,
                         borderBottom: !isLast || isExpanded ? `1px solid ${colors.borderSubtle}` : undefined,
@@ -587,6 +616,43 @@ function AutoParserPage() {
                           ? <ChevronDown className="w-3.5 h-3.5" style={{ color: colors.textMuted }} />
                           : <ChevronRight className="w-3.5 h-3.5" style={{ color: colors.textMuted }} />
                         }
+                      </div>
+                      <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+                        {confirmDeleteId === run.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              disabled={deleteRun.isPending}
+                              onClick={() => {
+                                if (isExpanded) setExpandedId(null);
+                                deleteRun.mutate(run.id, { onSettled: () => setConfirmDeleteId(null) });
+                              }}
+                              className="px-1.5 py-0.5 rounded text-[10px] font-medium cursor-pointer"
+                              style={{ background: colors.errorSubtle, border: `1px solid ${colors.errorBorder}`, color: colors.error }}
+                            >
+                              {deleteRun.isPending && confirmDeleteId === run.id ? '…' : 'Yes'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirmDeleteId(null)}
+                              className="px-1.5 py-0.5 rounded text-[10px] cursor-pointer"
+                              style={{ color: colors.textMuted }}
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteId(run.id)}
+                            className="flex items-center justify-center w-5 h-5 rounded cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ color: colors.textMuted }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.error; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = colors.textMuted; }}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     </div>
                     {isExpanded && <ExpandedRunDetail run={run} />}
