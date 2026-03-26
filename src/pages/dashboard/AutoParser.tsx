@@ -685,9 +685,12 @@ function AutoParserPage() {
 
 export default function AutoParser() {
   const { user } = useAuth();
-  const allowedEmail = import.meta.env.VITE_ALLOWED_EMAIL as string | undefined;
+  const allowed = (import.meta.env.VITE_ALLOWED_EMAIL as string || '')
+    .split(',')
+    .map((e: string) => e.trim().toLowerCase())
+    .filter(Boolean);
 
-  if (allowedEmail && user?.email !== allowedEmail) {
+  if (allowed.length > 0 && !allowed.includes((user?.email ?? '').toLowerCase())) {
     return <Navigate to="/" replace />;
   }
 
