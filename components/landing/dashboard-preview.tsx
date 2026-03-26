@@ -4,17 +4,24 @@ const providers = [
   { name: "Stripe", cost: "$23.67", calls: "2,156", color: "#6366f1" },
 ]
 
-const apiKeys = [
-  { name: "production-main", key: "rct_prod_***8f3a", status: "active", created: "Mar 15, 2026" },
-  { name: "staging-test", key: "rct_stg_***2b7c", status: "active", created: "Mar 12, 2026" },
-  { name: "dev-local", key: "rct_dev_***9d4e", status: "inactive", created: "Mar 10, 2026" },
+const endpoints = [
+  { provider: "OpenAI",    method: "POST", url: "/v1/chat/completions",  callsPerDay: "1,240", cost: "$89.45" },
+  { provider: "Anthropic", method: "POST", url: "/v1/messages",          callsPerDay: "680",   cost: "$67.20" },
+  { provider: "OpenAI",    method: "POST", url: "/v1/embeddings",        callsPerDay: "840",   cost: "$38.10" },
+  { provider: "Stripe",    method: "POST", url: "/v1/payment_intents",   callsPerDay: "420",   cost: "free"   },
+  { provider: "SendGrid",  method: "POST", url: "/v3/mail/send",         callsPerDay: "180",   cost: "free"   },
 ]
+
+const METHOD_STYLES: Record<string, { bg: string; border: string; color: string }> = {
+  POST: { bg: "rgba(212,144,10,0.10)", border: "rgba(212,144,10,0.30)", color: "#d4900a" },
+  GET:  { bg: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.22)", color: "#38bdf8" },
+}
 
 export function DashboardPreview() {
   return (
     <section className="relative overflow-hidden border-t border-[#262626] bg-[#0a0a0a]">
       <div className="glow-orb-sm w-[900px] h-[400px] -top-10 left-1/2 -translate-x-1/2" />
-      <div className="mx-auto max-w-6xl px-6 py-20 md:py-28 relative">
+      <div className="mx-auto max-w-6xl px-6 pt-24 pb-20 md:pt-32 md:pb-28 relative">
         {/* Section Header */}
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-[#fafafa] md:text-4xl">
@@ -100,43 +107,49 @@ export function DashboardPreview() {
               </div>
             </div>
 
-            {/* API Keys Table */}
-            <div className="hidden sm:block rounded-lg border border-[#262626] bg-[#0a0a0a] p-6 lg:col-span-2">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-medium text-[#fafafa]">API Keys</h3>
-                <button className="text-xs text-[#d4900a] hover:underline">+ Create key</button>
+            {/* Endpoints Table */}
+            <div className="hidden sm:block rounded-lg border border-[#262626] bg-[#0a0a0a] lg:col-span-2 overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#262626]">
+                <h3 className="font-medium text-[#fafafa]">Endpoints</h3>
+                <div className="w-[104px] flex items-center justify-between px-2 py-1 rounded text-xs text-[#a3a3a3] border border-[#262626] bg-[#111111] select-none pointer-events-none">
+                  <span>By cost</span>
+                  <svg className="w-3 h-3 text-[#737373]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
-              
+
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-[#262626]">
-                      <th className="pb-3 text-left font-medium text-[#737373]">Name</th>
-                      <th className="pb-3 text-left font-medium text-[#737373]">Key</th>
-                      <th className="pb-3 text-left font-medium text-[#737373]">Status</th>
-                      <th className="pb-3 text-left font-medium text-[#737373]">Created</th>
+                      {["Provider", "Endpoint", "Method", "Calls / day", "Monthly cost"].map((h) => (
+                        <th key={h} className="px-6 py-2.5 text-left font-medium text-[#737373]">{h}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {apiKeys.map((key) => (
-                      <tr key={key.name} className="border-b border-[#262626]/50">
-                        <td className="py-3 text-[#fafafa]">{key.name}</td>
-                        <td className="py-3 font-mono text-[#a3a3a3]">{key.key}</td>
-                        <td className="py-3">
-                          <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs ${
-                            key.status === "active" 
-                              ? "bg-[#d4900a]/10 text-[#d4900a]" 
-                              : "bg-[#737373]/10 text-[#737373]"
-                          }`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${
-                              key.status === "active" ? "bg-[#d4900a]" : "bg-[#737373]"
-                            }`} />
-                            {key.status}
-                          </span>
-                        </td>
-                        <td className="py-3 text-[#737373]">{key.created}</td>
-                      </tr>
-                    ))}
+                    {endpoints.map((ep, i) => {
+                      const ms = METHOD_STYLES[ep.method] ?? METHOD_STYLES.GET
+                      return (
+                        <tr key={i} className="border-b border-[#262626]/40 last:border-0">
+                          <td className="px-6 py-2.5 font-medium text-[#a3a3a3]">{ep.provider}</td>
+                          <td className="px-6 py-2.5 font-mono text-[#fafafa] max-w-[200px] truncate">{ep.url}</td>
+                          <td className="px-6 py-2.5">
+                            <span
+                              className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-semibold rounded"
+                              style={{ background: ms.bg, border: `1px solid ${ms.border}`, color: ms.color }}
+                            >
+                              {ep.method}
+                            </span>
+                          </td>
+                          <td className="px-6 py-2.5 font-mono tabular-nums text-[#a3a3a3]">{ep.callsPerDay}</td>
+                          <td className="px-6 py-2.5 font-mono font-semibold tabular-nums" style={{ color: ep.cost !== "free" ? "#d4900a" : "#737373" }}>
+                            {ep.cost}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

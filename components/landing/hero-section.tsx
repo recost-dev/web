@@ -35,6 +35,13 @@ export function HeroSection() {
           transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] as const },
         }
 
+  const stats = [
+    { value: "30s", label: "telemetry windows" },
+    { value: "10+", label: "SDK frameworks" },
+    { value: "8",   label: "AI providers" },
+    { value: "1",   label: "line to set up" },
+  ]
+
   return (
     <section className="relative overflow-hidden">
       {/* Background layers */}
@@ -47,21 +54,21 @@ export function HeroSection() {
       <div className="glow-orb-teal w-[800px] h-[500px] top-16 left-1/2 -translate-x-1/2" />
 
       {/* Content */}
-      <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-6 py-20 sm:py-24">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-7xl items-center px-6 py-20 pb-32 sm:py-24 sm:pb-32">
         <div className="flex w-full flex-col items-center text-center">
 
           {/* Badge */}
           <Motion.div
             {...fade(0)}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-1.5 text-sm"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#22c55e]/25 bg-[#22c55e]/5 px-4 py-1.5 text-sm"
           >
             <span className="h-2 w-2 rounded-full bg-[#22c55e] animate-pulse" />
-            <span className="text-[#a3a3a3]">Now in public beta</span>
+            <span className="text-[#22c55e]/80">Now in public beta</span>
           </Motion.div>
 
           {/* Headline — word-by-word stagger */}
           <Motion.h1
-            className="max-w-4xl text-4xl font-bold tracking-tight text-[#fafafa] text-balance sm:text-5xl md:text-[3.6rem] lg:text-[4.35rem]"
+            className="max-w-4xl text-[clamp(2.25rem,_1.25rem+4.5vw,_4.5rem)] leading-[1.1] font-bold tracking-tight text-[#fafafa] text-balance"
             variants={shouldReduceMotion ? undefined : headlineVariants}
             initial={shouldReduceMotion ? undefined : 'hidden'}
             animate={shouldReduceMotion ? undefined : 'visible'}
@@ -83,7 +90,7 @@ export function HeroSection() {
           {/* Subheadline */}
           <Motion.p
             {...fade(0.55)}
-            className="mt-5 max-w-2xl text-base text-[#a3a3a3] text-balance md:text-lg"
+            className="mt-6 max-w-2xl text-base text-[#a3a3a3] text-balance md:text-lg"
           >
             One-line SDK install. Zero-config cost tracking. Full visibility into every API call across OpenAI, Anthropic, Stripe, Twilio, and more.
           </Motion.p>
@@ -115,6 +122,21 @@ export function HeroSection() {
 
         </div>
       </div>
+
+      {/* Stats bar pinned to bottom of hero viewport */}
+      <Motion.div
+        {...fade(1.0)}
+        className="absolute bottom-0 left-0 right-0 border-t border-[#1c1c1c] bg-[#0a0a0a]/80 backdrop-blur-sm"
+      >
+        <div className="mx-auto max-w-7xl px-6 py-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {stats.map(({ value, label }) => (
+            <div key={label} className="flex flex-col items-center text-center gap-1">
+              <span className="text-xl font-bold font-mono text-[#d4900a] tabular-nums">{value}</span>
+              <span className="text-xs text-[#737373] tracking-wide">{label}</span>
+            </div>
+          ))}
+        </div>
+      </Motion.div>
     </section>
   )
 }
