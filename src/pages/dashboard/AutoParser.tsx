@@ -396,13 +396,14 @@ function AutoParserPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [triggerError, setTriggerError] = useState('');
+  const [queueProgress, setQueueProgress] = useState<{ current: number; total: number } | null>(null);
 
   const { data: runs = [], isLoading, isError, refetch } = useParserRuns();
   const createRun = useCreateParserRun();
   const deleteRun = useDeleteParserRun();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  function handleRunScan(e: { preventDefault(): void }) {
+  async function handleRunScan(e: { preventDefault(): void }) {
     e.preventDefault();
     setTriggerError('');
     setSuccessMsg('');
@@ -417,19 +418,22 @@ function AutoParserPage() {
       return;
     }
 
-    createRun.mutate(
-      { repos, triggered_by: 'ui' },
-      {
-        onSuccess: () => {
-          setRepoInput('');
-          setSuccessMsg('Scan queued.');
-          setTimeout(() => setSuccessMsg(''), 4000);
-        },
-        onError: (e: Error) => {
-          setTriggerError(e.message || 'Failed to start scan.');
-        },
+    const total = repos.length;
+    setQueueProgress({ current: 0, total });
+
+    for (let i = 0; i < repos.length; i++) {
+      setQueueProgress({ current: i + 1, total });
+      try {
+        await createRun.mutateAsync({ repos: [repos[i]], triggered_by: 'ui' });
+      } catch (err) {
+        console.error(`Failed to queue repo ${repos[i]}:`, err);
       }
-    );
+    }
+
+    setQueueProgress(null);
+    setRepoInput('');
+    setSuccessMsg(`${total} ${total === 1 ? 'run' : 'runs'} queued successfully`);
+    setTimeout(() => setSuccessMsg(''), 4000);
   }
 
   function toggleRow(id: string) {
@@ -500,13 +504,15 @@ function AutoParserPage() {
                   <div className="flex items-center gap-4 flex-wrap">
                     <button
                       type="submit"
-                      disabled={createRun.isPending || !repoInput.trim()}
+                      disabled={!!queueProgress || !repoInput.trim()}
                       className="flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                       style={{ background: colors.accentSubtle, border: `1px solid ${colors.accentBorder}`, color: accent }}
-                      onMouseEnter={(e) => { if (!createRun.isPending) (e.currentTarget as HTMLButtonElement).style.background = colors.accentHover; }}
+                      onMouseEnter={(e) => { if (!queueProgress) (e.currentTarget as HTMLButtonElement).style.background = colors.accentHover; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = colors.accentSubtle; }}
                     >
-                      {createRun.isPending ? 'Queuing…' : 'Run scan'}
+                      {queueProgress
+                        ? `Queuing ${queueProgress.current}/${queueProgress.total}…`
+                        : 'Run scan'}
                     </button>
                     {successMsg && (
                       <p className="text-xs font-medium" style={{ color: '#22c55e' }}>{successMsg}</p>
