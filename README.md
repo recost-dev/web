@@ -28,7 +28,7 @@ Run the dashboard locally without a backend. Create `web/.env.local`:
 VITE_DEV_AUTH=true
 ```
 
-All API requests are intercepted and served from `app/lib/mock-data.ts`. This file is never committed and the env var is absent in production, so the real API is used when deployed.
+All API requests are intercepted and served from `app/lib/mock-data.ts`. Mock data is organized as per-project maps keyed by project ID (`MOCK_ENDPOINTS_MAP`, `MOCK_SCANS_MAP`, etc.) so each mock project has distinct data. The env var is absent in production, so the real API is used when deployed.
 
 ## Environment variables
 
@@ -46,7 +46,7 @@ src/
 │   │   ├── DashboardLayout.tsx   — shared layout: sidebar, navbar, breadcrumb
 │   │   ├── GettingStarted.tsx    — /dashboard
 │   │   ├── Projects.tsx          — /dashboard/projects
-│   │   ├── ProjectDetail.tsx     — /dashboard/projects/:id
+│   │   ├── ProjectDetail.tsx     — /dashboard/projects/:id (Live, Endpoints, Suggestions tabs)
 │   │   └── Account.tsx           — /dashboard/account
 │   └── ...                       — landing, login
 ├── lib/
@@ -54,7 +54,9 @@ src/
 │   ├── auth-context.tsx          — JWT auth, stores token in localStorage
 │   ├── theme-context.tsx         — theme provider
 │   └── themes.ts                 — theme definitions
-└── components/                   — shared UI components
+└── components/
+    ├── landing/                  — landing page sections (hero, features horizontal scroll, stats strip, etc.)
+    └── ...                       — shared UI components
 ```
 
 ## Auth

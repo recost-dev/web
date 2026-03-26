@@ -31,22 +31,38 @@ src/
 │   │   ├── DashboardLayout.tsx   — shared layout: sidebar, top navbar, breadcrumb
 │   │   ├── GettingStarted.tsx    — /dashboard (home)
 │   │   ├── Projects.tsx          — /dashboard/projects (list)
-│   │   ├── ProjectDetail.tsx     — /dashboard/projects/:id
+│   │   ├── ProjectDetail.tsx     — /dashboard/projects/:id (tabbed: Live, Endpoints, Suggestions, etc.)
 │   │   └── Account.tsx           — /dashboard/account (API keys, settings)
 │   └── ...                       — landing, login, etc.
 ├── lib/
-│   ├── api-client.ts             — typed fetch wrapper; mock intercept layer
+│   ├── api-client.ts             — typed fetch wrapper; mock intercept layer (per-project ID routing)
 │   ├── auth-context.tsx          — JWT auth context; mock bypass
 │   ├── theme-context.tsx         — theme provider
 │   └── themes.ts                 — theme definitions
 └── components/                   — shared UI components
 ```
 
+**ProjectDetail tabs & components:**
+- `LiveTab` — real-time telemetry view: pulse indicator, summary stats (monthly cost / calls/day / endpoint count), cost-by-provider progress bars, weekly call volume chart, top endpoints table (sortable by cost or calls)
+- `ProjectIdChip` — inline copy-to-clipboard for project ID
+- `SortDropdown<T>` — generic sort selector used in LiveTab and other tabs
+- `PROVIDER_COLORS` — map of provider name → accent color for charts/bars
+
+**Landing page components (`components/landing/`):**
+- `FeaturesSection` (horizontal scroll) — scroll-driven stacking card animation for 5 feature highlights; replaces the old static grid
+- `StatsStrip` — animated stats bar: 30s telemetry windows, 10+ SDK frameworks, 8 AI providers, 1 line to set up
+- `RoleDropdown` — role selector (Student / Developer / Founder / Other) used in mailing list and waitlist modals
+- `DashboardPreview` — updated to show an endpoints table (method badge, provider, URL, calls/day, cost) instead of API keys
+
 ### Local mock mode
 
 Set `VITE_DEV_AUTH=true` in `web/.env.local`. The api-client intercepts all requests and returns data from `app/lib/mock-data.ts` (a shared mock file used by both the Vite app and Next.js). `.env.local` is never committed or deployed — when hosted, the env var is absent and the real API is used.
 
-Mock data covers: `MOCK_PROJECTS`, `MOCK_LATEST_SCAN`, `MOCK_ENDPOINTS`, `MOCK_SUGGESTIONS`, `MOCK_COST_BY_PROVIDER`, `MOCK_COST_BY_FILE`, `MOCK_SCANS`, `MOCK_KEYS`, `MOCK_USER`.
+Mock data is per-project — each resource has a `MOCK_*_MAP` keyed by project ID (`proj_mock_001/002/003`), with flat aliases for backwards compatibility:
+- Maps: `MOCK_ENDPOINTS_MAP`, `MOCK_SUGGESTIONS_MAP`, `MOCK_COST_BY_PROVIDER_MAP`, `MOCK_COST_BY_FILE_MAP`, `MOCK_SCANS_MAP`, `MOCK_LATEST_SCAN_MAP`, `MOCK_COST_SUMMARY_MAP`
+- Flat aliases: `MOCK_PROJECTS`, `MOCK_KEYS`, `MOCK_USER`, `MOCK_ENDPOINTS`, `MOCK_SUGGESTIONS`, etc.
+
+The api-client resolves mock data by matching the project ID from the request path (`/projects/:id/...`) against the maps, falling back to the first project's data.
 
 The api-client also uses `VITE_API_URL` (default: `https://api.recost.dev`) to set the base URL.
 
