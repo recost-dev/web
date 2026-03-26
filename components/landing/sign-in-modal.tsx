@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import { motion as Motion, AnimatePresence } from "motion/react"
 import { X } from "lucide-react"
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useState } from "react"
 import { createPortal } from "react-dom"
 import { useGoogleAuth } from "@/src/hooks/useGoogleAuth"
 
@@ -11,14 +11,17 @@ interface SignInModalProps {
 }
 
 export function SignInModal({ open, onClose }: SignInModalProps) {
+  const [error, setError] = useState<string | null>(null)
+
   const onSuccess = useCallback((token: string) => {
     localStorage.setItem("recost_token", token)
     window.location.href = "/dashboard"
   }, [])
 
-  const { login } = useGoogleAuth(onSuccess, (msg) => alert(msg))
+  const { login } = useGoogleAuth(onSuccess, setError)
 
   useEffect(() => {
+    if (!open) setError(null)
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
     if (open) document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
@@ -87,6 +90,10 @@ export function SignInModal({ open, onClose }: SignInModalProps) {
               </svg>
               <span className="text-sm font-medium text-[#fafafa]">Continue with Google</span>
             </button>
+
+            {error && (
+              <p className="text-center text-xs text-[#ef4444]">{error}</p>
+            )}
 
             {/* Footer note */}
             <p className="text-center text-xs text-[#737373]">
