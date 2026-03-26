@@ -2,11 +2,12 @@ import { Link, Outlet, useLocation, Navigate } from 'react-router';
 import { useAuth } from '@/src/lib/auth-context';
 import { useQueryClient } from '@tanstack/react-query';
 import { colors, accent } from '@/src/lib/tokens';
-import { Sparkles, FolderKanban, User, LogOut } from 'lucide-react';
+import { Sparkles, FolderKanban, User, LogOut, ScanSearch } from 'lucide-react';
 
 const NAV = [
   { href: '/dashboard', icon: Sparkles, label: 'Get Started', exact: true },
   { href: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
+  { href: '/dashboard/parser', icon: ScanSearch, label: 'Auto Parser' },
   { href: '/dashboard/account', icon: User, label: 'Account' },
 ];
 
@@ -164,7 +165,7 @@ export default function DashboardLayout() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+        <main className="flex-1 overflow-y-auto pb-20 md:pb-0 no-scrollbar">
           <Outlet />
         </main>
       </div>

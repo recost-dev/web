@@ -894,3 +894,109 @@ export const MOCK_SCANS_MAP: Record<string, typeof MOCK_SCANS_001> = {
   'proj_mock_002': MOCK_SCANS_002,
   'proj_mock_003': MOCK_SCANS_003,
 };
+
+// ---------------------------------------------------------------------------
+// Parser runs
+// ---------------------------------------------------------------------------
+
+const MOCK_PARSER_RESULTS_001 = [
+  {
+    id: 'res_mock_001a',
+    run_id: 'run_mock_001',
+    repo: 'acme-corp/backend-api',
+    target: null,
+    scanned_file_count: 84,
+    endpoints: JSON.stringify([
+      { endpoint: '/v1/chat/completions', provider: 'OpenAI',    method: 'POST', frequencyClass: 'high',   costModel: 'per-token',  estimatedMonthlyCost: 142.50 },
+      { endpoint: '/v1/embeddings',       provider: 'OpenAI',    method: 'POST', frequencyClass: 'medium', costModel: 'per-token',  estimatedMonthlyCost:  38.20 },
+      { endpoint: '/v1/messages',         provider: 'Anthropic', method: 'POST', frequencyClass: 'medium', costModel: 'per-token',  estimatedMonthlyCost:  67.80 },
+      { endpoint: '/v1/payment_intents',  provider: 'Stripe',    method: 'POST', frequencyClass: 'low',    costModel: 'per-call',   estimatedMonthlyCost:   0    },
+      { endpoint: '/v3/mail/send',        provider: 'SendGrid',  method: 'POST', frequencyClass: 'low',    costModel: 'per-call',   estimatedMonthlyCost:   0    },
+    ]),
+    suggestions: JSON.stringify([
+      { title: 'Cache embedding results',          type: 'caching',      estimatedSaving: 22.80 },
+      { title: 'Batch chat completions',           type: 'batching',     estimatedSaving: 18.40 },
+      { title: 'Switch to claude-haiku for FAQs',  type: 'model-swap',   estimatedSaving: 31.20 },
+    ]),
+    summary: JSON.stringify({ totalMonthlyCost: 248.50, scannedFileCount: 84, endpointCount: 5, suggestionCount: 3 }),
+    collected_at: Date.now() - 1000 * 60 * 14,
+  },
+];
+
+const MOCK_PARSER_RESULTS_002 = [
+  {
+    id: 'res_mock_002a',
+    run_id: 'run_mock_002',
+    repo: 'acme-corp/data-pipeline',
+    target: null,
+    scanned_file_count: 37,
+    endpoints: JSON.stringify([
+      { endpoint: '/v1/embeddings',  provider: 'OpenAI',    method: 'POST', frequencyClass: 'high',   costModel: 'per-token', estimatedMonthlyCost: 94.10 },
+      { endpoint: '/v1/completions', provider: 'OpenAI',    method: 'POST', frequencyClass: 'medium', costModel: 'per-token', estimatedMonthlyCost: 51.30 },
+    ]),
+    suggestions: JSON.stringify([
+      { title: 'Use text-embedding-3-small instead of ada-002', type: 'model-swap', estimatedSaving: 41.00 },
+    ]),
+    summary: JSON.stringify({ totalMonthlyCost: 145.40, scannedFileCount: 37, endpointCount: 2, suggestionCount: 1 }),
+    collected_at: Date.now() - 1000 * 60 * 60 * 3,
+  },
+  {
+    id: 'res_mock_002b',
+    run_id: 'run_mock_002',
+    repo: 'acme-corp/ml-service',
+    target: null,
+    scanned_file_count: 22,
+    endpoints: JSON.stringify([
+      { endpoint: '/inference', provider: 'HuggingFace', method: 'POST', frequencyClass: 'medium', costModel: 'per-call', estimatedMonthlyCost: 28.60 },
+    ]),
+    suggestions: JSON.stringify([]),
+    summary: JSON.stringify({ totalMonthlyCost: 28.60, scannedFileCount: 22, endpointCount: 1, suggestionCount: 0 }),
+    collected_at: Date.now() - 1000 * 60 * 60 * 3,
+  },
+];
+
+export const MOCK_PARSER_RUNS = [
+  {
+    id: 'run_mock_001',
+    status: 'done',
+    repos: JSON.stringify(['https://github.com/acme-corp/backend-api']),
+    results_found: 1,
+    duration_ms: 4820,
+    triggered_by: 'ui',
+    created_at: Date.now() - 1000 * 60 * 14,
+  },
+  {
+    id: 'run_mock_002',
+    status: 'done',
+    repos: JSON.stringify(['https://github.com/acme-corp/data-pipeline', 'https://github.com/acme-corp/ml-service']),
+    results_found: 2,
+    duration_ms: 11340,
+    triggered_by: 'cron',
+    created_at: Date.now() - 1000 * 60 * 60 * 3,
+  },
+  {
+    id: 'run_mock_003',
+    status: 'failed',
+    repos: JSON.stringify(['https://github.com/acme-corp/frontend']),
+    results_found: 0,
+    duration_ms: 2100,
+    triggered_by: 'ui',
+    created_at: Date.now() - 1000 * 60 * 60 * 27,
+  },
+  {
+    id: 'run_mock_004',
+    status: 'queued',
+    repos: JSON.stringify(['https://github.com/acme-corp/workers']),
+    results_found: 0,
+    duration_ms: null,
+    triggered_by: 'ui',
+    created_at: Date.now() - 1000 * 30,
+  },
+];
+
+export const MOCK_PARSER_RESULTS_MAP: Record<string, typeof MOCK_PARSER_RESULTS_001> = {
+  'run_mock_001': MOCK_PARSER_RESULTS_001,
+  'run_mock_002': MOCK_PARSER_RESULTS_002 as typeof MOCK_PARSER_RESULTS_001,
+  'run_mock_003': [],
+  'run_mock_004': [],
+};

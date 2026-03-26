@@ -44,6 +44,7 @@ async function mockRequest<T>(path: string): Promise<T> {
     MOCK_PROJECTS, MOCK_KEYS,
     MOCK_ENDPOINTS_MAP, MOCK_SUGGESTIONS_MAP, MOCK_COST_BY_PROVIDER_MAP,
     MOCK_COST_BY_FILE_MAP, MOCK_SCANS_MAP, MOCK_LATEST_SCAN_MAP, MOCK_COST_SUMMARY_MAP,
+    MOCK_PARSER_RUNS, MOCK_PARSER_RESULTS_MAP,
   } = await import('@/app/lib/mock-data');
 
   await new Promise((r) => setTimeout(r, 100));
@@ -83,6 +84,15 @@ async function mockRequest<T>(path: string): Promise<T> {
     if (sub.match(/^cost\/by-file/)) return paginated(costByFile) as T;
     if (sub === 'cost') return { data: costSummary } as T;
   }
+
+  // Parser runs
+  if (path.match(/^\/parser\/runs(\?|$)/)) return { data: MOCK_PARSER_RUNS } as T;
+  const parserResultsMatch = path.match(/^\/parser\/runs\/([^/]+)\/results$/);
+  if (parserResultsMatch) {
+    const rid = parserResultsMatch[1];
+    return { data: MOCK_PARSER_RESULTS_MAP[rid] ?? [] } as T;
+  }
+  if (path === '/parser/runs') return { data: { runId: 'run_mock_new', status: 'queued', createdAt: Date.now() } } as T;
 
   console.warn(`[mock] unhandled GET ${path}`);
   return { data: null } as T;

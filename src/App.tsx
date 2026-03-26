@@ -16,6 +16,7 @@ import GettingStarted from './pages/dashboard/GettingStarted'
 import Projects from './pages/dashboard/Projects'
 import ProjectDetail from './pages/dashboard/ProjectDetail'
 import Account from './pages/dashboard/Account'
+import AutoParser from './pages/dashboard/AutoParser'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30000, retry: 1 } } })
 
@@ -49,6 +50,7 @@ export default function App() {
               <Route index element={<GettingStarted />} />
               <Route path="projects" element={<Projects />} />
               <Route path="projects/:id" element={<ProjectDetail />} />
+              <Route path="parser" element={<AutoParser />} />
               <Route path="account" element={<Account />} />
             </Route>
           </Routes>
