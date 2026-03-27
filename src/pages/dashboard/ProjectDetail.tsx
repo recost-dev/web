@@ -788,6 +788,7 @@ export default function ProjectDetail() {
   const params = useParams();
   const id = params.id as string;
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [scansPage, setScansPage] = useState(1);
   const [viewMode, setViewMode] = useState<'static' | 'live'>('static');
 
   const { data: project, isLoading: projectLoading, isError: projectError, refetch: refetchProject } =
@@ -859,15 +860,17 @@ export default function ProjectDetail() {
   });
 
   // Scan history
-  const { data: scans = [], isLoading: scansLoading, isError: scansError, refetch: refetchScans } =
-    useQuery<Scan[]>({
-      queryKey: ['dashboard-project-scans', id],
+  const { data: scansResponse, isLoading: scansLoading, isError: scansError, refetch: refetchScans } =
+    useQuery<{ data: Scan[]; pagination: { page: number; totalPages: number; hasNext: boolean; hasPrev: boolean } }>({
+      queryKey: ['dashboard-project-scans', id, scansPage],
       queryFn: () =>
         apiClient
-          .get<{ data: Scan[] }>(`/projects/${id}/scans`)
-          .then((r) => r.data),
+          .get<{ data: Scan[]; pagination: { page: number; totalPages: number; hasNext: boolean; hasPrev: boolean } }>(`/projects/${id}/scans?page=${scansPage}&limit=50`)
+          .then((r) => r),
       enabled: !!id && historyOpen,
     });
+  const scans = scansResponse?.data ?? [];
+  const scansPagination = scansResponse?.pagination;
 
   const isLoading = projectLoading || latestScanLoading;
   const summary = latestScan?.summary;
@@ -1200,6 +1203,34 @@ export default function ProjectDetail() {
                     </div>
                   </div>
                 ))}
+                {scansPagination && scansPagination.totalPages > 1 && (
+                  <div
+                    className="flex items-center justify-between px-3 py-2 sm:px-5"
+                    style={{ borderTop: `1px solid ${colors.borderSubtle}` }}
+                  >
+                    <button
+                      disabled={!scansPagination.hasPrev}
+                      onClick={() => setScansPage(p => p - 1)}
+                      className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      style={{ color: colors.textSecondary, border: `1px solid ${colors.borderDefault}` }}
+                    >
+                      <ChevronUp className="w-3 h-3 rotate-[-90deg]" />
+                      Prev
+                    </button>
+                    <span className="text-xs font-mono" style={{ color: colors.textMuted }}>
+                      Page {scansPagination.page} of {scansPagination.totalPages}
+                    </span>
+                    <button
+                      disabled={!scansPagination.hasNext}
+                      onClick={() => setScansPage(p => p + 1)}
+                      className="flex items-center gap-1 text-xs px-2 py-1 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      style={{ color: colors.textSecondary, border: `1px solid ${colors.borderDefault}` }}
+                    >
+                      Next
+                      <ChevronDown className="w-3 h-3 rotate-[-90deg]" />
+                    </button>
+                  </div>
+                )}
               </div>
             )
           )}
